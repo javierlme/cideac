@@ -1,0 +1,12 @@
+# Ignore everything
+*
+# but
+
+# Include node config files
+!package*.json
+
+# Include code
+!src
+
+# Include scripts
+!docker-scripts

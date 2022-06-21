@@ -1,0 +1,41 @@
+:root {
+  --color-accent-100: #154481;
+  --color-accent-80: #4A92F0;
+  --color-neutral-100: #2e2e2e;
+  --color-neutral-80: #d2d2d2;
+  
+  --color-error: #F95738;
+
+  /* CUSTOMIZATION */
+  --input-color-border: var(--color-neutral-80);
+  --input-color-error: var(--color-error);
+  --input-color-disabled: var(--color-neutral-80);
+  --icon-size: 24px;
+}
+
+body {
+  margin: 0;
+
+  font-family: 'Ubuntu', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input, textarea, select, button {
+  font: inherit;
+}
+
+select {
+  border: 1px solid var(--input-color-border);
+  padding: 4px 12px;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+button {
+  cursor: pointer;
+}
