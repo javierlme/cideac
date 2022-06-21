@@ -79,6 +79,12 @@ export default function Home() {
       } else if (step.id === 'assign') {
         formData.set('city', categoryObj.city);
         formData.set('category', categoryObj.code);
+        formData.set('config', { 
+          "percentageHandicap": Number(5/100), 
+          "numSlotsBySeatHandicap": Number(1),
+          "percentageAthlete": Number(5/100), 
+          "numSlotsBySeatAthlete": Number(1),
+        });
         res = await API.post('/courses/assign', formData);
       }
       console.log(res);
