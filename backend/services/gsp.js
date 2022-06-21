@@ -27,7 +27,7 @@ const GSPColumns = {
   ['ALUMNO CON MINUSVALÍA']: 'T',
   ['DEPORTISTA DE ÉLITE']: 'U',
 };
-async function processAssigns(category, city, filePath) {
+async function processAssigns(category, city, filePath, config) {
   const courses = await courseService.getCategoryCourses(city, category);
   const wb = xlsx.readFile(
     filePath
@@ -135,8 +135,8 @@ async function processAssigns(category, city, filePath) {
   for (const course of courses) {
     // NOTE: Asignación para discapacitados
     // TODO: Sacar pesos a ctes para leer de ficheros
-    handicappedSlots = Math.ceil(course.slots * 0.05);
-    athleteSlots = Math.ceil(course.slots * 0.05);
+    handicappedSlots = Math.ceil(course.slots * config.percentageHandicap * config.numSlotsBySeatHandicap);
+    athleteSlots = Math.ceil(course.slots * config.percentageAthlete * config.numSlotsBySeatAthlete);
     slotsByList.push({
       code: course.code,
       schoolCode: course.schoolCode,

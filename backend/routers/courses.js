@@ -216,27 +216,27 @@ router.post('/assign', guard.check([['admin']]),
       let url;
       switch (req.body.category) {
         case 'CE': {
-          url = await CEService.processAssigns(req.body.category, req.body.city, req.file.path);
+          url = await CEService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
           break;
         }
         case 'FPB': {
-          url = await FPBService.processAssigns(req.body.category, req.body.city, req.file.path);
+          url = await FPBService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
           break;
         }
         case 'GMD': {
-          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path);
+          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
           break;
         }
         case 'GMP': {
-          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path);
+          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
           break;
         }
         case 'GSD': {
-          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path);
+          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
           break;
         }
         case 'GSP': {
-          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path);
+          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
           break;
         }
         default: {
