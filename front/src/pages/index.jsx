@@ -3,11 +3,12 @@ import { Fragment, h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import Button from '../components/Button';
 import Icon from '../components/Icon';
-import { error, file as fileIcon, signout, trash } from '../icons';
+import { error, file as fileIcon, signout, trash, expand, colapse, pdf, excel } from '../icons';
 import { Redirect } from 'wouter-preact';
 import { useSession } from '../stores/session';
 import shallow from 'zustand/shallow';
 import { API } from '../api';
+import {Buffer} from 'buffer';
 
 const selector = (state) => [state.user, state.logout];
 
@@ -22,6 +23,22 @@ const defaultSteps = [
   },
 ];
 
+// Configuration
+let percentageHandicap = 5;
+let numSlotsBySeatHandicap = 1;
+let percentageAthlete = 5;
+let numSlotsBySeatAthlete = 1;
+let percentageA = 60;
+let percentageB = 30;
+let percentageC = 10;
+let openConfig = false;
+let textTypeA = 'Título de graduado en ESO';
+let textTypeB = 'Título de Formación Profesional Básica (Sin prioridad)';
+let textTypeC = 'Prueba de Acceso / Otras formas de acceso';
+let textTypeAthlete = 'Reserva plaza disposición cuarta 1';
+let textTypeHandicap = 'Reserva plaza disposición cuarta 2';
+
+
 export default function Home() {
   const [user, logout] = useSession(selector, shallow);
   const [steps, setSteps] = useState(defaultSteps);
@@ -29,7 +46,9 @@ export default function Home() {
   const [category, setCategory] = useState('');
   const [popupOpen, setPopupOpen] = useState(null);
   const categoryObj = categories.find((c) => c.name === category);
+  
 
+  
   useEffect(() => {
     if (!user) return;
     API.get('/courses/categories').then(async (res) => {
@@ -79,12 +98,10 @@ export default function Home() {
       } else if (step.id === 'assign') {
         formData.set('city', categoryObj.city);
         formData.set('category', categoryObj.code);
-        formData.set('config', { 
-          "percentageHandicap": Number(5/100), 
-          "numSlotsBySeatHandicap": Number(1),
-          "percentageAthlete": Number(5/100), 
-          "numSlotsBySeatAthlete": Number(1),
-        });
+        formData.set('percentageHandicap', percentageHandicap);
+        formData.set('numSlotsBySeatHandicap', numSlotsBySeatHandicap);
+        formData.set('percentageAthlete', percentageAthlete);
+        formData.set('numSlotsBySeatAthlete', numSlotsBySeatAthlete);
         res = await API.post('/courses/assign', formData);
       }
       console.log(res);
@@ -132,6 +149,23 @@ export default function Home() {
     }
   };
 
+  const downloadAdmitidosPdf = async (step) => {
+    const filename = step.url;
+    console.log(`filename:${filename}`);
+    const { data } = await API.get(`/courses/files/pdf/admitidos/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+//      let pdfContent = Buffer(data).toString("base64");
+      console.log(pdfContent.length)
+      const blob = new Blob([pdfContent], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'prueba.pdf';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+
   return (
     <Container>
       <header>
@@ -142,20 +176,11 @@ export default function Home() {
         </Button>
       </header>
       <section className="intro">
-        <h1>
-          <b>
-            Plataforma de asignación de plazas de ciclo de formación <br />
-            2022
-          </b>
-        </h1>
+        <h2><b>Plataforma de asignación de plazas de formación profesional</b></h2>
         <p>Para comenzar sigue los pasos a continuación:</p>
         <label className="selector">
           Seleccionar ciclo
-          <select
-            id="categorySelect"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
+          <select id="categorySelect" value={category} onChange={(e) => setCategory(e.target.value)}>
             {categories.map((option) => (
               <option value={option.name} key={option.name}>
                 {option.name}
@@ -164,13 +189,146 @@ export default function Home() {
           </select>
         </label>
       </section>
+      <section className="configParam">
+          <h2 style="cursor:pointer" onClick={(e) => 
+                { 
+                  openConfig = !openConfig;
+                  openConfig?document.getElementById('configSectionParamId').style.display='block' : document.getElementById('configSectionParamId').style.display='none';
+                  openConfig?document.getElementById('iconConfigSectionParamId1').style.display='none' : document.getElementById('iconConfigSectionParamId1').style.display='block';
+                  openConfig?document.getElementById('iconConfigSectionParamId2').style.display='block' : document.getElementById('iconConfigSectionParamId2').style.display='none';
+                } 
+              }>
+            <div id="iconConfigSectionParamId1" style="display:block">
+              Parámetros de configuración <Icon icon={expand} />
+            </div>
+            <div id="iconConfigSectionParamId2" style="display:none">
+              Parámetros de configuración <Icon icon={colapse} />
+            </div>
+          </h2> 
+          <div className="divConfig" id="configSectionParamId" style={openConfig?'display:block' : 'display:none'}>
+
+            <h4><b>Minusválidos</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Porcentaje plazas reservadas
+                </td>
+                <td>
+                  <input class="inputConfig" id="percentageHandicapInput" value={percentageHandicap} onChange={(e) => percentageHandicap = e.target.value} />%
+                </td>
+              </tr>
+            </table>  
+            <h4><b>Deportistas élite</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Porcentaje plazas reservadas
+                </td>
+                <td>
+                  <input class="inputConfig" id="percentageAthleteInput" value={percentageAthlete} onChange={(e) => percentageAthlete = e.target.value} />%
+                </td>
+              </tr>
+            </table>
+            <h4><b>Forma acceso</b></h4>
+            <table>
+            <tr>
+                <td class="tdConfig">
+                  Porcentaje plazas tipo A
+                </td>
+                <td>
+                  <input class="inputConfig" id="percentageTypeAInput" value={percentageA} onChange={(e) => percentageA = e.target.value} />%
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Porcentaje plazas tipo B
+                </td>
+                <td>
+                  <input class="inputConfig" id="percentageTypeAInput" value={percentageB} onChange={(e) => percentageB = e.target.value} />%
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Porcentaje plazas tipo C
+                </td>
+                <td>
+                  <input class="inputConfig" id="percentageTypeAInput" value={percentageC} onChange={(e) => percentageC = e.target.value} />%
+                </td>
+              </tr>
+            </table>
+          </div>
+        </section>
+        <section className="configText">
+          <h2 style="cursor:pointer" onClick={(e) => 
+                { 
+                  openConfig = !openConfig;
+                  openConfig?document.getElementById('configSectionTextId').style.display='block' : document.getElementById('configSectionTextId').style.display='none';
+                  openConfig?document.getElementById('iconConfigSectionTextId1').style.display='none' : document.getElementById('iconConfigSectionTextId1').style.display='block';
+                  openConfig?document.getElementById('iconConfigSectionTextId2').style.display='block' : document.getElementById('iconConfigSectionTextId2').style.display='none';
+                } 
+              }>
+            <div id="iconConfigSectionTextId1" style="display:block">
+              Textos de configuración <Icon icon={expand} />
+            </div>
+            <div id="iconConfigSectionTextId2" style="display:none">
+              Textos de configuración <Icon icon={colapse} />
+            </div>
+          </h2> 
+          <div className="divConfig" id="configSectionTextId" style={openConfig?'display:block' : 'display:none'}>
+
+            <h4><b>Forma acceso</b></h4>
+            <table>
+            <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo A
+                </td>
+                <td>
+                  <input class="inputConfig" id="textTypeAInput" value={textTypeA} onChange={(e) => textTypeA = e.target.value} />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo B
+                </td>
+                <td>
+                  <input class="inputConfig" id="textTypeBInput" value={textTypeB} onChange={(e) => textTypeB = e.target.value} />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo C
+                </td>
+                <td>
+                  <input class="inputConfig" id="textTypeCInput" value={textTypeC} onChange={(e) => textTypeC = e.target.value} />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso deportista élite
+                </td>
+                <td>
+                  <input class="inputConfig" id="textTypeAthleteInput" value={textTypeAthlete} onChange={(e) => textTypeAthlete = e.target.value} />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso minusvalía
+                </td>
+                <td>
+                  <input class="inputConfig" id="textTypeHandicapInput" value={textTypeHandicap} onChange={(e) => textTypeHandicap = e.target.value} />
+                </td>
+              </tr>
+            </table>
+          </div>
+        </section>
       <section className="steps">
         {steps.map((step, index) => (
           <Step
             key={step.id}
             step={step}
             index={index}
-            onDownload={downloadFile}
+            onDownloadExcel={downloadFile}
+            onDownloadPdf={downloadAdmitidosPdf}
             onUpload={uploadFile}
             onRemove={removeFile}
             onShowErrors={(step) => setPopupOpen(step)}
@@ -204,7 +362,7 @@ input.type = 'file';
 input.accept = '.xls,.xlsx';
 
 function Step(props) {
-  const { step, index, onUpload, onDownload, onRemove, onShowErrors } = props;
+  const { step, index, onUpload, onDownloadExcel, onDownloadPdf, onRemove, onShowErrors } = props;
   const uploadFile = () => {
     input.onchange = () => {
       onUpload(step, input.files[0]);
@@ -220,10 +378,13 @@ function Step(props) {
         <div className="FileInput">
           {step.id === 'download' && (
             <Fragment>
-              El archivo de asignaciones ya está listo
-              <Button primary onClick={() => onDownload(step)}>
-                Descargar
-              </Button>
+              <table>
+                <tr>
+                  <td>Admitidos</td>
+                  <td><a primary onClick={() => onDownloadExcel(step)}>Excel <Icon icon={excel} /></a></td>
+                  <td><Button primary onClick={() => onDownloadPdf(step)}>Pdf <Icon icon={pdf} /></Button></td>
+                </tr>
+              </table>
             </Fragment>
           )}
           {step.id !== 'download' && step.state === 'pending' && (
@@ -277,7 +438,7 @@ const Container = styled('div')`
     align-items: center;
     justify-content: space-between;
 
-    padding: 10px 48px 10px 180px;
+    padding: 20px 50px 20px 100px;
 
     background: var(--color-accent-100);
 
@@ -287,15 +448,13 @@ const Container = styled('div')`
   }
 
   .intro {
-    padding: 50px 50px 50px 180px;
+    padding: 20px 50px 20px 100px;
     color: var(--color-neutral-100);
-
     h1 {
       font-weight: normal;
       font-size: 32px;
       line-height: 37px;
     }
-
     .selector {
       display: flex;
       align-items: center;
@@ -306,18 +465,57 @@ const Container = styled('div')`
       }
     }
   }
+  .configParam {
+    background: white;
+    padding: 20px 50px 20px 100px;
+    border-top: 1px solid var(--color-neutral-80);
+    h1 {
+      font-weight: normal;
+      font-size: 32px;
+      line-height: 37px;
+    }
+    .inputConfig {
+      margin-left:20px;
+      margin-right:5px;
+      text-align: center;
+      width: 40px;
+    }
+    .tdConfig {
+      width: 250px;
+      padding: 0;
+      margin: 0;
+    }
+  }
+  .configText {
+    background: white;
+    padding: 20px 50px 20px 100px;
+    border-top: 1px solid var(--color-neutral-80);
+    h1 {
+      font-weight: normal;
+      font-size: 32px;
+      line-height: 37px;
+    }
+    .inputConfig {
+      margin-left:20px;
+      margin-right:5px;
+      text-align: left;
+      width: 600px;
+    }
+    .tdConfig {
+      width: 250px;
+      padding: 0;
+      margin: 0;
+    }
+  }
   .steps {
+    background: #f9f9f9;
     flex: 1;
-
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
     gap: 24px;
-
-    background: #f9f9f9;
     border-top: 1px solid var(--color-neutral-80);
-
-    padding: 70px 180px 70px 180px;
+    padding: 20px 50px 20px 100px;
     color: var(--color-neutral-100);
 
     .step {
@@ -363,7 +561,7 @@ const Container = styled('div')`
         line-height: 23px;
         text-align: center;
         margin-bottom: 25px;
-        width: 180px;
+        width: 100px;
       }
 
       .file {
