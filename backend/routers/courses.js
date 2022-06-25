@@ -14,7 +14,7 @@ const GMPService = require('../services/gmp');
 const GSDService = require('../services/gsd');
 const GSPService = require('../services/gsp');
 const config = require('../config');
-const html_to_pdf = require('html-pdf-node');
+const {Buffer} = require('buffer');
 
 const slotsColumns = {
   ['codigo centro ']: 'A',
@@ -277,7 +277,7 @@ router.get('/checkSlots', guard.check([['admin']]), async (req, res) => {
   }
 });
 
-router.get('/files/:filename', guard.check([['admin']]), async (req, res) => {
+router.get('/files/excel/:filename', guard.check([['admin']]), async (req, res) => {
   try {
 
     const filename = req.params.filename
@@ -286,29 +286,32 @@ router.get('/files/:filename', guard.check([['admin']]), async (req, res) => {
       return common.respond(req, res, 400, { code: 'ERR_MISSING_PARAM', additionalInfo: { param: 'filename' } });
     }
     const filePath = path.join(__dirname, '..', 'temp', `${filename}`);
-    const contentFile = await fs.readFileSync(filePath, 'utf8')
-    common.respond(req, res, 200, contentFile);
+    const contentFile = await fs.readFileSync(filePath)
+    if (!contentFile) {
+      return common.respond(req, res, 404, { code: 'ERR_FILE_NOT_FOUND', additionalInfo: { param: 'filename' } });
+    }
+    const bufferBase64 = Buffer(contentFile).toString('base64')
+    common.respond(req, res, 200, bufferBase64);
   } catch (err) {
     common.handleException(req, res, err);
   }
 });
 
-router.get('/files/pdf/admitidos/:filename', guard.check([['admin']]), async (req, res) => {
+router.get('/files/pdf/:filename', guard.check([['admin']]), async (req, res) => {
   try {
 
-    //const filename = req.params.filename;
-    const filename = "admitidos.html";
+    const filename = req.params.filename
     console.log(`filename:${filename}`)
     if (!filename) {
       return common.respond(req, res, 400, { code: 'ERR_MISSING_PARAM', additionalInfo: { param: 'filename' } });
     }
-    const filePath = path.join(__dirname, '..', 'templates', `${filename}`);
-    const contentFile = await fs.readFileSync(filePath, 'utf8');
-
-    let options = { format: 'A4' };
-    let file = { content: contentFile };
-    pdfBuffer = await html_to_pdf.generatePdf(file, options);
-    common.respond(req, res, 200, pdfBuffer.toString('base64'));
+    const filePath = path.join(__dirname, '..', 'temp', `${filename}`);
+    const contentFile = await fs.readFileSync(filePath);
+    if (!contentFile) {
+      return common.respond(req, res, 404, { code: 'ERR_FILE_NOT_FOUND', additionalInfo: { param: 'filename' } });
+    }
+    const bufferBase64 = Buffer(contentFile).toString('base64')
+    common.respond(req, res, 200, bufferBase64);
   } catch (err) {
     common.handleException(req, res, err);
   }

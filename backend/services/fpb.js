@@ -3,6 +3,7 @@ const path = require('path');
 const { randomNumber } = require('../constants');
 const courseService = require('../routers/courses');
 const fs = require('fs');
+const html_to_pdf = require('html-pdf-node');
 
 const FPBColumns = {
   ['NÚMERO DOCUMENTO DE IDENTIDAD']: 'A',
@@ -326,19 +327,32 @@ async function processAssigns(category, city, filePath, config) {
       index++;
     }
   });
-  const filename = `FPB_${Date.now()}.csv`;
+
+  const filename = `FPB_Admitidos_${Date.now()}`;
+
+  // Excel
   const content = 'NUMERO SOLICITUD;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CILO;DNI;IDENTIFICACION;PUNTUACION;' +
     'NEE;MINUSVALÍA;ATLETA;MOTIVO DE ACCESO;CENTRO LISTA DE ESPERA 1;CICLO LISTA DE ESPERA 1;CENTRO LISTA DE ESPERA 2;' +
     'CICLO LISTA DE ESPERA 2;CENTRO LISTA DE ESPERA 3;CICLO LISTA DE ESPERA 3;CENTRO LISTA DE ESPERA 4;CICLO LISTA DE ESPERA 4;\r\n' +
-    applications.map(ap => `${ap.applicationId};${ap.assignedCourse?.schoolCode || 'Ninguno'};${ap.assignedCourse?.school || 'Ninguno'};` +
-      `${ap.assignedCourse?.code || 'Ninguno'};${ap.assignedCourse?.course || 'Ninguno'};${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'};` +
-      `${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'};` +
-      `${ap.scoring};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};` +
-      `${ap.reason || 'Ninguno'};${ap.waitingLists[0]?.schoolCode || ''};${ap.waitingLists[0]?.code || ''};${ap.waitingLists[1]?.schoolCode || ''};` +
-      `${ap.waitingLists[1]?.code || ''};${ap.waitingLists[2]?.schoolCode || ''};${ap.waitingLists[2]?.code || ''};${ap.waitingLists[3]?.schoolCode || ''};` +
-      `${ap.waitingLists[3]?.code || ''};`).join('\r\n');
-  fs.writeFileSync(path.join(__dirname, '..', 'temp', filename), content, 'latin1');
+  applications.map(ap => `${ap.applicationId};${ap.assignedCourse?.schoolCode || 'Ninguno'};${ap.assignedCourse?.school || 'Ninguno'};` +
+    `${ap.assignedCourse?.code || 'Ninguno'};${ap.assignedCourse?.course || 'Ninguno'};${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'};` +
+    `${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'};` +
+    `${ap.scoring};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};` +
+    `${ap.reason || 'Ninguno'};${ap.waitingLists[0]?.schoolCode || ''};${ap.waitingLists[0]?.code || ''};${ap.waitingLists[1]?.schoolCode || ''};` +
+    `${ap.waitingLists[1]?.code || ''};${ap.waitingLists[2]?.schoolCode || ''};${ap.waitingLists[2]?.code || ''};${ap.waitingLists[3]?.schoolCode || ''};` +
+    `${ap.waitingLists[3]?.code || ''};`).join('\r\n');
+
+  fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+".csv"), content);
+  
   console.log({ applications, coursesAssignations });
+
+  // Pdf
+  const contentFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'admitidos.html'), 'utf8');
+  if (contentFile){
+    pdfBuffer = await html_to_pdf.generatePdf({ content: contentFile }, { format: 'A4' });
+    fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+".pdf"), pdfBuffer);
+  }
+
   return `${filename}`;
 }
 

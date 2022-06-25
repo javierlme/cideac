@@ -3,6 +3,7 @@ const path = require('path');
 const { randomNumber } = require('../constants');
 const courseService = require('../routers/courses');
 const fs = require('fs');
+const html_to_pdf = require('html-pdf-node');
 
 const GSPColumns = {
   ['NÚMERO DOCUMENTO DE IDENTIDAD']: 'A',
