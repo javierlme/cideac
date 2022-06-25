@@ -135,12 +135,18 @@ export default function Home() {
     newSteps[index] = { ...newSteps[index], state: 'pending', file: null };
     setSteps(newSteps);
   };
-  const downloadFile = async (step) => {
-    const filename = step.url;
+  const downloadAdmitidosExcel = async (step) => {
+    const filename = step.url + ".csv"
     console.log(`filename:${filename}`);
-    const { data } = await API.get(`/courses/files/${filename}`);
+    const { data } = await API.get(`/courses/files/excel/${filename}`);
     if (data) {
-      const blob = new Blob([data], { type: 'application/csv' });
+      console.log(data.length)
+      console.log(data)
+
+      let pdfContent = Buffer(data, 'base64');
+      console.log(pdfContent.length)
+      console.log(pdfContent)
+      const blob = new Blob([pdfContent], { type: 'application/csv;base64' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = filename;
@@ -150,17 +156,20 @@ export default function Home() {
   };
 
   const downloadAdmitidosPdf = async (step) => {
-    const filename = step.url;
+    const filename = step.url + ".pdf"
     console.log(`filename:${filename}`);
-    const { data } = await API.get(`/courses/files/pdf/admitidos/${filename}`);
+    const { data } = await API.get(`/courses/files/pdf/${filename}`);
     if (data) {
+      console.log(data.length)
+      console.log(data)
+
       let pdfContent = Buffer(data, 'base64');
-//      let pdfContent = Buffer(data).toString("base64");
       console.log(pdfContent.length)
-      const blob = new Blob([pdfContent], { type: 'application/pdf' });
+      console.log(pdfContent)
+      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'prueba.pdf';
+      link.download = filename;
       link.click();
       URL.revokeObjectURL(link.href);
     }
@@ -327,7 +336,7 @@ export default function Home() {
             key={step.id}
             step={step}
             index={index}
-            onDownloadExcel={downloadFile}
+            onDownloadExcel={downloadAdmitidosExcel}
             onDownloadPdf={downloadAdmitidosPdf}
             onUpload={uploadFile}
             onRemove={removeFile}
