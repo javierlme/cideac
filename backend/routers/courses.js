@@ -14,6 +14,7 @@ const GMPService = require('../services/gmp');
 const GSDService = require('../services/gsd');
 const GSPService = require('../services/gsp');
 const config = require('../config');
+const html_to_pdf = require('html-pdf-node');
 
 const slotsColumns = {
   ['codigo centro ']: 'A',
@@ -214,25 +215,32 @@ router.post('/assign', guard.check([['admin']]),
       }
 
       let url;
+      const config = {
+        "percentageHandicap": Number(req.body.percentageHandicap?req.body.percentageHandicap:5)/100,
+        "numSlotsBySeatHandicap": Number(req.body.numSlotsBySeatHandicap?req.body.numSlotsBySeatHandicap:1),
+        "percentageAthlete": Number(req.body.percentageAthlete?req.body.percentageAthlete:5)/100,
+        "numSlotsBySeatAthlete": Number(req.body.numSlotsBySeatAthlete?req.body.numSlotsBySeatAthlete:1)
+      }      
+      console.log(JSON.stringify(config))
       switch (req.body.category) {
         case 'CE': {
-          url = await CEService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
+          url = await CEService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'FPB': {
-          url = await FPBService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
+          url = await FPBService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GMD': {
-          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
+          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GMP': {
-          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
+          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GSD': {
-          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
+          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GSP': {
@@ -280,6 +288,27 @@ router.get('/files/:filename', guard.check([['admin']]), async (req, res) => {
     const filePath = path.join(__dirname, '..', 'temp', `${filename}`);
     const contentFile = await fs.readFileSync(filePath, 'utf8')
     common.respond(req, res, 200, contentFile);
+  } catch (err) {
+    common.handleException(req, res, err);
+  }
+});
+
+router.get('/files/pdf/admitidos/:filename', guard.check([['admin']]), async (req, res) => {
+  try {
+
+    //const filename = req.params.filename;
+    const filename = "admitidos.html";
+    console.log(`filename:${filename}`)
+    if (!filename) {
+      return common.respond(req, res, 400, { code: 'ERR_MISSING_PARAM', additionalInfo: { param: 'filename' } });
+    }
+    const filePath = path.join(__dirname, '..', 'templates', `${filename}`);
+    const contentFile = await fs.readFileSync(filePath, 'utf8');
+
+    let options = { format: 'A4' };
+    let file = { content: contentFile };
+    pdfBuffer = await html_to_pdf.generatePdf(file, options);
+    common.respond(req, res, 200, pdfBuffer.toString('base64'));
   } catch (err) {
     common.handleException(req, res, err);
   }

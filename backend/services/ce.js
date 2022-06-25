@@ -4,7 +4,7 @@ const { randomNumber } = require('../constants');
 const courseService = require('../routers/courses');
 const fs = require('fs');
 
-const GMDColumns = {
+const CEColumns = {
   ['NÚMERO DOCUMENTO DE IDENTIDAD']: 'A',
   ['NUMERO SOLICITUD']: 'B',
   ['NÚMERO ALEATORIO']: 'C',
@@ -87,13 +87,13 @@ async function processAssigns(category, city, filePath, config) {
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
   const readCell = (column, row) => {
-    return getCellValue(`${GMDColumns[column]}${row}`);
+    return getCellValue(`${CEColumns[column]}${row}`);
   }
   const headerRow = 3;
   const errors = [];
-  Object.keys(GMDColumns).forEach(key => {
+  Object.keys(CEColumns).forEach(key => {
     if (readCell(key, headerRow) != key) {
-      errors.push(`Header cell ${GMDColumns[key]}${headerRow} must be ${key}`);
+      errors.push(`Header cell ${CEColumns[key]}${headerRow} must be ${key}`);
     }
   });
   if (errors.length > 0) {
