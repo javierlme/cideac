@@ -1,5 +1,4 @@
 module.exports = {
-  randomNumber: 1234567890,
   types: ['FPB', 'GM', 'GS'],
   cities: ['Ceuta', 'Melilla', 'CIDEAD'],
   categories: [

@@ -1,6 +1,5 @@
 const xlsx = require('xlsx');
 const path = require('path');
-const { randomNumber } = require('../constants');
 const courseService = require('../routers/courses');
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
@@ -77,7 +76,7 @@ const CEColumns = {
   ['ALUMNO CON MINUSVALÍA']: 'BQ',
   ['DEPORTISTA DE ÉLITE']: 'BR',
 };
-async function processAssigns(category, city, filePath, config) {
+async function processAssigns(category, city, filePath, config, distance) {
   const courses = await courseService.getCategoryCourses(city, category);
   const wb = xlsx.readFile(
     filePath
@@ -94,7 +93,7 @@ async function processAssigns(category, city, filePath, config) {
   const errors = [];
   Object.keys(CEColumns).forEach(key => {
     if (readCell(key, headerRow) != key) {
-      errors.push(`Header cell ${CEColumns[key]}${headerRow} must be ${key}`);
+      errors.push(`La celda de la cabecera ${CEColumns[key]}${headerRow} debe ser ${key}`);
     }
   });
   if (errors.length > 0) {
@@ -274,8 +273,8 @@ async function processAssigns(category, city, filePath, config) {
       return c2.scoring - c1.scoring;
     } else {
       // NOTE: Si hay empate en scoring, se escoge el que más cerca esté del randomNumber, en dirección siempre creciente-modular
-      if (((c1.randomNumber - randomNumber) >= 0 && (c2.randomNumber - randomNumber) >= 0) ||
-        (((c1.randomNumber - randomNumber) < 0 && (c2.randomNumber - randomNumber) < 0))) {
+      if (((c1.randomNumber - config.randomNumberSelected) >= 0 && (c2.randomNumber - config.randomNumberSelected) >= 0) ||
+        (((c1.randomNumber - config.randomNumberSelected) < 0 && (c2.randomNumber - config.randomNumberSelected) < 0))) {
         return c1.randomNumber - c2.randomNumber;
       } else {
         return c2.randomNumber - c1.randomNumber;

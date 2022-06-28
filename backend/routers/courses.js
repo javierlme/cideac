@@ -48,7 +48,7 @@ router.post('/slots', guard.check([['admin']]),
         return common.respond(req, res, 400, {
           code: "ERR_INVALID_FILE",
           additionalInfo: {
-            desc: "It must be an excel file - .xlsx|.xls extension",
+            desc: "El fichero debe ser excel - .xlsx|.xls extension",
           },
         });
       }
@@ -81,13 +81,13 @@ router.post('/slots', guard.check([['admin']]),
         .map(c => c.code);
       sheets.forEach(code => {
         if (!wb.SheetNames.includes(code)) {
-          errors.push(`Missing sheet ${code}`);
+          errors.push(`Falta la hoja ${code}`);
         } else {
           const headerRow = 1;
           const columns = listDistanceCode.includes(code) ? distanceSlotsColumns : slotsColumns;
           Object.keys(columns).forEach(key => {
             if (readCell(code, key, headerRow) != key) {
-              errors.push(`Sheet ${code} - Header cell ${columns[key]}${headerRow} must be ${key}`);
+              errors.push(`Hoja Excel ${code} - La celda de la cabecera ${columns[key]}${headerRow} debe ser ${key}`);
             }
           });
         }
@@ -196,7 +196,7 @@ router.post('/assign', guard.check([['admin']]),
       if (!['.xlsx', '.xls'].includes(path.extname(req.file.originalname).toLowerCase())) {
         return common.respond(req, res, 400, {
           code: 'ERR_INVALID_FILE',
-          additionalInfo: { desc: 'It must be an excel file - .xlsx|.xls extension' },
+          additionalInfo: { desc: 'El fichero debe ser excel - .xlsx|.xls extension' },
         });
       }
       if (!req.body.city) {
@@ -216,35 +216,68 @@ router.post('/assign', guard.check([['admin']]),
 
       let url;
       const config = {
+        
+        "randomNumberSelected": Number(req.body.randomNumberSelected?req.body.randomNumberSelected:147),
         "percentageHandicap": Number(req.body.percentageHandicap?req.body.percentageHandicap:5)/100,
         "numSlotsBySeatHandicap": Number(req.body.numSlotsBySeatHandicap?req.body.numSlotsBySeatHandicap:1),
         "percentageAthlete": Number(req.body.percentageAthlete?req.body.percentageAthlete:5)/100,
-        "numSlotsBySeatAthlete": Number(req.body.numSlotsBySeatAthlete?req.body.numSlotsBySeatAthlete:1)
-      }      
-      console.log(JSON.stringify(config))
+        "numSlotsBySeatAthlete": Number(req.body.numSlotsBySeatAthlete?req.body.numSlotsBySeatAthlete:1),
+        "percentageA": Number(req.body.percentageA?req.body.percentageA:60),
+        "percentageB": Number(req.body.percentageB?req.body.percentageB:30),
+        "percentageC": Number(req.body.percentageC?req.body.percentageC:10),
+
+        "titleGeneral": String(req.body.titleGeneral?req.body.titleGeneral:String()),
+        "titleCurse": String(req.body.titleCurse?req.body.titleCurse:String()),
+        "titleAdmitted": String(req.body.titleAdmitted?req.body.titleAdmitted:String()),
+        "titleWarning": String(req.body.titleWarning?req.body.titleWarning:String()),
+
+        "textGBTitleGeneral": String(req.body.textGBTitleGeneral?req.body.textGBTitleGeneral:String()),
+        "textGBTypeGeneral": String(req.body.textGBTypeGeneral?req.body.textGBTypeGeneral:String()),
+        "textGBTypeAthlete": String(req.body.textGBTypeAthlete?req.body.textGBTypeAthlete:String()),
+        "textGBTypeHandicap": String(req.body.textGBTypeHandicap?req.body.textGBTypeHandicap:String()),
+
+        "textGMTitleGeneral": String(req.body.textGMTitleGeneral?req.body.textGMTitleGeneral:String()),
+        "textGMTypeA": String(req.body.textGMTypeA?req.body.textGMTypeA:String()),
+        "textGMTypeB": String(req.body.textGMTypeB?req.body.textGMTypeB:String()),
+        "textGMTypeC": String(req.body.textGMTypeC?req.body.textGMTypeC:String()),
+        "textGMTypeAthlete": String(req.body.textGMTypeAthlete?req.body.textGMTypeAthlete:String()),
+        "textGMTypeHandicap": String(req.body.textGMTypeHandicap?req.body.textGMTypeHandicap:String()),
+
+        "textGSTitleGeneral": String(req.body.textGSTitleGeneral?req.body.textGSTitleGeneral:String()),
+        "textGSTypeA": String(req.body.textGSTypeA?req.body.textGSTypeA:String()),
+        "textGSTypeB": String(req.body.textGSTypeB?req.body.textGSTypeB:String()),
+        "textGSTypeC": String(req.body.textGSTypeC?req.body.textGSTypeC:String()),
+        "textGSTypeAthlete": String(req.body.textGSTypeAthlete?req.body.textGSTypeAthlete:String()),
+        "textGSTypeHandicap": String(req.body.textGSTypeHandicap?req.body.textGSTypeHandicap:String()),
+
+        "textCETitleGeneral": String(req.body.textCETitleGeneral?req.body.textCETitleGeneral:String()),
+        "textCETypeGeneral": String(req.body.textCETypeGeneral?req.body.textCETypeGeneral:String()),
+        "textCETypeAthlete": String(req.body.textCETypeAthlete?req.body.textCETypeAthlete:String()),
+        "textCETypeHandicap": String(req.body.textCETypeHandicap?req.body.textCETypeHandicap:String())
+      }
       switch (req.body.category) {
-        case 'CE': {
-          url = await CEService.processAssigns(req.body.category, req.body.city, req.file.path, config);
-          break;
-        }
         case 'FPB': {
-          url = await FPBService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          url = await FPBService.processAssigns(req.body.category, req.body.city, req.file.path, config, false);
           break;
         }
         case 'GMD': {
-          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, config, true);
           break;
         }
         case 'GMP': {
-          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path, config, false);
           break;
         }
         case 'GSD': {
-          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, config, true);
           break;
         }
         case 'GSP': {
-          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config);
+          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config, false);
+          break;
+        }
+        case 'CE': {
+          url = await CEService.processAssigns(req.body.category, req.body.city, req.file.path, config, true);
           break;
         }
         default: {

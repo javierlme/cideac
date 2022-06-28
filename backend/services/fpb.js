@@ -1,10 +1,9 @@
 const xlsx = require('xlsx');
 const path = require('path');
-const { randomNumber } = require('../constants');
 const courseService = require('../routers/courses');
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
-
+/*
 const FPBColumns = {
   ['NÚMERO DOCUMENTO DE IDENTIDAD']: 'A',
   ['NUMERO SOLICITUD']: 'B',
@@ -20,11 +19,28 @@ const FPBColumns = {
   ['BAREMO POR ESTUDIOS EN MISMA CIUDAD']: 'L',
   ['SUMA BAREMO']: 'M',
   ['ALUMNO CON MINUSVALÍA']: 'N',
+  ['DEPORTISTA DE ÉLITE']: 'O'
+};
+*/
+const FPBColumns = {
+  ['NÚMERO DOCUMENTO DE IDENTIDAD']: 'A',
+  ['NUMERO SOLICITUD']: 'B',
+  ['NÚMERO ALEATORIO']: 'C',
+  ['IDENTIFICACION']: 'D',
+  ['NEE']: 'E',
+  ['CENTRO Y CICLO FORMATIVO [1]']: 'F',
+  ['CENTRO Y CICLO FORMATIVO [2]']: 'G',
+  ['CENTRO Y CICLO FORMATIVO [3]']: 'H',
+  ['CENTRO Y CICLO FORMATIVO [4]']: 'I',
+  ['BAREMO POR AÑO DE NACIMIENTO']: 'J',
+  ['ESTUDIOS CURSADOS EN 2020-2021']: 'K',
+  ['BAREMO ESTUDIOS MISMA CIUDAD']: 'L',
+  ['SUMA BAREMO']: 'M',
+  ['ALUMNO CON MINUSVALÍA']: 'N',
   ['DEPORTISTA DE ÉLITE']: 'O',
 };
 
-
-async function processAssigns(category, city, filePath, config) {
+async function processAssigns(category, city, filePath, config, distance) {
   const courses = await courseService.getCategoryCourses(city, 'FPB');
   const wb = xlsx.readFile(
     filePath
@@ -35,13 +51,16 @@ async function processAssigns(category, city, filePath, config) {
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
   const readCell = (column, row) => {
-    return getCellValue(`${FPBColumns[column]}${row}`);
+    return getCellValue(`${column}${row}`);
+//    return getCellValue(`${FPBColumns[column]}${row}`);
   }
-  const headerRow = 3;
+
+  /*
+  const headerRow = 1;
   const errors = [];
   Object.keys(FPBColumns).forEach(key => {
     if (readCell(key, headerRow) != key) {
-      errors.push(`Header cell ${FPBColumns[key]}${headerRow} must be ${key}`);
+      errors.push(`La celda de la cabecera ${FPBColumns[key]}${headerRow} debe ser ${key}`);
     }
   });
   if (errors.length > 0) {
@@ -51,10 +70,11 @@ async function processAssigns(category, city, filePath, config) {
       additionalInfo: { desc: errors.join('\r\n') },
     };
   }
+  */
   const readRow = (index) => {
-    return readCell('NÚMERO DOCUMENTO DE IDENTIDAD', index) != '';
+    return readCell('A', index) != '';
   };
-  let rowIndex = 4;
+  let rowIndex = 2;
   const applications = [];
   let application;
   const validateAndAppendCourse = (field, application, mandatory = false) => {
@@ -89,23 +109,22 @@ async function processAssigns(category, city, filePath, config) {
       application.courses.push(selectedCourse);
     }
   }
-  // NOTE: Código para grado medio melilla, pendiente extender/generalizar
   while (readRow(rowIndex)) {
     application = {
-      applicationId: readCell('NUMERO SOLICITUD', rowIndex),
-      docId: readCell('NÚMERO DOCUMENTO DE IDENTIDAD', rowIndex),
-      randomNumber: readCell('NÚMERO ALEATORIO', rowIndex),
-      personalId: readCell('IDENTIFICACIÓN', rowIndex),
-      especialNeeds: readCell('NEE', rowIndex).toLowerCase() === 'si',
+      docId: readCell('A', rowIndex),
+      applicationId: readCell('B', rowIndex),
+      randomNumber: readCell('C', rowIndex),
+      personalId: readCell('D', rowIndex),
+      especialNeeds: readCell('E', rowIndex).toLowerCase() === 'si',
       courses: []
-    };
-    validateAndAppendCourse('SELECCIONE CENTRO Y CICLO FORMATIVO [1]', application, true);
-    validateAndAppendCourse('SELECCIONE CENTRO Y CICLO FORMATIVO [2]', application);
-    validateAndAppendCourse('SELECCIONE CENTRO Y CICLO FORMATIVO [3]', application);
-    validateAndAppendCourse('SELECCIONE CENTRO Y CICLO FORMATIVO [4]', application);
-    application.handicapped = readCell('ALUMNO CON MINUSVALÍA', rowIndex) === 'Sí';
-    application.eliteAthlete = readCell('DEPORTISTA DE ÉLITE', rowIndex) === 'Sí';
-    application.scoring = readCell('SUMA BAREMO', rowIndex);
+    };  
+    validateAndAppendCourse('F', application, true);
+    validateAndAppendCourse('G', application);
+    validateAndAppendCourse('H', application);
+    validateAndAppendCourse('I', application);
+    application.scoring = readCell('M', rowIndex);
+    application.handicapped = readCell('N', rowIndex) === 'Sí';
+    application.eliteAthlete = readCell('O', rowIndex) === 'Sí';
     application.waitingLists = [];
     applications.push(application);
     rowIndex++;
@@ -132,8 +151,8 @@ async function processAssigns(category, city, filePath, config) {
       return c2.scoring - c1.scoring;
     } else {
       // NOTE: Si hay empate en scoring, se escoge el que más cerca esté del randomNumber, en dirección siempre creciente-modular
-      if (((c1.randomNumber - randomNumber) >= 0 && (c2.randomNumber - randomNumber) >= 0) ||
-        (((c1.randomNumber - randomNumber) < 0 && (c2.randomNumber - randomNumber) < 0))) {
+      if (((c1.randomNumber - config.randomNumberSelected) >= 0 && (c2.randomNumber - config.randomNumberSelected) >= 0) ||
+        (((c1.randomNumber - config.randomNumberSelected) < 0 && (c2.randomNumber - config.randomNumberSelected) < 0))) {
         return c1.randomNumber - c2.randomNumber;
       } else {
         return c2.randomNumber - c1.randomNumber;
@@ -284,7 +303,7 @@ async function processAssigns(category, city, filePath, config) {
       }
     }
   }
-  // NOTE: Asignamos plazas recuepradas y segunda pasada para ver si podemos mejorar la asignación de alguien
+  // NOTE: Asignamos plazas recuperadas y segunda pasada para ver si podemos mejorar la asignación de alguien
   for (const slot of slotsByList) {
     slot.otherSlots = slot.otherSlots + slot.recoveredSlots;
     slot.recoveredSlots = 0;
@@ -328,29 +347,94 @@ async function processAssigns(category, city, filePath, config) {
     }
   });
 
-  const filename = `FPB_Admitidos_${Date.now()}`;
-
+/*
   // Excel
-  const content = 'NUMERO SOLICITUD;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CILO;DNI;IDENTIFICACION;PUNTUACION;' +
+  const content = 'NUMERO SOLICITUD;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CICLO;DNI;IDENTIFICACION;PUNTUACION;' +
     'NEE;MINUSVALÍA;ATLETA;MOTIVO DE ACCESO;CENTRO LISTA DE ESPERA 1;CICLO LISTA DE ESPERA 1;CENTRO LISTA DE ESPERA 2;' +
     'CICLO LISTA DE ESPERA 2;CENTRO LISTA DE ESPERA 3;CICLO LISTA DE ESPERA 3;CENTRO LISTA DE ESPERA 4;CICLO LISTA DE ESPERA 4;\r\n' +
   applications.map(ap => `${ap.applicationId};${ap.assignedCourse?.schoolCode || 'Ninguno'};${ap.assignedCourse?.school || 'Ninguno'};` +
-    `${ap.assignedCourse?.code || 'Ninguno'};${ap.assignedCourse?.course || 'Ninguno'};${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'};` +
+    `${ap.assignedCourse?.code || 'Ninguno'};${ap.assignedCourse?.course || 'Ninguno'};${ap.docId ? `${ap.docId}` : 'Ninguno'};` +
     `${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'};` +
     `${ap.scoring};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};` +
     `${ap.reason || 'Ninguno'};${ap.waitingLists[0]?.schoolCode || ''};${ap.waitingLists[0]?.code || ''};${ap.waitingLists[1]?.schoolCode || ''};` +
     `${ap.waitingLists[1]?.code || ''};${ap.waitingLists[2]?.schoolCode || ''};${ap.waitingLists[2]?.code || ''};${ap.waitingLists[3]?.schoolCode || ''};` +
     `${ap.waitingLists[3]?.code || ''};`).join('\r\n');
 
-  fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+".csv"), content);
-  
-  console.log({ applications, coursesAssignations });
+  fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Admitidos.csv"), content);
 
-  // Pdf
-  const contentFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'admitidos.html'), 'utf8');
-  if (contentFile){
-    pdfBuffer = await html_to_pdf.generatePdf({ content: contentFile }, { format: 'A4' });
-    fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+".pdf"), pdfBuffer);
+  console.log({ applications, coursesAssignations });
+*/
+  const filename = `FPB_Admitidos_${Date.now()}`;
+  var contentAdmitidosExcel = 'ORDEN;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CICLO;DNI;IDENTIFICACION;PUNTUACION;' +
+  'NEE;MINUSVALÍA;ATLETA;\r\n';
+  const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
+  const admitidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'admitidosBase.html'));
+  const esperaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'esperaBase.html'));
+  if (contentHeaderFile && admitidosBaseHtml && esperaBaseHtml){
+    let html = contentHeaderFile.toString();
+    const numLinesPerPage = 50;
+    var pag=1;
+    for (i=0; i<courses.length; i++){
+      var order=0;
+      course = courses[i];
+      console.log(JSON.stringify(course))
+      const selectedCourse = coursesAssignations[String(course.code+'_'+course.schoolCode)];
+      if (!selectedCourse) return;
+      selectedCourse.assignees.map(ap => {
+        if (order%numLinesPerPage==0){
+          html += admitidosBaseHtml.toString()
+          .replace('##titleGeneral##', config.titleGeneral)
+          .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+          .replace('##city##', city)
+          .replace('##titleCurse##', config.titleCurse)
+          .replace('##titleAdmitted##', config.titleAdmitted)
+          .replace('##school##', ap.assignedCourse.school)
+          .replace('##course##', ap.assignedCourse.course)
+          .replace('##textGBTypeGeneral##', config.textGBTypeGeneral)
+          .replace('##titleWarning##', config.titleWarning)
+        }  
+        html += `  <tr style="background-color:${(order++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+        html += `   <td class="width:15%;text-align:left;">${(order)}</td>`;
+        html += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+        html += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+        html += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+        html += `  </tr>`;
+        contentAdmitidosExcel+= `${(order || '')};${(ap.assignedCourse.schoolCode || '')};${(ap.assignedCourse.school || '')};`
+          +`${(ap.assignedCourse.code || '')};${(ap.assignedCourse.course || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+          + `${(ap.scoring || '')};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+        if (order%numLinesPerPage==0){
+          html += '</table>';
+          html += `<div style="page-break-after:always"></div>`;
+        }
+      });
+      html += `</table>`;
+      html += `<div style="page-break-after:always"></div>`;
+    }
+    html += `</body>`;
+    html += `</html>`;
+    contentAdmitidosPdf = await html_to_pdf.generatePdf({ content: html }, 
+    { 
+        format: 'A4',
+        displayHeaderFooter: true,
+        footerTemplate: '<style>span{width:100% !important;text-align:center !important;font-size:8px !important;font-family: "Calibri"; }</style><span>Página <label class="pageNumber"></label> de <label class="totalPages"> </label> </span>',
+        margin: {
+          top: "0px",
+          bottom: "50px",
+          right: "0px",
+          left: "0px",
+        }
+    });
+    fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Admitidos.pdf"), contentAdmitidosPdf);
+    fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Admitidos.csv"), contentAdmitidosExcel, 'latin1');
+
+
+    // Listado de esperas
+
+    const contentEspera = 'NUMERO SOLICITUD;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CILO;DNI;IDENTIFICACION;PUNTUACION;' +
+    'NEE;MINUSVALÍA;ATLETA;MOTIVO DE ACCESO;CENTRO LISTA DE ESPERA 1;CICLO LISTA DE ESPERA 1;CENTRO LISTA DE ESPERA 2;' +
+    'CICLO LISTA DE ESPERA 2;CENTRO LISTA DE ESPERA 3;CICLO LISTA DE ESPERA 3;CENTRO LISTA DE ESPERA 4;CICLO LISTA DE ESPERA 4;\r\n';
+    fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Espera.csv"), contentEspera);
+  
   }
 
   return `${filename}`;
