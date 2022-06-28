@@ -27,8 +27,8 @@ export default function Login(props) {
       await login(data);
       setLocation('/');
     } catch (err) {
-      console.log(err.data.code);
       setError('Credenciales incorrectas');
+      console.log(err.data.code);
     }
   };
   return /* @__PURE__ */ h(

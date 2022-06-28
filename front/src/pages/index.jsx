@@ -13,17 +13,14 @@ import {Buffer} from 'buffer';
 const selector = (state) => [state.user, state.logout];
 
 const defaultSteps = [
-  //{ id: 'settings', title: 'Subir archivo de configuración', state: 'uploaded', file: { name: 'configuracion.xlsx' } },
-  { id: 'slots', title: 'Subir archivo de plazas', state: 'pending' },
-  { id: 'assign', title: 'Subir archivo de solicitudes', state: 'disabled' },
-  {
-    id: 'download',
-    title: 'Descargar archivo de asignaciones',
-    state: 'disabled',
-  },
+  { id: 'slots', title: 'Subir archivo de plazas', state: 'pending', file: null },
+  { id: 'assign', title: 'Subir archivo de solicitudes', state: 'disabled', file: null },
+  { id: 'download', title: 'Descargar archivo de asignaciones', state: 'disabled', file: null }
 ];
 
 // Configuration
+let openConfig = false;
+let randomNumberSelected = 147;
 let percentageHandicap = 5;
 let numSlotsBySeatHandicap = 1;
 let percentageAthlete = 5;
@@ -31,12 +28,35 @@ let numSlotsBySeatAthlete = 1;
 let percentageA = 60;
 let percentageB = 30;
 let percentageC = 10;
-let openConfig = false;
-let textTypeA = 'Título de graduado en ESO';
-let textTypeB = 'Título de Formación Profesional Básica (Sin prioridad)';
-let textTypeC = 'Prueba de Acceso / Otras formas de acceso';
-let textTypeAthlete = 'Reserva plaza disposición cuarta 1';
-let textTypeHandicap = 'Reserva plaza disposición cuarta 2';
+
+let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
+let titleCurse = 'Curso 2022/2023';
+let titleAdmitted = 'LISTADO PROVISIONAL DE ALUMNOS ADMITIDOS'; // 'LISTADO DEFINITIVO DE ALUMNOS ADMITIDOS';
+let titleWarning = 'IMPORTANTE: LOS ALUMNOS QUE APARECEN EN ESTA LISTA DEBEN FORMALIZAR SU MATRÍCULA EN EL CENTRO CORRESPONDIENTE DEL 22 AL 29 DE JULIO. Si no se formaliza se perderá la plaza.'
+
+let textGBTitleGeneral = 'Ciclos Formativos de Grado Básico';
+let textGBTypeGeneral = 'Ordinaria';
+let textGBTypeAthlete = 'Reserva plaza disposición cuarta 1';
+let textGBTypeHandicap = 'Reserva plaza disposición cuarta 2';
+
+let textGMTitleGeneral = 'Ciclos Formativos de Grado Medio';
+let textGMTypeA = 'Título de graduado en ESO';
+let textGMTypeB = 'Título de Formación Profesional Básica (Sin prioridad)';
+let textGMTypeC = 'Prueba de Acceso / Otras formas de acceso';
+let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
+let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
+
+let textGSTitleGeneral = 'Ciclos Formativos de Grado Superior';
+let textGSTypeA = 'Bachillerato';
+let textGSTypeB = 'Título de Tcnico (G.M. LOE/LOGSE)';
+let textGSTypeC = 'Prueba de Acceso / Otras formas de acceso';
+let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
+let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
+
+let textCETitleGeneral = 'Ciclos Formativos de Curso Especialización';
+let textCETypeGeneral = 'Ordinaria';
+let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
+let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
 
 
 export default function Home() {
@@ -47,8 +67,14 @@ export default function Home() {
   const [popupOpen, setPopupOpen] = useState(null);
   const categoryObj = categories.find((c) => c.name === category);
   
+  const resetSteps = async (index=0) => {
+    for (let i=index; i<steps.length;i++) {
+      steps[i] = { ...steps[i], state: i==index?'pending' : 'disabled', file: null };
+    }
+    const newSteps = [...steps];
+    setSteps(newSteps);
+  };
 
-  
   useEffect(() => {
     if (!user) return;
     API.get('/courses/categories').then(async (res) => {
@@ -62,30 +88,18 @@ export default function Home() {
     API.get('/courses/checkSlots', {
       params: { city: categoryObj.city },
     }).then(async (res) => {
-      const newSteps = [...steps];
       if (res.data.result) {
-        newSteps[1] = {
-          ...newSteps[1],
-          state: 'uploaded',
-          file: { name: 'Fichero de vacantes.xlsx' },
-        };
-        newSteps[2] = { ...newSteps[2], state: 'pending' };
+        steps[0] = { ...steps[0], state: 'uploaded', file: { name: 'Fichero de vacantes.xlsx' } };
+        resetSteps(1)
       } else {
-        newSteps[1] = {
-          ...newSteps[1],
-          state: 'pending',
-          file: null,
-        };
-        newSteps[2] = { ...newSteps[2], state: 'pending' };
+        resetSteps()
       }
-      setSteps(newSteps);
     });
   }, [categoryObj?.city]);
 
   if (!user) return <Redirect href="/login" />;
 
   const uploadFile = async (step, file) => {
-    console.log(file);
     const formData = new FormData();
     formData.set('file', file);
     let res;
@@ -98,54 +112,62 @@ export default function Home() {
       } else if (step.id === 'assign') {
         formData.set('city', categoryObj.city);
         formData.set('category', categoryObj.code);
+        formData.set('randomNumberSelected', randomNumberSelected);
         formData.set('percentageHandicap', percentageHandicap);
         formData.set('numSlotsBySeatHandicap', numSlotsBySeatHandicap);
         formData.set('percentageAthlete', percentageAthlete);
         formData.set('numSlotsBySeatAthlete', numSlotsBySeatAthlete);
+        formData.set('percentageA', percentageA);
+        formData.set('percentageB', percentageB);
+        formData.set('percentageC', percentageC);
+
+        formData.set('titleGeneral', titleGeneral);
+        formData.set('titleCurse', titleCurse);
+        formData.set('titleAdmitted', titleAdmitted);
+        formData.set('titleWarning', titleWarning);
+
+        formData.set('textGBTitleGeneral', textGBTitleGeneral);
+        formData.set('textGBTypeGeneral', textGBTypeGeneral);
+        formData.set('textGBTypeAthlete', textGBTypeAthlete);
+        formData.set('textGBTypeHandicap', textGBTypeHandicap);
+
+        formData.set('textGMTitleGeneral', textGMTitleGeneral);
+        formData.set('textGMTypeA', textGMTypeA);
+        formData.set('textGMTypeB', textGMTypeB);
+        formData.set('textGMTypeC', textGMTypeC);
+        formData.set('textGMTypeAthlete', textGMTypeAthlete);
+        formData.set('textGMTypeHandicap', textGMTypeHandicap);
+
+        formData.set('textGSTitleGeneral', textGSTitleGeneral);
+        formData.set('textGSTypeA', textGSTypeA);
+        formData.set('textGSTypeB', textGSTypeB);
+        formData.set('textGSTypeC', textGSTypeC);
+        formData.set('textGSTypeAthlete', textGSTypeAthlete);
+        formData.set('textGSTypeHandicap', textGSTypeHandicap);
+
+        formData.set('textCETitleGeneral', textCETitleGeneral);
+        formData.set('textCETypeGeneral', textCETypeGeneral);
+        formData.set('textCETypeAthlete', textCETypeAthlete);
+        formData.set('textCETypeHandicap', textCETypeHandicap);
         res = await API.post('/courses/assign', formData);
       }
-      console.log(res);
-      const newSteps = [...steps];
       const index = steps.indexOf(step);
-      newSteps[index] = { ...newSteps[index], state: 'uploaded', file };
-      newSteps[index + 1] = {
-        ...newSteps[index + 1],
-        state:
-          newSteps[index + 1].state == 'disabled'
-            ? 'pending'
-            : newSteps[index + 1].state,
-        url: res.data?.url,
-      };
-      setSteps(newSteps);
+      steps[index] = { ...steps[index], state: 'uploaded', file };
+      resetSteps(index + 1);
     } catch (err) {
-      const newSteps = [...steps];
       const index = steps.indexOf(step);
-      newSteps[index] = {
-        ...newSteps[index],
-        state: 'error',
-        info: err.data.additionalInfo,
-        file: null,
-      };
-      setSteps(newSteps);
+      steps[index] = { ...steps[index], state: 'error', info: err.data.additionalInfo, file: null };
+      resetSteps(index + 1);
     }
   };
   const removeFile = async (step) => {
-    const newSteps = [...steps];
-    const index = steps.indexOf(step);
-    newSteps[index] = { ...newSteps[index], state: 'pending', file: null };
-    setSteps(newSteps);
+    resetSteps(steps.indexOf(step));
   };
   const downloadAdmitidosExcel = async (step) => {
-    const filename = step.url + ".csv"
-    console.log(`filename:${filename}`);
+    const filename = step.url + "Admitidos.csv"
     const { data } = await API.get(`/courses/files/excel/${filename}`);
     if (data) {
-      console.log(data.length)
-      console.log(data)
-
       let pdfContent = Buffer(data, 'base64');
-      console.log(pdfContent.length)
-      console.log(pdfContent)
       const blob = new Blob([pdfContent], { type: 'application/csv;base64' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -156,16 +178,38 @@ export default function Home() {
   };
 
   const downloadAdmitidosPdf = async (step) => {
-    const filename = step.url + ".pdf"
-    console.log(`filename:${filename}`);
+    const filename = step.url + "Admitidos.pdf"
     const { data } = await API.get(`/courses/files/pdf/${filename}`);
     if (data) {
-      console.log(data.length)
-      console.log(data)
-
       let pdfContent = Buffer(data, 'base64');
-      console.log(pdfContent.length)
-      console.log(pdfContent)
+      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+
+  const downloadEsperaExcel = async (step) => {
+    const filename = step.url + "Espera.csv"
+    const { data } = await API.get(`/courses/files/excel/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+      const blob = new Blob([pdfContent], { type: 'application/csv;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+
+  const downloadEsperaPdf = async (step) => {
+    const filename = step.url + "Espera.pdf"
+    const { data } = await API.get(`/courses/files/pdf/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
       const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -216,6 +260,17 @@ export default function Home() {
           </h2> 
           <div className="divConfig" id="configSectionParamId" style={openConfig?'display:block' : 'display:none'}>
 
+            <h4><b>Desempate</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Número aleatorio asignado
+                </td>
+                <td>
+                  <input class="inputConfig" id="randomNumberSelectedInput" value={randomNumberSelected} onChange={(e) => { randomNumberSelected = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+            </table>  
             <h4><b>Minusválidos</b></h4>
             <table>
               <tr>
@@ -223,7 +278,7 @@ export default function Home() {
                   Porcentaje plazas reservadas
                 </td>
                 <td>
-                  <input class="inputConfig" id="percentageHandicapInput" value={percentageHandicap} onChange={(e) => percentageHandicap = e.target.value} />%
+                  <input class="inputConfig" id="percentageHandicapInput" value={percentageHandicap} onChange={(e) => { percentageHandicap = e.target.value; resetSteps(); } } />%
                 </td>
               </tr>
             </table>  
@@ -234,7 +289,7 @@ export default function Home() {
                   Porcentaje plazas reservadas
                 </td>
                 <td>
-                  <input class="inputConfig" id="percentageAthleteInput" value={percentageAthlete} onChange={(e) => percentageAthlete = e.target.value} />%
+                  <input class="inputConfig" id="percentageAthleteInput" value={percentageAthlete} onChange={(e) => { percentageAthlete = e.target.value; resetSteps(); } } />%
                 </td>
               </tr>
             </table>
@@ -245,7 +300,7 @@ export default function Home() {
                   Porcentaje plazas tipo A
                 </td>
                 <td>
-                  <input class="inputConfig" id="percentageTypeAInput" value={percentageA} onChange={(e) => percentageA = e.target.value} />%
+                  <input class="inputConfig" id="percentageTypeAInput" value={percentageA} onChange={(e) => { percentageA = e.target.value; resetSteps(); } } />%
                 </td>
               </tr>
               <tr>
@@ -253,7 +308,7 @@ export default function Home() {
                   Porcentaje plazas tipo B
                 </td>
                 <td>
-                  <input class="inputConfig" id="percentageTypeAInput" value={percentageB} onChange={(e) => percentageB = e.target.value} />%
+                  <input class="inputConfig" id="percentageTypeAInput" value={percentageB} onChange={(e) => { percentageB = e.target.value; resetSteps(); } } />%
                 </td>
               </tr>
               <tr>
@@ -261,7 +316,7 @@ export default function Home() {
                   Porcentaje plazas tipo C
                 </td>
                 <td>
-                  <input class="inputConfig" id="percentageTypeAInput" value={percentageC} onChange={(e) => percentageC = e.target.value} />%
+                  <input class="inputConfig" id="percentageTypeAInput" value={percentageC} onChange={(e) => { percentageC = e.target.value; resetSteps(); } } />%
                 </td>
               </tr>
             </table>
@@ -284,31 +339,57 @@ export default function Home() {
             </div>
           </h2> 
           <div className="divConfig" id="configSectionTextId" style={openConfig?'display:block' : 'display:none'}>
-
-            <h4><b>Forma acceso</b></h4>
+          <h4><b>Curso</b></h4>
             <table>
             <tr>
                 <td class="tdConfig">
-                  Texto acceso tipo A
+                  Título general
                 </td>
                 <td>
-                  <input class="inputConfig" id="textTypeAInput" value={textTypeA} onChange={(e) => textTypeA = e.target.value} />
+                  <input class="inputConfig" id="titleGeneralInput" value={titleGeneral} onChange={(e) => { titleGeneral = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
                 <td class="tdConfig">
-                  Texto acceso tipo B
+                  Título curso
                 </td>
                 <td>
-                  <input class="inputConfig" id="textTypeBInput" value={textTypeB} onChange={(e) => textTypeB = e.target.value} />
+                  <input class="inputConfig" id="titleCurseInput" value={titleCurse} onChange={(e) => { titleCurse = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
                 <td class="tdConfig">
-                  Texto acceso tipo C
+                  Título admitidos
                 </td>
                 <td>
-                  <input class="inputConfig" id="textTypeCInput" value={textTypeC} onChange={(e) => textTypeC = e.target.value} />
+                  <input class="inputConfig" id="titleAdmittedInput" value={titleAdmitted} onChange={(e) => { titleAdmitted = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto de Aviso
+                </td>
+                <td>
+                  <input class="inputConfig" id="titleWarningInput" value={titleWarning} onChange={(e) => { titleWarning = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+            </table>
+            <h4><b>Vía acceso Grado Básico (GB)</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Texto título
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBTitleGeneralInput" value={textGBTitleGeneral} onChange={(e) => { textGBTitleGeneral = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto vía acceso general
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBTypeGeneralInput" value={textGBTypeGeneral} onChange={(e) => { textGBTypeGeneral = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
@@ -316,7 +397,7 @@ export default function Home() {
                   Texto acceso deportista élite
                 </td>
                 <td>
-                  <input class="inputConfig" id="textTypeAthleteInput" value={textTypeAthlete} onChange={(e) => textTypeAthlete = e.target.value} />
+                  <input class="inputConfig" id="textGBTypeAthleteInput" value={textGBTypeAthlete} onChange={(e) => { textGBTypeAthlete = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
@@ -324,7 +405,144 @@ export default function Home() {
                   Texto acceso minusvalía
                 </td>
                 <td>
-                  <input class="inputConfig" id="textTypeHandicapInput" value={textTypeHandicap} onChange={(e) => textTypeHandicap = e.target.value} />
+                  <input class="inputConfig" id="textGBTypeHandicapInput" value={textGBTypeHandicap} onChange={(e) => { textGBTypeHandicap = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+            </table>
+            <h4><b>Vía acceso Grado Médio (GM)</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Texto título
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTitleGeneralInput" value={textGMTitleGeneral} onChange={(e) => { textGMTitleGeneral = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo A
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTypeAInput" value={textGMTypeA} onChange={(e) => { textGMTypeA = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo B
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTypeBInput" value={textGMTypeB} onChange={(e) => { textGMTypeB = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo C
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTypeCInput" value={textGMTypeC} onChange={(e) => { textGMTypeC = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso deportista élite
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTypeAthleteInput" value={textGMTypeAthlete} onChange={(e) => { textGMTypeAthlete = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso minusvalía
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTypeHandicapInput" value={textGMTypeHandicap} onChange={(e) => { textGMTypeHandicap = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+            </table>
+            <h4><b>Vía acceso Grado Superior (GS)</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Texto título
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTitleGeneralInput" value={textGSTitleGeneral} onChange={(e) => { textGSTitleGeneral = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo A
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeAInput" value={textGSTypeA} onChange={(e) => { textGSTypeA = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo B
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeBInput" value={textGSTypeB} onChange={(e) => { textGSTypeB = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo C
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeCInput" value={textGSTypeC} onChange={(e) => { textGSTypeC = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso deportista élite
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeAthleteInput" value={textGSTypeAthlete} onChange={(e) => { textGSTypeAthlete = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso minusvalía
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTypeHandicapInput" value={textGMTypeHandicap} onChange={(e) => { textGMTypeHandicap = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+            </table>
+            <h4><b>Vía acceso Curso Especialización (CE)</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Texto título
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCETitleGeneralInput" value={textCETitleGeneral} onChange={(e) => { textCETitleGeneral = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto vía acceso general
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCETypeGeneralInput" value={textCETypeGeneral} onChange={(e) => { textCETypeGeneral = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso deportista élite
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCETypeAthleteInput" value={textCETypeAthlete} onChange={(e) => { textCETypeAthlete = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso minusvalía
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCETypeHandicapInput" value={textCETypeHandicap} onChange={(e) => { textCETypeHandicap = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>
@@ -336,8 +554,10 @@ export default function Home() {
             key={step.id}
             step={step}
             index={index}
-            onDownloadExcel={downloadAdmitidosExcel}
-            onDownloadPdf={downloadAdmitidosPdf}
+            onDownloadAdmitidosPdf={downloadAdmitidosPdf}
+            onDownloadAdmitidosExcel={downloadAdmitidosExcel}
+            onDownloadEsperaPdf={downloadEsperaPdf}
+            onDownloadEsperaExcel={downloadEsperaExcel}
             onUpload={uploadFile}
             onRemove={removeFile}
             onShowErrors={(step) => setPopupOpen(step)}
@@ -345,7 +565,7 @@ export default function Home() {
         ))}
       </section>
       {popupOpen && (
-        <div className="ErrorPopup">
+        <div className="ErrorPopup">onDownloadAdmitidosExcel
           <div className="Content">
             <h2>Errores</h2>
             <div className="errorText">
@@ -371,7 +591,7 @@ input.type = 'file';
 input.accept = '.xls,.xlsx';
 
 function Step(props) {
-  const { step, index, onUpload, onDownloadExcel, onDownloadPdf, onRemove, onShowErrors } = props;
+  const { step, index, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf, onRemove, onShowErrors } = props;
   const uploadFile = () => {
     input.onchange = () => {
       onUpload(step, input.files[0]);
@@ -387,13 +607,28 @@ function Step(props) {
         <div className="FileInput">
           {step.id === 'download' && (
             <Fragment>
-              <table>
-                <tr>
-                  <td>Admitidos</td>
-                  <td><a primary onClick={() => onDownloadExcel(step)}>Excel <Icon icon={excel} /></a></td>
-                  <td><Button primary onClick={() => onDownloadPdf(step)}>Pdf <Icon icon={pdf} /></Button></td>
-                </tr>
-              </table>
+                <table>
+                  <tr>
+                    <td style="text-align:center;font-weight:bold;">Lista admitidos</td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td><Button secondary onClick={() => onDownloadAdmitidosPdf(step)}><Icon icon={pdf}/>Pdf&nbsp;&nbsp;&nbsp;&nbsp;</Button></td>
+                    <td><Button secondary onClick={() => onDownloadAdmitidosExcel(step)}><Icon icon={excel} />Excel</Button></td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td style="text-align:center;font-weight:bold;">Lista espera</td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td><Button secondary onClick={() => onDownloadEsperaPdf(step)}><Icon icon={pdf}/>Pdf&nbsp;&nbsp;&nbsp;&nbsp;</Button></td>
+                    <td><Button secondary onClick={() => onDownloadEsperaExcel(step)}><Icon icon={excel} />Excel</Button></td>
+                  </tr>
+                </table>
             </Fragment>
           )}
           {step.id !== 'download' && step.state === 'pending' && (
@@ -408,22 +643,15 @@ function Step(props) {
             <Fragment>
               <Icon className="fileIcon" icon={fileIcon} />
               <div className="fileName">{step.file.name}</div>
-              <Button
-                className="removeBtn"
-                tertiary
-                onClick={() => onRemove(step)}
-              >
-                <Icon icon={trash} />
-                Eliminar
+              <Button className="removeBtn" tertiary onClick={() => onRemove(step)}>
+                <Icon icon={trash} />Eliminar
               </Button>
             </Fragment>
           )}
           {step.id !== 'download' && step.state === 'error' && (
             <Fragment>
-              <Icon
-                className="errorIcon"
-                icon={error}
-                onClick={() => onShowErrors(step)}
+              <span>{step.info?step.info.desc:''}</span>
+              <Icon className="errorIcon" icon={error} onClick={() => onShowErrors(step)}
               />
               Ha ocurrido un error, vuelve a subir el archivo
               <Button primary onClick={uploadFile}>
@@ -570,7 +798,7 @@ const Container = styled('div')`
         line-height: 23px;
         text-align: center;
         margin-bottom: 25px;
-        width: 100px;
+        width: 350px;
       }
 
       .file {
@@ -578,7 +806,7 @@ const Container = styled('div')`
         border: 1px dashed #8d8d8d;
         box-sizing: border-box;
         border-radius: 5px;
-        width: 250px;
+        width: 350px;
         min-height: 250px;
 
         display: grid;

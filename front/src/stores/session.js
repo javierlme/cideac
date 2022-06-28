@@ -14,9 +14,7 @@ export const useSession = create((set) => {
     expiration: null,
     ...session,
     async login(data) {
-      console.log(data);
       const res = await API.post('/users/login', data);
-      console.log(res);
       const { expiration, token, user } = res.data.result;
       set({ expiration, token, user });
     },

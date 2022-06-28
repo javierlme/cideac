@@ -17,9 +17,9 @@ export default function Button(props) {
   } = props;
   const btnStyle = {
     primary,
-    secondary: !primary && secondary,
-    tertiary: !primary && !secondary && tertiary,
-    quaternary: !primary && !secondary && !tertiary && quaternary,
+    secondary,
+    tertiary,
+    quaternary,
     condesed,
   };
   return (
@@ -45,8 +45,6 @@ const Cls = css`
   line-height: 18px;
   border: 0;
 
-  padding: 11px 16px;
-
   &[condesed] {
     padding: 2px 8px;
     font-size: 12px;
@@ -57,10 +55,20 @@ const Cls = css`
   &[primary] {
     background: var(--color-accent-100);
     color: white;
+    height: 35px;
+    border-radius: 4px;
+    border: 1px solid #000;
+    padding: 10px;
+    margin: 0px;
   }
   &[secondary] {
-    background: var(--color-navy);
-    color: var(--color-white);
+    background: #ccc;
+    color: #000;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    height: 35px;
+    padding: 10px;
+    margin: 0px;
   }
   &[tertiary] {
     font-size: 14px;
