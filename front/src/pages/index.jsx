@@ -33,12 +33,17 @@ let percentageC = 10;
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
 let titleCurse = 'Curso 2022/2023';
 let titleAdmitted = 'LISTADO PROVISIONAL DE ALUMNOS ADMITIDOS'; // 'LISTADO DEFINITIVO DE ALUMNOS ADMITIDOS';
+let titleWaiting = 'LISTAS DE ESPERA PROVISIONAL'; // 'LISTAS DE ESPERA DEFINITIVAS';
+let titleRejected = 'LISTADO PROVISIONAL DE ALUMNOS EXCLUIDOS '; // 'LISTADO DEFINITIVO DE ALUMNOS EXCLUIDOS ';
 let titleWarning = 'IMPORTANTE: LOS ALUMNOS QUE APARECEN EN ESTA LISTA DEBEN FORMALIZAR SU MATRÍCULA EN EL CENTRO CORRESPONDIENTE DEL 22 AL 29 DE JULIO. Si no se formaliza se perderá la plaza.'
 
 let textGBTitleGeneral = 'Ciclos Formativos de Grado Básico';
 let textGBTypeGeneral = 'Provisional';
 let textGBTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGBTypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGBR1 = 'Identidad alumno';
+let textGBR2 = 'Consejo Orientador firmado';
+let textGBR3 = 'Consentimiento';
 
 let textGMTitleGeneral = 'Ciclos Formativos de Grado Medio';
 let textGMTypeA = 'Título de graduado en ESO';
@@ -46,6 +51,9 @@ let textGMTypeB = 'Título de Formación Profesional Básica (Sin prioridad)';
 let textGMTypeC = 'Prueba de Acceso / Otras formas de acceso';
 let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGMR1 = 'Identidad alumno';
+let textGMR2 = 'Forma de acceso';
+let textGMR3 = 'Consentimiento progenitores firmado (menores de edad)';
 
 let textGSTitleGeneral = 'Ciclos Formativos de Grado Superior';
 let textGSTypeA = 'Bachillerato';
@@ -53,11 +61,17 @@ let textGSTypeB = 'Título de Técnico (G.M. LOE/LOGSE)';
 let textGSTypeC = 'Prueba de Acceso / Otras formas de acceso';
 let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGSR1 = 'Identidad alumno';
+let textGSR2 = 'Forma de acceso';
+let textGSR3 = 'Consentimiento progenitores firmado (menores de edad)';
 
 let textCETitleGeneral = 'Ciclos Formativos de Curso Especialización';
 let textCETypeGeneral = 'Provisional';
 let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textCER1 = 'Identidad alumno';
+let textCER2 = 'Forma de acceso';
+let textCER3 = 'Consentimiento progenitores firmado (menores de edad)';
 
 
 export default function Home() {
@@ -135,12 +149,17 @@ export default function Home() {
         formData.set('titleGeneral', titleGeneral);
         formData.set('titleCurse', titleCurse);
         formData.set('titleAdmitted', titleAdmitted);
+        formData.set('titleWaiting', titleWaiting);
+        formData.set('titleRejected', titleRejected);
         formData.set('titleWarning', titleWarning);
 
         formData.set('textGBTitleGeneral', textGBTitleGeneral);
         formData.set('textGBTypeGeneral', textGBTypeGeneral);
         formData.set('textGBTypeAthlete', textGBTypeAthlete);
         formData.set('textGBTypeHandicap', textGBTypeHandicap);
+        formData.set('textGBR1', textGBR1);
+        formData.set('textGBR2', textGBR2);
+        formData.set('textGBR3', textGBR3);
 
         formData.set('textGMTitleGeneral', textGMTitleGeneral);
         formData.set('textGMTypeA', textGMTypeA);
@@ -148,6 +167,9 @@ export default function Home() {
         formData.set('textGMTypeC', textGMTypeC);
         formData.set('textGMTypeAthlete', textGMTypeAthlete);
         formData.set('textGMTypeHandicap', textGMTypeHandicap);
+        formData.set('textGMR1', textGMR1);
+        formData.set('textGMR2', textGMR2);
+        formData.set('textGMR3', textGMR3);
 
         formData.set('textGSTitleGeneral', textGSTitleGeneral);
         formData.set('textGSTypeA', textGSTypeA);
@@ -155,11 +177,17 @@ export default function Home() {
         formData.set('textGSTypeC', textGSTypeC);
         formData.set('textGSTypeAthlete', textGSTypeAthlete);
         formData.set('textGSTypeHandicap', textGSTypeHandicap);
+        formData.set('textGSR1', textGSR1);
+        formData.set('textGSR2', textGSR2);
+        formData.set('textGSR3', textGSR3);
 
         formData.set('textCETitleGeneral', textCETitleGeneral);
         formData.set('textCETypeGeneral', textCETypeGeneral);
         formData.set('textCETypeAthlete', textCETypeAthlete);
         formData.set('textCETypeHandicap', textCETypeHandicap);
+        formData.set('textCER1', textCER1);
+        formData.set('textCER2', textCER2);
+        formData.set('textCER3', textCER3);
         const res = await API.post('/courses/assign', formData);
         const index = steps.indexOf(step);
         if (res.data.url){
@@ -237,6 +265,34 @@ export default function Home() {
 
   const downloadEsperaPdf = async (step) => {
     const filename = step.filename + "Espera.pdf"
+    const { data } = await API.get(`/courses/files/pdf/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+
+  const downloadExcluidosExcel = async (step) => {
+    const filename = step.filename + "Excluidos.csv"
+    const { data } = await API.get(`/courses/files/excel/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+      const blob = new Blob([pdfContent], { type: 'application/csv;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+
+  const downloadExcluidosPdf = async (step) => {
+    const filename = step.filename + "Excluidos.pdf"
     const { data } = await API.get(`/courses/files/pdf/${filename}`);
     if (data) {
       let pdfContent = Buffer(data, 'base64');
@@ -389,10 +445,26 @@ export default function Home() {
               </tr>
               <tr>
                 <td class="tdConfig">
-                  Título admitidos
+                  Título listado de admitidos
                 </td>
                 <td>
                   <input class="inputConfig" id="titleAdmittedInput" value={titleAdmitted} onChange={(e) => { titleAdmitted = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Título del listado de espera
+                </td>
+                <td>
+                  <input class="inputConfig" id="titleWaitingInput" value={titleWaiting} onChange={(e) => { titleWaiting = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Título del listado de excluidos
+                </td>
+                <td>
+                  <input class="inputConfig" id="titleRejectedInput" value={titleRejected} onChange={(e) => { titleRejected = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
@@ -436,6 +508,30 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textGBTypeHandicapInput" value={textGBTypeHandicap} onChange={(e) => { textGBTypeHandicap = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R1
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBR1Input" value={textGBR1} onChange={(e) => { textGBR1 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R2
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBR2Input" value={textGBR2} onChange={(e) => { textGBR2 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R3
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBR3Input" value={textGBR3} onChange={(e) => { textGBR3 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>
@@ -489,6 +585,30 @@ export default function Home() {
                   <input class="inputConfig" id="textGMTypeHandicapInput" value={textGMTypeHandicap} onChange={(e) => { textGMTypeHandicap = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R1
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMR1Input" value={textGMR1} onChange={(e) => { textGMR1 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R2
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMR2Input" value={textGMR2} onChange={(e) => { textGMR2 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R3
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMR3Input" value={textGMR3} onChange={(e) => { textGMR3 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
             <h4><b>Vía acceso Grado Superior (GS)</b></h4>
             <table>
@@ -540,6 +660,30 @@ export default function Home() {
                   <input class="inputConfig" id="textGMTypeHandicapInput" value={textGMTypeHandicap} onChange={(e) => { textGMTypeHandicap = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R1
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSR1Input" value={textGSR1} onChange={(e) => { textGSR1 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R2
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSR2Input" value={textGSR2} onChange={(e) => { textGSR2 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R3
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSR3Input" value={textGSR3} onChange={(e) => { textGSR3 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
             <h4><b>Vía acceso Curso Especialización (CE)</b></h4>
             <table>
@@ -575,6 +719,30 @@ export default function Home() {
                   <input class="inputConfig" id="textCETypeHandicapInput" value={textCETypeHandicap} onChange={(e) => { textCETypeHandicap = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R1
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCER1Input" value={textCER1} onChange={(e) => { textCER1 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R2
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCER2Input" value={textCER2} onChange={(e) => { textCER2 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R3
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCER3Input" value={textCER3} onChange={(e) => { textCER3 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
           </div>
         </section>
@@ -588,6 +756,8 @@ export default function Home() {
             onDownloadAdmitidosExcel={downloadAdmitidosExcel}
             onDownloadEsperaPdf={downloadEsperaPdf}
             onDownloadEsperaExcel={downloadEsperaExcel}
+            onDownloadExcluidosPdf={downloadExcluidosPdf}
+            onDownloadExcluidosExcel={downloadExcluidosExcel}
             onUpload={uploadFile}
             onRemove={removeFile}
             onShowErrors={(step) => setPopupOpen(step)}
@@ -621,7 +791,8 @@ input.type = 'file';
 input.accept = '.xls,.xlsx';
 
 function Step(props) {
-  const { step, index, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf, onRemove, onShowErrors } = props;
+  const { step, index, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf
+    , onDownloadExcluidosExcel, onDownloadExcluidosPdf, onRemove, onShowErrors } = props;
   const uploadFile = () => {
     input.onchange = () => {
       onUpload(step, input.files[0]);
@@ -657,6 +828,17 @@ function Step(props) {
                   <tr>
                     <td><Button secondary onClick={() => onDownloadEsperaPdf(step)}><Icon icon={pdf}/>Pdf&nbsp;&nbsp;&nbsp;&nbsp;</Button></td>
                     <td><Button secondary onClick={() => onDownloadEsperaExcel(step)}><Icon icon={excel} />Excel</Button></td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td style="text-align:center;font-weight:bold;">Lista excluidos</td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td><Button secondary onClick={() => onDownloadExcluidosPdf(step)}><Icon icon={pdf}/>Pdf&nbsp;&nbsp;&nbsp;&nbsp;</Button></td>
+                    <td><Button secondary onClick={() => onDownloadExcluidosExcel(step)}><Icon icon={excel} />Excel</Button></td>
                   </tr>
                 </table>
             </Fragment>
