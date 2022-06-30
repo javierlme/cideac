@@ -11,11 +11,12 @@ import { API } from '../api';
 import {Buffer} from 'buffer';
 
 const selector = (state) => [state.user, state.logout];
+const textUploadOk= 'Verificado Correctamente';
 
 const defaultSteps = [
   { id: 'slots', title: 'Subir archivo de plazas', state: 'pending', file: null },
   { id: 'assign', title: 'Subir archivo de solicitudes', state: 'disabled', file: null },
-  { id: 'download', title: 'Descargar archivo de asignaciones', state: 'disabled', file: null }
+  { id: 'download', title: 'Descargar listados de asignaciones', state: 'disabled', file: null }
 ];
 
 // Configuration
@@ -35,7 +36,7 @@ let titleAdmitted = 'LISTADO PROVISIONAL DE ALUMNOS ADMITIDOS'; // 'LISTADO DEFI
 let titleWarning = 'IMPORTANTE: LOS ALUMNOS QUE APARECEN EN ESTA LISTA DEBEN FORMALIZAR SU MATRÍCULA EN EL CENTRO CORRESPONDIENTE DEL 22 AL 29 DE JULIO. Si no se formaliza se perderá la plaza.'
 
 let textGBTitleGeneral = 'Ciclos Formativos de Grado Básico';
-let textGBTypeGeneral = 'Ordinaria';
+let textGBTypeGeneral = 'Provisional';
 let textGBTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGBTypeHandicap = 'Reserva plaza disposición cuarta 2';
 
@@ -48,13 +49,13 @@ let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
 
 let textGSTitleGeneral = 'Ciclos Formativos de Grado Superior';
 let textGSTypeA = 'Bachillerato';
-let textGSTypeB = 'Título de Tcnico (G.M. LOE/LOGSE)';
+let textGSTypeB = 'Título de Técnico (G.M. LOE/LOGSE)';
 let textGSTypeC = 'Prueba de Acceso / Otras formas de acceso';
 let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
 
 let textCETitleGeneral = 'Ciclos Formativos de Curso Especialización';
-let textCETypeGeneral = 'Ordinaria';
+let textCETypeGeneral = 'Provisional';
 let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
 
@@ -71,9 +72,12 @@ export default function Home() {
     for (let i=index; i<steps.length;i++) {
       steps[i] = { ...steps[i], state: i==index?'pending' : 'disabled', file: null };
     }
+    updateSteps();
+  };
+  const updateSteps = async () => {
     const newSteps = [...steps];
     setSteps(newSteps);
-  };
+  }  
 
   useEffect(() => {
     if (!user) return;
@@ -89,7 +93,7 @@ export default function Home() {
       params: { city: categoryObj.city },
     }).then(async (res) => {
       if (res.data.result) {
-        steps[0] = { ...steps[0], state: 'uploaded', file: { name: 'Fichero de vacantes.xlsx' } };
+        steps[0] = { ...steps[0], state: 'uploaded', file: { name: textUploadOk } };
         resetSteps(1)
       } else {
         resetSteps()
@@ -102,13 +106,20 @@ export default function Home() {
   const uploadFile = async (step, file) => {
     const formData = new FormData();
     formData.set('file', file);
-    let res;
     try {
-      if (step.id === 'settings') {
-        res = { data: null };
-      } else if (step.id === 'slots') {
+      if (step.id === 'slots') {
         formData.set('city', categoryObj.city);
-        res = await API.post('/courses/slots', formData);
+        const res = await API.post('/courses/slots', formData);
+        const index = steps.indexOf(step);
+        if (res?.data?.additionalInfo) {
+          resetSteps(index);
+          steps[index] = { ...steps[index], state: 'error', info: err.data.additionalInfo, file: null };
+        }
+        else {
+          steps[index] = { ...steps[index], state: 'uploaded', file };
+          resetSteps(index + 1);
+        }
+        updateSteps();
       } else if (step.id === 'assign') {
         formData.set('city', categoryObj.city);
         formData.set('category', categoryObj.code);
@@ -149,22 +160,41 @@ export default function Home() {
         formData.set('textCETypeGeneral', textCETypeGeneral);
         formData.set('textCETypeAthlete', textCETypeAthlete);
         formData.set('textCETypeHandicap', textCETypeHandicap);
-        res = await API.post('/courses/assign', formData);
+        const res = await API.post('/courses/assign', formData);
+        const index = steps.indexOf(step);
+        if (res.data.url){
+          steps[index] = { ...steps[index], state: 'uploaded', file };
+          resetSteps(index + 1);
+          steps[index+1] = { ...steps[index+1], state: 'ok', filename: res.data.url };
+        }
+        else{
+          resetSteps(index);
+          steps[index] = { ...steps[index], state: 'error', info: err.data.additionalInfo, file: null };
+        }
+        updateSteps();
       }
-      const index = steps.indexOf(step);
-      steps[index] = { ...steps[index], state: 'uploaded', file };
-      resetSteps(index + 1);
     } catch (err) {
       const index = steps.indexOf(step);
-      steps[index] = { ...steps[index], state: 'error', info: err.data.additionalInfo, file: null };
-      resetSteps(index + 1);
+      resetSteps(index);
+      steps[index] = { ...steps[index], state: 'error', info: err?.data?.additionalInfo?err.data.additionalInfo:err, file: null };
+      updateSteps();
     }
   };
   const removeFile = async (step) => {
-    resetSteps(steps.indexOf(step));
+    try {
+      if (step.id === 'slots') {
+        await API.delete('/courses/slots/'+categoryObj.city);
+      }
+      resetSteps(steps.indexOf(step));
+    } catch (err) {
+      const index = steps.indexOf(step);
+      resetSteps(index);
+      steps[index] = { ...steps[index], state: 'error', info: err.data.additionalInfo, file: null };
+      updateSteps();
+    }
   };
   const downloadAdmitidosExcel = async (step) => {
-    const filename = step.url + "Admitidos.csv"
+    const filename = step.filename + "Admitidos.csv"
     const { data } = await API.get(`/courses/files/excel/${filename}`);
     if (data) {
       let pdfContent = Buffer(data, 'base64');
@@ -178,7 +208,7 @@ export default function Home() {
   };
 
   const downloadAdmitidosPdf = async (step) => {
-    const filename = step.url + "Admitidos.pdf"
+    const filename = step.filename + "Admitidos.pdf"
     const { data } = await API.get(`/courses/files/pdf/${filename}`);
     if (data) {
       let pdfContent = Buffer(data, 'base64');
@@ -192,7 +222,7 @@ export default function Home() {
   };
 
   const downloadEsperaExcel = async (step) => {
-    const filename = step.url + "Espera.csv"
+    const filename = step.filename + "Espera.csv"
     const { data } = await API.get(`/courses/files/excel/${filename}`);
     if (data) {
       let pdfContent = Buffer(data, 'base64');
@@ -206,7 +236,7 @@ export default function Home() {
   };
 
   const downloadEsperaPdf = async (step) => {
-    const filename = step.url + "Espera.pdf"
+    const filename = step.filename + "Espera.pdf"
     const { data } = await API.get(`/courses/files/pdf/${filename}`);
     if (data) {
       let pdfContent = Buffer(data, 'base64');
@@ -605,7 +635,7 @@ function Step(props) {
       <div className="title">{step.title}</div>
       <div className="file">
         <div className="FileInput">
-          {step.id === 'download' && (
+          {step.id === 'download' && step.state === 'ok' && (
             <Fragment>
                 <table>
                   <tr>
@@ -642,7 +672,7 @@ function Step(props) {
           {step.id !== 'download' && step.state === 'uploaded' && (
             <Fragment>
               <Icon className="fileIcon" icon={fileIcon} />
-              <div className="fileName">{step.file.name}</div>
+              <div className="fileName">{textUploadOk}</div>
               <Button className="removeBtn" tertiary onClick={() => onRemove(step)}>
                 <Icon icon={trash} />Eliminar
               </Button>
