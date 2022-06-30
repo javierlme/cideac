@@ -181,12 +181,17 @@ router.post('/assign', guard.check([['admin']]),
         "titleGeneral": String(req.body.titleGeneral?req.body.titleGeneral:String()),
         "titleCurse": String(req.body.titleCurse?req.body.titleCurse:String()),
         "titleAdmitted": String(req.body.titleAdmitted?req.body.titleAdmitted:String()),
+        "titleWaiting": String(req.body.titleWaiting?req.body.titleWaiting:String()),
+        "titleRejected": String(req.body.titleAdmitted?req.body.titleRejected:String()),
         "titleWarning": String(req.body.titleWarning?req.body.titleWarning:String()),
 
         "textGBTitleGeneral": String(req.body.textGBTitleGeneral?req.body.textGBTitleGeneral:String()),
         "textGBTypeGeneral": String(req.body.textGBTypeGeneral?req.body.textGBTypeGeneral:String()),
         "textGBTypeAthlete": String(req.body.textGBTypeAthlete?req.body.textGBTypeAthlete:String()),
         "textGBTypeHandicap": String(req.body.textGBTypeHandicap?req.body.textGBTypeHandicap:String()),
+        "textGBR1": String(req.body.textGBR1?req.body.textGBR1:String()),
+        "textGBR2": String(req.body.textGBR2?req.body.textGBR2:String()),
+        "textGBR3": String(req.body.textGBR3?req.body.textGBR3:String()),
 
         "textGMTitleGeneral": String(req.body.textGMTitleGeneral?req.body.textGMTitleGeneral:String()),
         "textGMTypeA": String(req.body.textGMTypeA?req.body.textGMTypeA:String()),
@@ -194,6 +199,9 @@ router.post('/assign', guard.check([['admin']]),
         "textGMTypeC": String(req.body.textGMTypeC?req.body.textGMTypeC:String()),
         "textGMTypeAthlete": String(req.body.textGMTypeAthlete?req.body.textGMTypeAthlete:String()),
         "textGMTypeHandicap": String(req.body.textGMTypeHandicap?req.body.textGMTypeHandicap:String()),
+        "textGMR1": String(req.body.textGMR1?req.body.textGMR1:String()),
+        "textGMR2": String(req.body.textGMR2?req.body.textGMR2:String()),
+        "textGMR3": String(req.body.textGMR3?req.body.textGMR3:String()),
 
         "textGSTitleGeneral": String(req.body.textGSTitleGeneral?req.body.textGSTitleGeneral:String()),
         "textGSTypeA": String(req.body.textGSTypeA?req.body.textGSTypeA:String()),
@@ -201,11 +209,17 @@ router.post('/assign', guard.check([['admin']]),
         "textGSTypeC": String(req.body.textGSTypeC?req.body.textGSTypeC:String()),
         "textGSTypeAthlete": String(req.body.textGSTypeAthlete?req.body.textGSTypeAthlete:String()),
         "textGSTypeHandicap": String(req.body.textGSTypeHandicap?req.body.textGSTypeHandicap:String()),
+        "textGSR1": String(req.body.textGSR1?req.body.textGSR1:String()),
+        "textGSR2": String(req.body.textGSR2?req.body.textGSR2:String()),
+        "textGSR3": String(req.body.textGSR3?req.body.textGSR3:String()),
 
         "textCETitleGeneral": String(req.body.textCETitleGeneral?req.body.textCETitleGeneral:String()),
         "textCETypeGeneral": String(req.body.textCETypeGeneral?req.body.textCETypeGeneral:String()),
         "textCETypeAthlete": String(req.body.textCETypeAthlete?req.body.textCETypeAthlete:String()),
-        "textCETypeHandicap": String(req.body.textCETypeHandicap?req.body.textCETypeHandicap:String())
+        "textCETypeHandicap": String(req.body.textCETypeHandicap?req.body.textCETypeHandicap:String()),
+        "textCER1": String(req.body.textCER1?req.body.textCER1:String()),
+        "textCER2": String(req.body.textCER2?req.body.textCER2:String()),
+        "textCER3": String(req.body.textCER3?req.body.textCER3:String())
       }
       switch (req.body.category) {
         case 'GB': {
