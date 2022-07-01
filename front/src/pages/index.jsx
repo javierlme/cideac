@@ -47,7 +47,7 @@ let textGBR3 = 'Consentimiento';
 
 let textGMTitleGeneral = 'Ciclos Formativos de Grado Medio';
 let textGMTypeA = 'Título de graduado en ESO';
-let textGMTypeB = 'Título de Formación Profesional Básica (Sin prioridad)';
+let textGMTypeB = 'Título de Formación Profesional Básica';
 let textGMTypeC = 'Prueba de Acceso / Otras formas de acceso';
 let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
@@ -321,7 +321,7 @@ export default function Home() {
         <p>Para comenzar sigue los pasos a continuación:</p>
         <label className="selector">
           Seleccionar ciclo
-          <select id="categorySelect" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select id="categorySelect" value={category} onChange={(e) => {setCategory(e.target.value); resetSteps(1);}}>
             {categories.map((option) => (
               <option value={option.name} key={option.name}>
                 {option.name}
