@@ -70,7 +70,13 @@ async function processAssigns(category, city, filePath, config, distance) {
         }
       };
     } else {
-      infoSolicitud.listaCentrosCiclosModulos.push(selectedCourse);
+      const centrosCiclosModulo = {
+        codigoCentro: selectedCourse.codigoCentro,
+        centro: selectedCourse.centro,
+        codigoCurso: selectedCourse.codigoCurso,
+        curso: selectedCourse.curso
+      }
+      infoSolicitud.listaCentrosCiclosModulos.push(centrosCiclosModulo);
     }
   }
 
@@ -79,7 +85,7 @@ async function processAssigns(category, city, filePath, config, distance) {
     infoSolicitud = {
       docId: readCell('A', rowIndex),
       applicationId: readCell('B', rowIndex),
-      randomNumber: readCell('C', rowIndex),
+      randomNumber: Number(readCell('C', rowIndex).replace(',','.')),
       personalId: readCell('D', rowIndex),
       especialNeeds: ['si','sí'].includes(readCell('E', rowIndex).toLowerCase()),
       listaCentrosCiclosModulos: Array()
@@ -88,7 +94,7 @@ async function processAssigns(category, city, filePath, config, distance) {
     validateAndAppendCourse('G', infoSolicitud);
     validateAndAppendCourse('H', infoSolicitud);
     validateAndAppendCourse('I', infoSolicitud);
-    infoSolicitud.scoring = readCell('M', rowIndex);
+    infoSolicitud.scoring = Number(readCell('M', rowIndex).replace(',','.'));
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('N', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('O', rowIndex).toLowerCase());
     infoSolicitud.incumple =  readCell('P', rowIndex).toLowerCase();
@@ -152,11 +158,11 @@ async function processAssigns(category, city, filePath, config, distance) {
     cursoCentroCicloModulo.vacantesDisponibles = vacantesDisponibles;
   }
 
-  const filename = `GB_${Date.now()}_`;
+  const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
-  const admitidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'admitidosBase.html'));
-  const esperaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'esperaBase.html'));
-  const excluidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'excluidosBase.html'));
+  const admitidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `admitidosBase${category}.html`));
+  const esperaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `esperaBase${category}.html`));
+  const excluidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `excluidosBase${category}.html`));
 
   var contentAdmitidosExcel = 'ORDEN;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CICLO;DNI;IDENTIFICACION;PUNTUACION;' +
   'NEE;MINUSVALÍA;ATLETA;\r\n';
@@ -172,17 +178,7 @@ async function processAssigns(category, city, filePath, config, distance) {
     const numLinesPerPage = 50;
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
       
-      // Generar lista admitidos
-      
-/*      cursoCentroCicloModulo.listaAsignadosDiscapacitados = Array();
-      cursoCentroCicloModulo.listaAsignadosDiscapacitadosEspera = Array();
-      cursoCentroCicloModulo.listaAsignadosDeportistasElite = Array();
-      cursoCentroCicloModulo.listaAsignadosDeportistasEliteEspera = Array();
-              formData.set('textGBTypeGeneral', textGBTypeGeneral);
-        formData.set('textGBTypeAthlete', textGBTypeAthlete);
-        formData.set('textGBTypeHandicap', textGBTypeHandicap);
-
-  */
+    // Generar lista admitidos
 
       // Asignados discapacitados
       var orden=0;
@@ -203,7 +199,7 @@ async function processAssigns(category, city, filePath, config, distance) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:15%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:15%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
@@ -237,7 +233,7 @@ async function processAssigns(category, city, filePath, config, distance) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:15%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:15%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
@@ -271,7 +267,7 @@ async function processAssigns(category, city, filePath, config, distance) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:15%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:15%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
@@ -305,7 +301,7 @@ async function processAssigns(category, city, filePath, config, distance) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:15%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:15%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
@@ -338,7 +334,7 @@ async function processAssigns(category, city, filePath, config, distance) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:15%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:15%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
@@ -371,7 +367,7 @@ async function processAssigns(category, city, filePath, config, distance) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:15%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:15%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
