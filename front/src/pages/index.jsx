@@ -188,8 +188,10 @@ export default function Home() {
         formData.set('textCER1', textCER1);
         formData.set('textCER2', textCER2);
         formData.set('textCER3', textCER3);
-        const res = await API.post('/courses/assign', formData);
         const index = steps.indexOf(step);
+        step = steps[index] = { ...steps[index], state: 'waiting', file };
+        updateSteps();
+        const res = await API.post('/courses/assign', formData);
         if (res.data.url){
           steps[index] = { ...steps[index], state: 'uploaded', file };
           resetSteps(index + 1);
@@ -806,6 +808,10 @@ function Step(props) {
       <div className="title">{step.title}</div>
       <div className="file">
         <div className="FileInput">
+        
+          {step.id === 'assign' && step.state === 'waiting' && (
+            <Fragment><img style="width:100px;" src="assets/waiting.gif" alt="" /><p>Generando ficheros...</p></Fragment>
+          )}
           {step.id === 'download' && step.state === 'ok' && (
             <Fragment>
                 <table>
