@@ -174,9 +174,9 @@ router.post('/assign', guard.check([['admin']]),
         "numSlotsBySeatHandicap": Number(req.body.numSlotsBySeatHandicap?req.body.numSlotsBySeatHandicap:1),
         "percentageAthlete": Number(req.body.percentageAthlete?req.body.percentageAthlete:5)/100,
         "numSlotsBySeatAthlete": Number(req.body.numSlotsBySeatAthlete?req.body.numSlotsBySeatAthlete:1),
-        "percentageA": Number(req.body.percentageA?req.body.percentageA:60),
-        "percentageB": Number(req.body.percentageB?req.body.percentageB:30),
-        "percentageC": Number(req.body.percentageC?req.body.percentageC:10),
+        "percentageA": Number(req.body.percentageA?req.body.percentageA:60)/100,
+        "percentageB": Number(req.body.percentageB?req.body.percentageB:30)/100,
+        "percentageC": Number(req.body.percentageC?req.body.percentageC:10)/100,
 
         "titleGeneral": String(req.body.titleGeneral?req.body.titleGeneral:String()),
         "titleCurse": String(req.body.titleCurse?req.body.titleCurse:String()),
@@ -239,7 +239,7 @@ router.post('/assign', guard.check([['admin']]),
           break;
         }
         case 'GSP': {
-          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path, req.body.config, false);
+          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path, config, false);
           break;
         }
         case 'CE': {
