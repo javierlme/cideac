@@ -32,20 +32,20 @@ let percentageC = 10;
 
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
 let titleCurse = 'Curso 2022/2023';
-let titleAdmitted = 'LISTADO PROVISIONAL DE ALUMNOS ADMITIDOS'; // 'LISTADO DEFINITIVO DE ALUMNOS ADMITIDOS';
+let titleAdmitted = 'LISTADO PROVISIONAL DE ADMITIDOS'; // 'LISTADO DEFINITIVO DE ADMITIDOS';
 let titleWaiting = 'LISTAS DE ESPERA PROVISIONAL'; // 'LISTAS DE ESPERA DEFINITIVAS';
-let titleRejected = 'LISTADO PROVISIONAL DE ALUMNOS EXCLUIDOS '; // 'LISTADO DEFINITIVO DE ALUMNOS EXCLUIDOS ';
-let titleWarning = 'IMPORTANTE: LOS ALUMNOS QUE APARECEN EN ESTA LISTA DEBEN FORMALIZAR SU MATRÍCULA EN EL CENTRO CORRESPONDIENTE DEL 22 AL 29 DE JULIO. Si no se formaliza se perderá la plaza.'
+let titleRejected = 'LISTADO PROVISIONAL DE EXCLUIDOS '; // 'LISTADO DEFINITIVO DE EXCLUIDOS ';
+let titleWarning = ' IMPORTANTE: ANTE LOS LISTADOS PROVISIONALES PUBLICADOS EL DÍA 6 DE JULIO, LOS INTERESADOS DISPONDRÁN DE LOS DÍAS 7 Y 8 DE JULIO PARA PRESENTAR RECLAMACIONES A TRAVÉS DE LA SEDE ELECTRÓNICA DEL MEFP.'
 
-let textGBTitleGeneral = 'Ciclos Formativos de Grado Básico';
-let textGBTypeGeneral = 'Provisional';
+let textGBTitleGeneral = 'CICLOS FORMATIVOS DE GRADO BÁSICO';
+let textGBTypeGeneral = 'General';
 let textGBTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGBTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGBR1 = 'Identidad alumno';
 let textGBR2 = 'Consejo Orientador firmado';
 let textGBR3 = 'Consentimiento';
 
-let textGMTitleGeneral = 'Ciclos Formativos de Grado Medio';
+let textGMTitleGeneral = 'CICLOS FORMATIVOS DE GRADO MEDIO';
 let textGMTypeA = 'Título de graduado en ESO';
 let textGMTypeB = 'Título de Formación Profesional Básica';
 let textGMTypeC = 'Prueba de Acceso / Otras formas de acceso';
@@ -55,7 +55,7 @@ let textGMR1 = 'Identidad alumno';
 let textGMR2 = 'Forma de acceso';
 let textGMR3 = 'Consentimiento progenitores firmado (menores de edad)';
 
-let textGSTitleGeneral = 'Ciclos Formativos de Grado Superior';
+let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
 let textGSTypeA = 'Bachillerato';
 let textGSTypeB = 'Título de Técnico (G.M. LOE/LOGSE)';
 let textGSTypeC = 'Prueba de Acceso / Otras formas de acceso';
@@ -65,8 +65,8 @@ let textGSR1 = 'Identidad alumno';
 let textGSR2 = 'Forma de acceso';
 let textGSR3 = 'Consentimiento progenitores firmado (menores de edad)';
 
-let textCETitleGeneral = 'Ciclos Formativos de Curso Especialización';
-let textCETypeGeneral = 'Provisional';
+let textCETitleGeneral = 'CICLOS FORMATIVOS DE CURSO ESPECIALIZACIÓN';
+let textCETypeGeneral = 'General';
 let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textCER1 = 'Identidad alumno';
