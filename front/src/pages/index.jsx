@@ -37,7 +37,7 @@ let titleWaiting = 'LISTAS DE ESPERA PROVISIONAL'; // 'LISTAS DE ESPERA DEFINITI
 let titleRejected = 'LISTADO PROVISIONAL DE EXCLUIDOS '; // 'LISTADO DEFINITIVO DE EXCLUIDOS ';
 let titleWarning = ' IMPORTANTE: ANTE LOS LISTADOS PROVISIONALES PUBLICADOS EL DÍA 6 DE JULIO, LOS INTERESADOS DISPONDRÁN DE LOS DÍAS 7 Y 8 DE JULIO PARA PRESENTAR RECLAMACIONES A TRAVÉS DE LA SEDE ELECTRÓNICA DEL MEFP.'
 
-let textGBTitleGeneral = 'CICLOS FORMATIVOS DE GRADO BÁSICO';
+let textGBTitleGeneral = 'CICLOS FORMATIVOS BÁSICO';
 let textGBTypeGeneral = 'General';
 let textGBTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGBTypeHandicap = 'Reserva plaza disposición cuarta 2';

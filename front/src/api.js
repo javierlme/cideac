@@ -1,6 +1,6 @@
 import axios from 'redaxios';
 
 export const API = axios.create({
-  baseURL: flase?'http://localhost:8081':'https://cidead.is-a-teacher.com:8443',
+  baseURL: false?'http://localhost:8081':'https://cidead.is-a-teacher.com:8443',
   headers: {},
 });
