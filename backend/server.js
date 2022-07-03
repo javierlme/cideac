@@ -117,7 +117,7 @@ const genericErrorHandler = (err, req, res, next) => {
 };
 app.use(genericErrorHandler);
 httpServer.listen(config.expressPort, function () {
-	console.log(`Node server running on http://localhost:${config.expressPort}`);
+	console.log(`Node server running on port:${config.expressPort}`);
 });
 httpServer.setTimeout(0);
 

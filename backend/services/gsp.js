@@ -4,10 +4,7 @@ const courseService = require('../routers/courses');
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
 
-
-
-
-async function processAssigns(category, city, filePath, config, distance) {
+async function processAssigns(category, city, filePath, config) {
   const listaSolicitudesAceptadas = Array();
   const listaSolicitudesNoAceptadas = Array();
   const listaCentrosCiclosModulos = await courseService.getCategoryCourses(city, category);
@@ -169,8 +166,9 @@ async function processAssigns(category, city, filePath, config, distance) {
       lista = lista.concat(cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(sol=>sol.applicationId));
       vacantesDisponibles -= cursoCentroCicloModulo.listaAsignadosDeportistasElite.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
     }
+    const vacantesListaA = Math.ceil(vacantesDisponibles * config.percentageA);
+    const vacantesListaB = Math.ceil(vacantesDisponibles * config.percentageB);
     // Resto solicitantes Lista A
-    const vacantesListaA = Math.ceil(cursoCentroCicloModulo.vacantes * config.percentageA);
     if ((vacantesListaA>0) && (vacantesDisponibles>0)){
       // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
       listaAsignadosA = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (String(sol.viaAcceso).toLocaleUpperCase()=='A') 
@@ -187,7 +185,6 @@ async function processAssigns(category, city, filePath, config, distance) {
       vacantesDisponibles -= cursoCentroCicloModulo.listaAsignadosA.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
     }
     // Resto solicitantes Lista B
-    const vacantesListaB = Math.ceil(cursoCentroCicloModulo.vacantes * config.percentageB);
     if ((vacantesListaB>0) && (vacantesDisponibles>0)){
       // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
       listaAsignadosB = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (String(sol.viaAcceso).toLocaleUpperCase()=='B') 
@@ -229,8 +226,8 @@ async function processAssigns(category, city, filePath, config, distance) {
       lista = lista.concat(cursoCentroCicloModulo.listaAsignadosC.map(sol=>sol.applicationId));
       vacantesDisponibles -= cursoCentroCicloModulo.listaAsignadosC.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
     }
-
     cursoCentroCicloModulo.vacantesDisponibles = vacantesDisponibles;
+    console.log(`cursoCentroCicloModulo.vacantesDisponibles:${cursoCentroCicloModulo.vacantesDisponibles}`);
   }
 
   const filename = `${category}_${Date.now()}_`;

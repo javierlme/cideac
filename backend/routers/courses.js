@@ -7,7 +7,8 @@ const xlsx = require('xlsx');
 const path = require('path');
 const { categories, cities } = require('../constants');
 const fs = require('fs');
-const CEService = require('../services/ce');
+const CEPService = require('../services/cep');
+const CEDService = require('../services/ced');
 const GBService = require('../services/gb');
 const GMDService = require('../services/gmd');
 const GMPService = require('../services/gmp');
@@ -92,34 +93,18 @@ exports.getCategoryCourses = async (city, category) => {
   const courses = [];
   let rowIndex = 2;
   if (listDistanceCode.includes(sheet)) {
-    let curso;
-    while (getCellValue('G'+rowIndex) != '') {
-      if (courses.find(c => (c.codigoCentro === getCellValue('A'+rowIndex) && c.codigoCurso === getCellValue('C'+rowIndex)))) {
-        curso.modules.push({
-          codigoModulo: getCellValue('E', rowIndex),
-          modulo: getCellValue('F', rowIndex),
-          maxHorasModulo: getCellValue('H', rowIndex)
-        });
-      }
-      else {
-        curso = {
-          codigoCentro: getCellValue('A'+rowIndex),
-          centro: getCellValue('B'+rowIndex),
-          codigoCurso: getCellValue('C'+rowIndex),
-          curso: getCellValue('D'+rowIndex),
-          vacantes: getCellValue('H'+rowIndex),
-          modules: [{
-            codigoModulo: getCellValue('E', rowIndex),
-            modulo: getCellValue('F', rowIndex),
-            maxHorasModulo: getCellValue('G', rowIndex)
-          }]
-        };
-        courses.push(curso);
-      }
+    while (getCellValue('H'+rowIndex) != '') {
+      courses.push({
+        codigoCentro: getCellValue('A'+rowIndex),
+        centro: getCellValue('B'+rowIndex),
+        codigoCurso: getCellValue('C'+rowIndex),
+        curso: getCellValue('D'+rowIndex),
+        codigoModulo: getCellValue('E'+rowIndex),
+        modulo: getCellValue('F'+rowIndex),
+        maxHorasModulo: getCellValue('G', rowIndex),
+        vacantes: getCellValue('H'+rowIndex)
+      });
       rowIndex++;
-    }
-    for (curso of courses) {
-      curso.vacantes = Math.min(curso.modules.map(m => m.vacantes));
     }
   } else {
     while (getCellValue('E'+rowIndex) != '') {
@@ -223,27 +208,31 @@ router.post('/assign', guard.check([['admin']]),
       }
       switch (req.body.category) {
         case 'GB': {
-          url = await GBService.processAssigns(req.body.category, req.body.city, req.file.path, config, false);
+          url = await GBService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GMD': {
-          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, config, true);
+          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GMP': {
-          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path, config, false);
+          url = await GMPService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GSD': {
-          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, config, true);
+          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GSP': {
-          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path, config, false);
+          url = await GSPService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
-        case 'CE': {
-          url = await CEService.processAssigns(req.body.category, req.body.city, req.file.path, config, true);
+        case 'CEP': {
+          url = await CEPService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          break;
+        }
+        case 'CED': {
+          url = await CEDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         default: {

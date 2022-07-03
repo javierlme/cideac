@@ -28,11 +28,11 @@ async function processAssigns(category, city, filePath, config) {
     }
   }
 
-  const generarTextoExclusionGB = (texto) => {
+  const generarTextoExclusionCEP = (texto) => {
     var motivo = String();
-    if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGBR1 + ' / ';
-    if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textGBR2 + ' / ';
-    if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textGBR3 + ' / ';
+    if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textCER1 + ' / ';
+    if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textCER2 + ' / ';
+    if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textCER3 + ' / ';
     return motivo.slice(0,-2)
   }
 
@@ -84,17 +84,17 @@ async function processAssigns(category, city, filePath, config) {
       applicationId: readCell('B', rowIndex),
       randomNumber: Number(readCell('C', rowIndex).replace(',','.')),
       personalId: readCell('D', rowIndex),
-      especialNeeds: ['si','sí'].includes(readCell('E', rowIndex).toLowerCase()),
+      especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
-    validateAndAppendCourse('F', infoSolicitud, true);
+    validateAndAppendCourse('E', infoSolicitud, true);
+    validateAndAppendCourse('F', infoSolicitud);
     validateAndAppendCourse('G', infoSolicitud);
     validateAndAppendCourse('H', infoSolicitud);
-    validateAndAppendCourse('I', infoSolicitud);
-    infoSolicitud.scoring = Number(readCell('M', rowIndex).replace(',','.'));
-    infoSolicitud.handicapped = ['si','sí'].includes(readCell('N', rowIndex).toLowerCase());
-    infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('O', rowIndex).toLowerCase());
-    infoSolicitud.incumple =  readCell('P', rowIndex).toLowerCase();
+    infoSolicitud.scoring = Number(readCell('I', rowIndex).replace(',','.'));
+    infoSolicitud.handicapped = ['si','sí'].includes(readCell('J', rowIndex).toLowerCase());
+    infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('K', rowIndex).toLowerCase());
+    infoSolicitud.incumple =  readCell('L', rowIndex).toLowerCase();
     if (String(infoSolicitud.incumple || '') == '') {
       listaSolicitudesAceptadas.push(infoSolicitud);
     }
@@ -196,13 +196,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeHandicap)
+            .replace('##textCETypeGeneral##', config.textCETypeHandicap)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -230,13 +230,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeAthlete)
+            .replace('##textCETypeGeneral##', config.textCETypeAthlete)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -264,13 +264,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeGeneral)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -298,13 +298,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeHandicap)
+            .replace('##textCEPTypeGeneral##', config.textCEPTypeHandicap)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -331,13 +331,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeAthlete)
+            .replace('##textCEPTypeGeneral##', config.textCEPTypeAthlete)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -364,13 +364,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeGeneral)
+            .replace('##textCEPTypeGeneral##', config.textCEPTypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -405,11 +405,11 @@ async function processAssigns(category, city, filePath, config) {
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
         .replace('##titleGeneral##', config.titleGeneral)
-        .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+        .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
         .replace('##city##', city)
         .replace('##titleCurse##', config.titleCurse)
         .replace('##titleRejected##', config.titleRejected)
-        .replace('##textGBTypeGeneral##', config.textGBTypeGeneral)
+        .replace('##textCEPTypeGeneral##', config.textCEPTypeGeneral)
         .replace('##titleWarning##', config.titleWarning)
       }  
 
@@ -417,9 +417,9 @@ async function processAssigns(category, city, filePath, config) {
       htmlListaExcluidos += `	  <td class="width:15%;text-align:left;">${orden}</td>`;
       htmlListaExcluidos += `	  <td class="width:15%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
       htmlListaExcluidos += `	  <td class="width:30%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-      htmlListaExcluidos += `	  <td class="width:40%;text-align:left;">${generarTextoExclusionGB(ap.incumple)}</td>`;
+      htmlListaExcluidos += `	  <td class="width:40%;text-align:left;">${generarTextoExclusionCEP(ap.incumple)}</td>`;
       htmlListaExcluidos += `  </tr>`;
-      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};${ap.incumple};${generarTextoExclusionGB(ap.incumple)}\r\n`;
+      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};${ap.incumple};${generarTextoExclusionCEP(ap.incumple)}\r\n`;
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += '</table>';
         htmlListaExcluidos += `<div style="page-break-after:always"></div>`;
