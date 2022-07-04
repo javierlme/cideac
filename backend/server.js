@@ -99,7 +99,7 @@ for (const router of rs) {
 
 const router = express.Router();
 router.get('/', function (req, res) {
-	res.status(200).jsonp(`Hello world!`);
+	res.status(200).jsonp(`Servidor OK!`);
 });
 app.use(router);
 

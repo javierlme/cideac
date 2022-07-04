@@ -41,11 +41,16 @@ async function processAssigns(category, city, filePath, config) {
     return motivo.slice(0,-2)
   }
 
+  const generarTextoModulo = (codigoModulo) => {
+    const found = listaCentrosCiclosModulos.find(lccm=>String(lccm.codigoModulo)==String(codigoModulo));
+    return found? found.abreviaturaModulo : codigoModulo;
+  }
+
   let rowIndex = 2;
   let infoSolicitud;
   const validateAndAppendCourse = (field, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, infoSolicitud, prioridad, mandatory = false) => {
     const curso   = readCell(field, rowIndex);
-    const listaModulos = Array();
+    var listaModulos = Array();
     const modulo1 = readCell(mod1,  rowIndex)
     const modulo2 = readCell(mod2,  rowIndex);
     const modulo3 = readCell(mod3,  rowIndex);
@@ -66,7 +71,9 @@ async function processAssigns(category, city, filePath, config) {
     if (modulo8!='')  { listaModulos.push(modulo8); }
     if (modulo9!='')  { listaModulos.push(modulo9); }
     if (modulo10!='') { listaModulos.push(modulo10);}
-
+    if (listaModulos.length==0){
+      listaModulos = listaCentrosCiclosModulos.filter(lccm=>((curso.match(new RegExp(lccm.codigoCurso, 'i')) != null) && (curso.match(new RegExp(lccm.codigoCentro, 'i')) != null))).map(lccm=>lccm.codigoModulo);
+    }
     if (!curso) {
       if (!mandatory) {
         return;
@@ -103,7 +110,8 @@ async function processAssigns(category, city, filePath, config) {
           curso: selectedCourse.curso,
           codigoModulo: selectedCourse.codigoModulo,
           modulo: selectedCourse.modulo,
-          prioridad: prioridad,
+          abreviaturaModulo: selectedCourse.abreviaturaModulo,
+          prioridad: prioridad
         }
         infoSolicitud.listaCentrosCiclosModulos.push(centrosCiclosModulo);
       }
@@ -116,16 +124,17 @@ async function processAssigns(category, city, filePath, config) {
       docId: readCell('D', rowIndex),
       applicationId: readCell('L', rowIndex),
       randomNumber: Number(readCell('N', rowIndex).replace(',','.')),
-      personalId: readCell('D', rowIndex),
+      personalId: readCell('A', rowIndex) + ' '+ readCell('B', rowIndex) + ' '+ readCell('C', rowIndex),
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
-    validateAndAppendCourse('R', 'T',  'U',  'V',  'W',  'X',  'Y',  'Z',  'AA',  'AB',  'AC',  infoSolicitud, ['si','sí'].includes(readCell('AD',  rowIndex).toLowerCase()), true);
-    validateAndAppendCourse('AF', 'AH',  'AI',  'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', infoSolicitud, ['si','sí'].includes(readCell('AR', rowIndex).toLowerCase()));
+    validateAndAppendCourse('R', 'T',  'U',  'V',  'W',  'X',  'Y',  'Z',  'AA', 'AB', 'AC',  infoSolicitud, ['si','sí'].includes(readCell('AD',  rowIndex).toLowerCase()), true);
+    validateAndAppendCourse('AF', 'AH','AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', infoSolicitud, ['si','sí'].includes(readCell('AR', rowIndex).toLowerCase()));
     validateAndAppendCourse('AT','AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD', 'BE', infoSolicitud, ['si','sí'].includes(readCell('BF', rowIndex).toLowerCase()));
     validateAndAppendCourse('BH','BJ', 'BK', 'BL', 'BM', 'BN', 'BO', 'BP', 'BQ', 'BR', 'BS', infoSolicitud, ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase()));
     infoSolicitud.viaAcceso = readCell('CB', rowIndex);
-    infoSolicitud.scoring = Number(readCell('BX', rowIndex).replace(',','.'));
+    infoSolicitud.scoring = readCell('BX', rowIndex).replace(',','.');   
+    infoSolicitud.scoring = Number(infoSolicitud.scoring.substring(0, infoSolicitud.scoring.indexOf('.')!=-1?infoSolicitud.scoring.indexOf('.')+4:infoSolicitud.scoring.length));
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BZ', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('CA', rowIndex).toLowerCase());
     infoSolicitud.incumple =  readCell('CC', rowIndex).toLowerCase();
@@ -275,7 +284,188 @@ async function processAssigns(category, city, filePath, config) {
     let htmlListaEspera = contentHeaderFile.toString();
     let htmlListaExcluidos = contentHeaderFile.toString();
     const numLinesPerPage = 50;
-    for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+
+
+    // TODO Admitidos
+    const listaCentrosCiclosModulosAgrupada = Array();
+    var listaAsignadosA = Array();
+    var listaAsignadosAEspera = Array();
+    var listaAsignadosB = Array();
+    var listaAsignadosBEspera = Array();
+    var listaAsignadosC = Array();
+    var listaAsignadosCEspera = Array();
+    var listaAsignadosDeportistasElite = Array();
+    var listaAsignadosDeportistasEliteEspera = Array();
+    var listaAsignadosDiscapacitados = Array();
+    var listaAsignadosDiscapacitadosEspera = Array();
+  
+    var keyAnterior = String('');
+
+    listaCentrosCiclosModulos.forEach(lccm => {
+
+      const key = String(lccm.codigoCentro + '_' + lccm.codigoCurso);
+      if (keyAnterior!=key){
+        keyAnterior = key;
+        listaAsignadosA = Array();
+        listaAsignadosAEspera = Array();
+        listaAsignadosB = Array();
+        listaAsignadosBEspera = Array();
+        listaAsignadosC = Array();
+        listaAsignadosCEspera = Array();
+        listaAsignadosDeportistasElite = Array();
+        listaAsignadosDeportistasEliteEspera = Array();
+        listaAsignadosDiscapacitados = Array();
+        listaAsignadosDiscapacitadosEspera = Array();
+        leyendaCodigoModulo = Array();
+      }
+      leyendaCodigoModulo.push(String(`<label>${lccm.codigoModulo} : ${lccm.modulo}</label>`));
+
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA))) {
+        const datosAux = listaAsignadosA.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosA.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosAEspera))) {
+        const datosAux = listaAsignadosAEspera.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosAEspera.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosB))) {
+        const datosAux = listaAsignadosB.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosB.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosBEspera))) {
+        const datosAux = listaAsignadosBEspera.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosBEspera.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosC))) {
+        const datosAux = listaAsignadosC.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosC.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosCEspera))) {
+        const datosAux = listaAsignadosCEspera.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosCEspera.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDeportistasElite))) {
+        const datosAux = listaAsignadosDeportistasElite.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosDeportistasElite.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDeportistasEliteEspera))) {
+        const datosAux = listaAsignadosDeportistasEliteEspera.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosDeportistasEliteEspera.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDiscapacitados))) {
+        const datosAux = listaAsignadosDiscapacitados.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosDiscapacitados.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDiscapacitadosEspera))) {
+        const datosAux = listaAsignadosDiscapacitadosEspera.find(l=>l.docId==lista.docId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          listaAsignadosDiscapacitadosEspera.push(data);
+        }
+      };
+      
+      var datosListaCentrosCiclosModulosAgrupada = listaCentrosCiclosModulosAgrupada.find(lccma=>String(lccma.codigoCentro + '_' + lccma.codigoCurso)==key);
+      if (!datosListaCentrosCiclosModulosAgrupada){
+        const centroCiclo = {
+          codigoCentro: lccm.codigoCentro,
+          centro: lccm.centro,
+          codigoCurso: lccm.codigoCurso,
+          curso: lccm.curso,
+          listaAsignadosA: listaAsignadosA,
+          listaAsignadosAEspera: listaAsignadosAEspera,
+          listaAsignadosB: listaAsignadosB,
+          listaAsignadosBEspera: listaAsignadosBEspera,
+          listaAsignadosC: listaAsignadosC,
+          listaAsignadosCEspera: listaAsignadosCEspera,
+          listaAsignadosDeportistasElite: listaAsignadosDeportistasElite,
+          listaAsignadosDeportistasEliteEspera: listaAsignadosDeportistasEliteEspera,
+          listaAsignadosDiscapacitados: listaAsignadosDiscapacitados,
+          listaAsignadosDiscapacitadosEspera: listaAsignadosDiscapacitadosEspera,
+          leyendaCodigoModulo: JSON.parse(JSON.stringify(leyendaCodigoModulo))
+        }
+        listaCentrosCiclosModulosAgrupada.push(centroCiclo);
+      }
+    });
+
+//    for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+    for (const cursoCentroCicloModulo of listaCentrosCiclosModulosAgrupada) {
       
     // Generar lista admitidos
       
@@ -298,8 +488,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -334,8 +525,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -370,8 +562,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -405,8 +598,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -440,8 +634,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -476,8 +671,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -511,8 +707,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -546,8 +743,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -581,8 +779,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -616,8 +815,9 @@ async function processAssigns(category, city, filePath, config) {
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
-          htmlListaEspera += `	  <td class="width:60%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
           htmlListaEspera += `  </tr>`;

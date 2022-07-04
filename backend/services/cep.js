@@ -230,7 +230,7 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -264,7 +264,7 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -298,7 +298,7 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -331,7 +331,7 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -364,7 +364,7 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -405,7 +405,7 @@ async function processAssigns(category, city, filePath, config) {
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
         .replace('##titleGeneral##', config.titleGeneral)
-        .replace('##textCEPTitleGeneral##', config.textCEPTitleGeneral)
+        .replace('##textCETitleGeneral##', config.textCETitleGeneral)
         .replace('##city##', city)
         .replace('##titleCurse##', config.titleCurse)
         .replace('##titleRejected##', config.titleRejected)
