@@ -72,7 +72,7 @@ async function processAssigns(category, city, filePath, config) {
     if (modulo9!='')  { listaModulos.push(modulo9); }
     if (modulo10!='') { listaModulos.push(modulo10);}
     if (listaModulos.length==0){
-      listaModulos = listaCentrosCiclosModulos.filter(lccm=>((curso.match(new RegExp(lccm.codigoCurso, 'i')) != null) && (curso.match(new RegExp(lccm.codigoCentro, 'i')) != null))).map(lccm=>lccm.codigoModulo);
+      listaModulos = listaCentrosCiclosModulos.filter(lccm=>((String(lccm.numeroCurso)==String('1')) && (curso.match(new RegExp(lccm.codigoCurso, 'i')) != null) && (curso.match(new RegExp(lccm.codigoCentro, 'i')) != null))).map(lccm=>lccm.codigoModulo);
     }
     if (!curso) {
       if (!mandatory) {
@@ -487,9 +487,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -524,9 +524,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -561,9 +561,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -597,9 +597,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -633,9 +633,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -670,9 +670,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -706,9 +706,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -742,9 +742,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -778,9 +778,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -814,9 +814,9 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`

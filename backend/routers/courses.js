@@ -103,7 +103,8 @@ exports.getCategoryCourses = async (city, category) => {
         modulo: getCellValue('F'+rowIndex),
         maxHorasModulo: getCellValue('G', rowIndex),
         vacantes: getCellValue('H'+rowIndex),
-        abreviaturaModulo: getCellValue('I'+rowIndex)
+        abreviaturaModulo: getCellValue('I'+rowIndex),
+        numeroCurso: getCellValue('J'+rowIndex)
       });
       rowIndex++;
     }

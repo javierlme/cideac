@@ -72,7 +72,7 @@ async function processAssigns(category, city, filePath, config) {
     if (modulo9!='')  { listaModulos.push(modulo9); }
     if (modulo10!='') { listaModulos.push(modulo10);}
     if (listaModulos.length==0){
-      listaModulos = listaCentrosCiclosModulos.filter(lccm=>((curso.match(new RegExp(lccm.codigoCurso, 'i')) != null) && (curso.match(new RegExp(lccm.codigoCentro, 'i')) != null))).map(lccm=>lccm.codigoModulo);
+      listaModulos = listaCentrosCiclosModulos.filter(lccm=>((String(lccm.numeroCurso)==String('1')) && (curso.match(new RegExp(lccm.codigoCurso, 'i')) != null) && (curso.match(new RegExp(lccm.codigoCentro, 'i')) != null))).map(lccm=>lccm.codigoModulo);
     }
     if (!curso) {
       if (!mandatory) {
@@ -124,7 +124,7 @@ async function processAssigns(category, city, filePath, config) {
       docId: readCell('D', rowIndex),
       applicationId: readCell('L', rowIndex),
       randomNumber: Number(readCell('N', rowIndex).replace(',','.')),
-      personalId: readCell('A', rowIndex) + ' '+ readCell('B', rowIndex) + ' '+ readCell('C', rowIndex),
+      personalId: String (readCell('A', rowIndex) + ' ' + readCell('B', rowIndex) + ' ' + readCell('C', rowIndex)),
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
@@ -489,13 +489,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -526,13 +526,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -563,13 +563,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -599,13 +599,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -635,13 +635,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaAdmitidos += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -672,13 +672,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -708,13 +708,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -744,13 +744,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -780,13 +780,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -816,13 +816,13 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td class="width:10%;text-align:left;">${(orden)}</td>`;
           htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join()}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:left;">${ap.personalId}</td>`;
+          htmlListaEspera += `	  <td class="width:30%;text-align:center;">${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
           htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.preferencia? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring}</td>`;
+          htmlListaEspera += `	  <td class="width:10%;text-align:center;">${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
+            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${ap.personalId};`
             +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -858,10 +858,10 @@ async function processAssigns(category, city, filePath, config) {
       htmlListaExcluidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
       htmlListaExcluidos += `	  <td class="width:15%;text-align:left;">${orden}</td>`;
       htmlListaExcluidos += `	  <td class="width:15%;text-align:center;">${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
-      htmlListaExcluidos += `	  <td class="width:30%;text-align:left;">${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+      htmlListaExcluidos += `	  <td class="width:30%;text-align:left;">${ap.personalId}</td>`;
       htmlListaExcluidos += `	  <td class="width:40%;text-align:left;">${generarTextoExclusionGS(ap.incumple)}</td>`;
       htmlListaExcluidos += `  </tr>`;
-      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};${ap.incumple};${generarTextoExclusionGS(ap.incumple)}\r\n`;
+      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId};${ap.incumple};${generarTextoExclusionGS(ap.incumple)}\r\n`;
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += '</table>';
         htmlListaExcluidos += `<div style="page-break-after:always"></div>`;
