@@ -226,35 +226,9 @@ export default function Home() {
     }
   };
 
-  const downloadVacantesGMDPdf = async () => {
-    const filename = "GMD_Leyenda.pdf"
-    const { data } = await API.get(`/courses/files/pdf/${filename}`);
-    if (data) {
-      let pdfContent = Buffer(data, 'base64');
-      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    }
-  };
-  const downloadVacantesGSDPdf = async () => {
-    const filename = "GSD_Leyenda.pdf"
-    const { data } = await API.get(`/courses/files/pdf/${filename}`);
-    if (data) {
-      let pdfContent = Buffer(data, 'base64');
-      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    }
-  };
-  const downloadVacantesCEDPdf = async () => {
-    const filename = "CED_Leyenda.pdf"
-    const { data } = await API.get(`/courses/files/pdf/${filename}`);
+  const downloadVacantesPdf = async (city, category) => {
+    const filename = `${city}_${category}_Leyenda.pdf`;
+    const { data } = await API.get(`/courses/files/slots/${filename}`);
     if (data) {
       let pdfContent = Buffer(data, 'base64');
       const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
@@ -805,15 +779,14 @@ export default function Home() {
             key={step.id}
             step={step}
             index={index}
+            city={categoryObj?.city?categoryObj.city: ''}
             onDownloadAdmitidosPdf={downloadAdmitidosPdf}
             onDownloadAdmitidosExcel={downloadAdmitidosExcel}
             onDownloadEsperaPdf={downloadEsperaPdf}
             onDownloadEsperaExcel={downloadEsperaExcel}
             onDownloadExcluidosPdf={downloadExcluidosPdf}
             onDownloadExcluidosExcel={downloadExcluidosExcel}
-            onDownloadVacantesGMDPdf={downloadVacantesGMDPdf}
-            onDownloadVacantesGSDPdf={downloadVacantesGSDPdf}
-            onDownloadVacantesCEDPdf={downloadVacantesCEDPdf}
+            onDownloadVacantesPdf={downloadVacantesPdf}
             onUpload={uploadFile}
             onRemove={removeFile}
             onShowErrors={(step) => setPopupOpen(step)}
@@ -847,9 +820,8 @@ input.type = 'file';
 input.accept = '.xls,.xlsx';
 
 function Step(props) {
-  const { step, index, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf,
-    onDownloadExcluidosExcel, onDownloadExcluidosPdf, onDownloadVacantesGMDPdf, onDownloadVacantesGSDPdf, onDownloadVacantesCEDPdf,
-    onRemove, onShowErrors } = props;
+  const { step, index, city, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf,
+    onDownloadExcluidosExcel, onDownloadExcluidosPdf, onDownloadVacantesPdf, onRemove, onShowErrors } = props;
   const uploadFile = () => {
     input.onchange = () => {
       onUpload(step, input.files[0]);
@@ -933,9 +905,9 @@ function Step(props) {
                 </table>
                 <table>
                   <tr>
-                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesGMDPdf()}><Icon icon={pdf}/>GMD</Button></td>
-                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesGSDPdf()}><Icon icon={pdf}/>GSD</Button></td>
-                    <td><Button secondary onClick={() => onDownloadVacantesCEDPdf()}><Icon icon={pdf}/>CED</Button></td>
+                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesPdf(city, 'GMD')}><Icon icon={pdf}/>GMD</Button></td>
+                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesPdf(city, 'GSD')}><Icon icon={pdf}/>GSD</Button></td>
+                    <td><Button secondary onClick={() => onDownloadVacantesPdf(city, 'CED')}><Icon icon={pdf}/>CED</Button></td>
                   </tr>
                 </table>
             </Fragment>
