@@ -2,6 +2,7 @@ import { styled } from 'goober';
 import { Fragment, h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import Button from '../components/Button';
+import ButtonPq  from '../components/ButtonPq';
 import Icon from '../components/Icon';
 import { error, file as fileIcon, signout, trash, expand, colapse, pdf, excel } from '../icons';
 import { Redirect } from 'wouter-preact';
@@ -905,9 +906,15 @@ function Step(props) {
                 </table>
                 <table>
                   <tr>
-                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesPdf(city, 'GMD')}><Icon icon={pdf}/>GMD</Button></td>
-                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesPdf(city, 'GSD')}><Icon icon={pdf}/>GSD</Button></td>
-                    <td><Button secondary onClick={() => onDownloadVacantesPdf(city, 'CED')}><Icon icon={pdf}/>CED</Button></td>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GB')}><Icon icon={pdf}/>GB</ButtonPq></td>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GMP')}><Icon icon={pdf}/>GMP</ButtonPq></td>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GSP')}><Icon icon={pdf}/>GSP</ButtonPq></td>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'CEP')}><Icon icon={pdf}/>CEP</ButtonPq></td>
+                  </tr>
+                  <tr>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GMD')}><Icon icon={pdf}/>GMD</ButtonPq></td>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GSD')}><Icon icon={pdf}/>GSD</ButtonPq></td>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'CED')}><Icon icon={pdf}/>CED</ButtonPq></td>
                   </tr>
                 </table>
             </Fragment>

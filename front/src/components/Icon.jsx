@@ -16,7 +16,7 @@ const Cls = css`
   align-items: center;
   justify-content: center;
   color: inherit;
-  
+
   svg {
     fill: currentColor;
     width: var(--icon-size, 24px);

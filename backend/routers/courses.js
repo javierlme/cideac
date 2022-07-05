@@ -18,6 +18,7 @@ const LeyendasService = require('../services/leyendas')
 const {Buffer} = require('buffer');
 
 const listDistanceCode = ['GMD', 'GSD', 'CED'];
+const listPresentialCode = ['GB', 'GMP', 'GSP', 'CEP'];
 
 router.post('/slots', guard.check([['admin']]),
   upload.single('file'), async (req, res) => {
@@ -71,7 +72,10 @@ router.post('/slots', guard.check([['admin']]),
       
       const config = buildConfig(req);
       for (const category of listDistanceCode) {
-        await LeyendasService.buildPdf(req.body.city, category, config);
+        await LeyendasService.buildPdfDistancia(req.body.city, category, config);
+      };
+      for (const category of listPresentialCode) {
+        await LeyendasService.buildPdfPresencial(req.body.city, category, config);
       };
 
       common.respond(req, res, 200, {});
@@ -295,9 +299,6 @@ router.get('/files/pdf/:filename', guard.check([['admin']]), async (req, res) =>
     common.handleException(req, res, err);
   }
 });
-
-
-
 
 const buildConfig = (req) => {
   return {

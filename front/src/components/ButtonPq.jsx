@@ -6,7 +6,7 @@ const btnProps = (props) => {
   return { type, disabled, onClick };
 };
 
-export default function Button(props) {
+export default function ButtonPq(props) {
   const {
     primary,
     secondary,
@@ -24,7 +24,7 @@ export default function Button(props) {
   };
   return (
     <button
-      class={`Button ${Cls} ${className}`}
+      class={`Button ${ClsPq} ${className}`}
       {...btnStyle}
       {...btnProps(props)}
     >
@@ -33,45 +33,34 @@ export default function Button(props) {
   );
 }
 
-const Cls = css`
+const ClsPq = css`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 2px;
 
   font-family: Arial;
   font-style: normal;
   font-weight: bold;
-  font-size: 16px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 14px;
   border: 0;
-
-  &[condesed] {
-    padding: 2px 8px;
-    font-size: 12px;
-    line-height: 14px;
-    gap: 6px;
-  }
+  border-radius: 4px;
+  width: 65px;
+  height: 30px;
+  padding: 4px;
+  margin: 4px;
 
   &[primary] {
     background: var(--color-accent-100);
     color: white;
-    height: 35px;
-    border-radius: 4px;
     border: 1px solid #000;
-    padding: 10px;
-    margin: 0px;
   }
   &[secondary] {
     background: #ccc;
     color: #000;
-    border-radius: 4px;
     border: 1px solid #aaa;
-    height: 35px;
-    padding: 10px;
-    margin: 0px;
   }
   &[tertiary] {
-    font-size: 14px;
     background: transparent;
     color: var(--color-accent-100);
   }
@@ -80,11 +69,9 @@ const Cls = css`
     color: var(--color-yellow);
     border: 1px solid var(--color-yellow);
   }
-
   &[disabled] {
     background: var(--color-inactive);
     color: var(--color-white);
     cursor: not-allowed;
   }
 `;
-
