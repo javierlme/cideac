@@ -93,7 +93,7 @@ async function processAssigns(category, city, filePath, config) {
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
-    validateAndAppendCourse('F', infoSolicitud, ['si','sí'].includes(readCell('G', rowIndex).toLowerCase()), true);
+    validateAndAppendCourse('F', infoSolicitud, ['si','sí'].includes(readCell('G', rowIndex).toLowerCase()));
     validateAndAppendCourse('H', infoSolicitud, ['si','sí'].includes(readCell('I', rowIndex).toLowerCase()));
     validateAndAppendCourse('J', infoSolicitud, ['si','sí'].includes(readCell('K', rowIndex).toLowerCase()));
     validateAndAppendCourse('L', infoSolicitud, ['si','sí'].includes(readCell('M', rowIndex).toLowerCase()));

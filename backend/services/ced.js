@@ -87,7 +87,7 @@ async function processAssigns(category, city, filePath, config) {
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
-    validateAndAppendCourse('E', infoSolicitud, true);
+    validateAndAppendCourse('E', infoSolicitud);
     validateAndAppendCourse('F', infoSolicitud);
     validateAndAppendCourse('G', infoSolicitud);
     validateAndAppendCourse('H', infoSolicitud);
