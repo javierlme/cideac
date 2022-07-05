@@ -22,7 +22,7 @@ const buildPdf = async (city, category, config) => {
       return r;
   }, Object.create(null));
 
-    const filename = `${category}_Leyenda.pdf`;
+    const filename = `${city}_${category}_Leyenda.pdf`;
     const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
     const leyendaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'leyendaBase.html'));
   
@@ -67,7 +67,7 @@ const buildPdf = async (city, category, config) => {
             footerTemplate: '<style>span{width:100% !important;text-align:center !important;font-size:8px !important;font-family: "Calibri"; }</style><span>Página <label class="pageNumber"></label> de <label class="totalPages"> </label> </span>',
             margin: { top: "0px", bottom: "50px", right: "0px", left: "0px" }
         });
-        fs.writeFileSync(path.join(__dirname, '..', 'temp', filename), contentLeyendasPdf);
+        fs.writeFileSync(path.join(__dirname, '..', 'data', filename), contentLeyendasPdf);
   }
   }
   catch (error){

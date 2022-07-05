@@ -239,6 +239,25 @@ router.delete('/slots/:city', guard.check([['admin']]), async (req, res) => {
   }
 });
 
+router.get('/files/slots/:filename', guard.check([['admin']]), async (req, res) => {
+  try {
+    const filename = req.params.filename
+    console.log(`filename:${filename}`)
+    if (!filename) {
+      return common.respond(req, res, 400, { codigoCurso: 'ERR_MISSING_PARAM', additionalInfo: { param: 'filename' } });
+    }
+    const filePath = path.join(__dirname, '..', 'data', `${filename}`);
+    const contentFile = await fs.readFileSync(filePath);
+    if (!contentFile) {
+      return common.respond(req, res, 404, { codigoCurso: 'ERR_FILE_NOT_FOUND', additionalInfo: { param: 'filename' } });
+    }
+    const bufferBase64 = Buffer(contentFile).toString('base64')
+    common.respond(req, res, 200, bufferBase64);
+  } catch (err) {
+    common.handleException(req, res, err);
+  }
+});
+
 router.get('/files/excel/:filename', guard.check([['admin']]), async (req, res) => {
   try {
     const filename = req.params.filename
@@ -276,6 +295,8 @@ router.get('/files/pdf/:filename', guard.check([['admin']]), async (req, res) =>
     common.handleException(req, res, err);
   }
 });
+
+
 
 
 const buildConfig = (req) => {
