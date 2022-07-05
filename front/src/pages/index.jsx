@@ -35,6 +35,7 @@ let titleCurse = 'Curso 2022/2023';
 let titleAdmitted = 'LISTADO PROVISIONAL DE ADMITIDOS'; // 'LISTADO DEFINITIVO DE ADMITIDOS';
 let titleWaiting = 'LISTAS DE ESPERA PROVISIONAL'; // 'LISTAS DE ESPERA DEFINITIVAS';
 let titleRejected = 'LISTADO PROVISIONAL DE EXCLUIDOS '; // 'LISTADO DEFINITIVO DE EXCLUIDOS ';
+let titleSlot = 'LISTADO PROVISIONAL DE VACANTES';//LISTADO DEFINITIVO DE VACANTES
 let titleWarning = ' IMPORTANTE: ANTE LOS LISTADOS PROVISIONALES PUBLICADOS EL DÍA 6 DE JULIO, LOS INTERESADOS DISPONDRÁN DE LOS DÍAS 7 Y 8 DE JULIO PARA PRESENTAR RECLAMACIONES A TRAVÉS DE LA SEDE ELECTRÓNICA DEL MEFP.'
 
 let textGBTitleGeneral = 'CICLOS FORMATIVOS BÁSICO';
@@ -120,9 +121,66 @@ export default function Home() {
   const uploadFile = async (step, file) => {
     const formData = new FormData();
     formData.set('file', file);
+    formData.set('city', categoryObj.city);
+    formData.set('category', categoryObj.code);
+    formData.set('randomNumberSelected', randomNumberSelected);
+    formData.set('percentageHandicap', percentageHandicap);
+    formData.set('numSlotsBySeatHandicap', numSlotsBySeatHandicap);
+    formData.set('percentageAthlete', percentageAthlete);
+    formData.set('numSlotsBySeatAthlete', numSlotsBySeatAthlete);
+    formData.set('percentageA', percentageA);
+    formData.set('percentageB', percentageB);
+    formData.set('percentageC', percentageC);
+
+    formData.set('titleGeneral', titleGeneral);
+    formData.set('titleCurse', titleCurse);
+    formData.set('titleAdmitted', titleAdmitted);
+    formData.set('titleWaiting', titleWaiting);
+    formData.set('titleRejected', titleRejected);
+    formData.set('titleSlot', titleSlot);
+    formData.set('titleWarning', titleWarning);
+
+    formData.set('textGBTitleGeneral', textGBTitleGeneral);
+    formData.set('textGBTypeGeneral', textGBTypeGeneral);
+    formData.set('textGBTypeAthlete', textGBTypeAthlete);
+    formData.set('textGBTypeHandicap', textGBTypeHandicap);
+    formData.set('textGBR1', textGBR1);
+    formData.set('textGBR2', textGBR2);
+    formData.set('textGBR3', textGBR3);
+
+    formData.set('textGMTitleGeneral', textGMTitleGeneral);
+    formData.set('textGMTypeA', textGMTypeA);
+    formData.set('textGMTypeB', textGMTypeB);
+    formData.set('textGMTypeC', textGMTypeC);
+    formData.set('textGMTypeAthlete', textGMTypeAthlete);
+    formData.set('textGMTypeHandicap', textGMTypeHandicap);
+    formData.set('textGMR1', textGMR1);
+    formData.set('textGMR2', textGMR2);
+    formData.set('textGMR3', textGMR3);
+
+    formData.set('textGSTitleGeneral', textGSTitleGeneral);
+    formData.set('textGSTypeA', textGSTypeA);
+    formData.set('textGSTypeB', textGSTypeB);
+    formData.set('textGSTypeC', textGSTypeC);
+    formData.set('textGSTypeAthlete', textGSTypeAthlete);
+    formData.set('textGSTypeHandicap', textGSTypeHandicap);
+    formData.set('textGSR1', textGSR1);
+    formData.set('textGSR2', textGSR2);
+    formData.set('textGSR3', textGSR3);
+
+    formData.set('textCETitleGeneral', textCETitleGeneral);
+    formData.set('textCETypeGeneral', textCETypeGeneral);
+    formData.set('textCETypeAthlete', textCETypeAthlete);
+    formData.set('textCETypeHandicap', textCETypeHandicap);
+    formData.set('textCER1', textCER1);
+    formData.set('textCER2', textCER2);
+    formData.set('textCER3', textCER3);
+
     try {
+      const index = steps.indexOf(step);
+      step = steps[index] = { ...steps[index], state: 'waiting', file };
+      updateSteps();
       if (step.id === 'slots') {
-        formData.set('city', categoryObj.city);
         const res = await API.post('/courses/slots', formData);
         const index = steps.indexOf(step);
         if (res?.data?.additionalInfo) {
@@ -135,62 +193,6 @@ export default function Home() {
         }
         updateSteps();
       } else if (step.id === 'assign') {
-        formData.set('city', categoryObj.city);
-        formData.set('category', categoryObj.code);
-        formData.set('randomNumberSelected', randomNumberSelected);
-        formData.set('percentageHandicap', percentageHandicap);
-        formData.set('numSlotsBySeatHandicap', numSlotsBySeatHandicap);
-        formData.set('percentageAthlete', percentageAthlete);
-        formData.set('numSlotsBySeatAthlete', numSlotsBySeatAthlete);
-        formData.set('percentageA', percentageA);
-        formData.set('percentageB', percentageB);
-        formData.set('percentageC', percentageC);
-
-        formData.set('titleGeneral', titleGeneral);
-        formData.set('titleCurse', titleCurse);
-        formData.set('titleAdmitted', titleAdmitted);
-        formData.set('titleWaiting', titleWaiting);
-        formData.set('titleRejected', titleRejected);
-        formData.set('titleWarning', titleWarning);
-
-        formData.set('textGBTitleGeneral', textGBTitleGeneral);
-        formData.set('textGBTypeGeneral', textGBTypeGeneral);
-        formData.set('textGBTypeAthlete', textGBTypeAthlete);
-        formData.set('textGBTypeHandicap', textGBTypeHandicap);
-        formData.set('textGBR1', textGBR1);
-        formData.set('textGBR2', textGBR2);
-        formData.set('textGBR3', textGBR3);
-
-        formData.set('textGMTitleGeneral', textGMTitleGeneral);
-        formData.set('textGMTypeA', textGMTypeA);
-        formData.set('textGMTypeB', textGMTypeB);
-        formData.set('textGMTypeC', textGMTypeC);
-        formData.set('textGMTypeAthlete', textGMTypeAthlete);
-        formData.set('textGMTypeHandicap', textGMTypeHandicap);
-        formData.set('textGMR1', textGMR1);
-        formData.set('textGMR2', textGMR2);
-        formData.set('textGMR3', textGMR3);
-
-        formData.set('textGSTitleGeneral', textGSTitleGeneral);
-        formData.set('textGSTypeA', textGSTypeA);
-        formData.set('textGSTypeB', textGSTypeB);
-        formData.set('textGSTypeC', textGSTypeC);
-        formData.set('textGSTypeAthlete', textGSTypeAthlete);
-        formData.set('textGSTypeHandicap', textGSTypeHandicap);
-        formData.set('textGSR1', textGSR1);
-        formData.set('textGSR2', textGSR2);
-        formData.set('textGSR3', textGSR3);
-
-        formData.set('textCETitleGeneral', textCETitleGeneral);
-        formData.set('textCETypeGeneral', textCETypeGeneral);
-        formData.set('textCETypeAthlete', textCETypeAthlete);
-        formData.set('textCETypeHandicap', textCETypeHandicap);
-        formData.set('textCER1', textCER1);
-        formData.set('textCER2', textCER2);
-        formData.set('textCER3', textCER3);
-        const index = steps.indexOf(step);
-        step = steps[index] = { ...steps[index], state: 'waiting', file };
-        updateSteps();
         const res = await API.post('/courses/assign', formData);
         if (res.data.url){
           steps[index] = { ...steps[index], state: 'uploaded', file };
@@ -223,6 +225,47 @@ export default function Home() {
       updateSteps();
     }
   };
+
+  const downloadVacantesGMDPdf = async () => {
+    const filename = "GMD_Leyenda.pdf"
+    const { data } = await API.get(`/courses/files/pdf/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+  const downloadVacantesGSDPdf = async () => {
+    const filename = "GSD_Leyenda.pdf"
+    const { data } = await API.get(`/courses/files/pdf/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+  const downloadVacantesCEDPdf = async () => {
+    const filename = "CED_Leyenda.pdf"
+    const { data } = await API.get(`/courses/files/pdf/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+      const blob = new Blob([pdfContent], { type: 'application/pdf;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+
   const downloadAdmitidosExcel = async (step) => {
     const filename = step.filename + "Admitidos.csv"
     const { data } = await API.get(`/courses/files/excel/${filename}`);
@@ -429,7 +472,7 @@ export default function Home() {
           <div className="divConfig" id="configSectionTextId" style={openConfig?'display:block' : 'display:none'}>
           <h4><b>Curso</b></h4>
             <table>
-            <tr>
+              <tr>
                 <td class="tdConfig">
                   Título general
                 </td>
@@ -467,6 +510,14 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="titleRejectedInput" value={titleRejected} onChange={(e) => { titleRejected = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Título vacantes
+                </td>
+                <td>
+                  <input class="inputConfig" id="titleSlotInput" value={titleSlot} onChange={(e) => { titleSlot = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
@@ -760,6 +811,9 @@ export default function Home() {
             onDownloadEsperaExcel={downloadEsperaExcel}
             onDownloadExcluidosPdf={downloadExcluidosPdf}
             onDownloadExcluidosExcel={downloadExcluidosExcel}
+            onDownloadVacantesGMDPdf={downloadVacantesGMDPdf}
+            onDownloadVacantesGSDPdf={downloadVacantesGSDPdf}
+            onDownloadVacantesCEDPdf={downloadVacantesCEDPdf}
             onUpload={uploadFile}
             onRemove={removeFile}
             onShowErrors={(step) => setPopupOpen(step)}
@@ -793,8 +847,9 @@ input.type = 'file';
 input.accept = '.xls,.xlsx';
 
 function Step(props) {
-  const { step, index, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf
-    , onDownloadExcluidosExcel, onDownloadExcluidosPdf, onRemove, onShowErrors } = props;
+  const { step, index, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf,
+    onDownloadExcluidosExcel, onDownloadExcluidosPdf, onDownloadVacantesGMDPdf, onDownloadVacantesGSDPdf, onDownloadVacantesCEDPdf,
+    onRemove, onShowErrors } = props;
   const uploadFile = () => {
     input.onchange = () => {
       onUpload(step, input.files[0]);
@@ -809,8 +864,11 @@ function Step(props) {
       <div className="file">
         <div className="FileInput">
         
+          {step.id === 'slots' && step.state === 'waiting' && (
+            <Fragment><img style="width:100px;" src="assets/waiting.gif" alt="" /><p>Generando ficheros vacantes...</p></Fragment>
+          )}
           {step.id === 'assign' && step.state === 'waiting' && (
-            <Fragment><img style="width:100px;" src="assets/waiting.gif" alt="" /><p>Generando ficheros...</p></Fragment>
+            <Fragment><img style="width:100px;" src="assets/waiting.gif" alt="" /><p>Generando ficheros asignaciones...</p></Fragment>
           )}
           {step.id === 'download' && step.state === 'ok' && (
             <Fragment>
@@ -864,6 +922,22 @@ function Step(props) {
               <Button className="removeBtn" tertiary onClick={() => onRemove(step)}>
                 <Icon icon={trash} />Eliminar
               </Button>
+            </Fragment>
+          )}
+          {step.id === 'slots' && step.state === 'uploaded' && (
+            <Fragment>
+                <table style="padding-top:20px">
+                  <tr>
+                    <td style="text-align:center;font-weight:bold">Lista Vacantes</td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesGMDPdf()}><Icon icon={pdf}/>GMD</Button></td>
+                    <td style="padding-right:10px;"><Button secondary onClick={() => onDownloadVacantesGSDPdf()}><Icon icon={pdf}/>GSD</Button></td>
+                    <td><Button secondary onClick={() => onDownloadVacantesCEDPdf()}><Icon icon={pdf}/>CED</Button></td>
+                  </tr>
+                </table>
             </Fragment>
           )}
           {step.id !== 'download' && step.state === 'error' && (
