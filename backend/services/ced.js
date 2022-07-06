@@ -110,9 +110,12 @@ async function processAssigns(category, city, filePath, config) {
 
   // Tratar asignaciones por prioridades
   var listaAsignadosDiscapacitados = Array();
+  var listaAsignadosDeportistasElite = Array();
+  var listaAsignadosTotal = Array();
+  var lista = Array();
+
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     var listaSolicitudesACEDtadasCopia = JSON.parse(JSON.stringify(listaSolicitudesACEDtadas));
-    var lista = Array();
     cursoCentroCicloModulo.listaAsignadosDiscapacitados = Array();
     cursoCentroCicloModulo.listaAsignadosDiscapacitadosEspera = Array();
     cursoCentroCicloModulo.listaAsignadosDeportistasElite = Array();
@@ -126,7 +129,7 @@ async function processAssigns(category, city, filePath, config) {
     const vacantesDiscapacitados = Math.ceil(cursoCentroCicloModulo.vacantes * config.percentageHandicap * config.numSlotsBySeatHandicap);
     if (vacantesDiscapacitados>0){
       // Obtener la lista de discapacitados que correspondan al centro-ciclo-modulo
-      listaAsignadosDiscapacitados = listaSolicitudesACEDtadasCopia.filter(sol => ((sol.handicapped) 
+      listaAsignadosDiscapacitados = listaSolicitudesACEDtadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.handicapped)
         && (sol.listaCentrosCiclosModulos.map(s=>(s.codigoCentro || '') + "_" + (s.codigoCurso || '') + "_" + (s.codigoModulo || ''))).includes(claveCurso)))
         .sort(sortCandidates);
       cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitados.slice(0,vacantesDiscapacitados);

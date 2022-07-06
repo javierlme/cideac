@@ -110,9 +110,12 @@ async function processAssigns(category, city, filePath, config) {
 
   // Tratar asignaciones por prioridades
   var listaAsignadosDiscapacitados = Array();
+  var listaAsignadosDeportistasElite = Array();
+  var listaAsignadosTotal = Array();
+  var lista = Array();
+  
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     var listaSolicitudesAceptadasCopia = JSON.parse(JSON.stringify(listaSolicitudesAceptadas));
-    var lista = Array();
     cursoCentroCicloModulo.listaAsignadosDiscapacitados = Array();
     cursoCentroCicloModulo.listaAsignadosDiscapacitadosEspera = Array();
     cursoCentroCicloModulo.listaAsignadosDeportistasElite = Array();
@@ -122,11 +125,10 @@ async function processAssigns(category, city, filePath, config) {
     const claveCurso = (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
 
     var vacantesDisponibles = cursoCentroCicloModulo.vacantes;
-
     const vacantesDiscapacitados = Math.ceil(cursoCentroCicloModulo.vacantes * config.percentageHandicap * config.numSlotsBySeatHandicap);
     if (vacantesDiscapacitados>0){
       // Obtener la lista de discapacitados que correspondan al centro-ciclo-modulo
-      listaAsignadosDiscapacitados = listaSolicitudesAceptadasCopia.filter(sol => ((sol.handicapped) 
+      listaAsignadosDiscapacitados = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.handicapped)
         && (sol.listaCentrosCiclosModulos.map(s=>(s.codigoCentro || '') + "_" + (s.codigoCurso || '') + "_" + (s.codigoModulo || ''))).includes(claveCurso)))
         .sort(sortCandidates);
       cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitados.slice(0,vacantesDiscapacitados);
@@ -145,26 +147,93 @@ async function processAssigns(category, city, filePath, config) {
       lista = lista.concat(cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(sol=>sol.applicationId));
       vacantesDisponibles -= cursoCentroCicloModulo.listaAsignadosDeportistasElite.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
     }
+    
     // Resto solicitantes
+
+    // Opcion 1
+    var listaAsignadosOpcion1 = Array();
     if (vacantesDisponibles>0){
       // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
-      listaAsignados = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
-        && (sol.listaCentrosCiclosModulos.map(s=>(s.codigoCentro || '') + "_" + (s.codigoCurso || '') + "_" + (s.codigoModulo || ''))).includes(claveCurso)))
-        .sort(sortCandidates);
-      cursoCentroCicloModulo.listaAsignados = listaAsignados.slice(0,vacantesDisponibles);
-      cursoCentroCicloModulo.listaAsignadosEspera = listaAsignados.slice(vacantesDisponibles);
-      lista = lista.concat(cursoCentroCicloModulo.listaAsignados.map(sol=>sol.applicationId));
-      vacantesDisponibles -= cursoCentroCicloModulo.listaAsignados.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
+      listaAsignadosOpcion1 = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
+        && ((sol.listaCentrosCiclosModulos[0]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[0]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[0]?.codigoModulo || '')).includes(claveCurso)))
+        .sort(sortCandidates).slice(0,vacantesDisponibles);
+      vacantesDisponibles -= listaAsignadosOpcion1.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
       if (vacantesDisponibles<0) {
         const vac = vacantesDisponibles*-1
         for (var j =0; j<vac; j++) {
-          cursoCentroCicloModulo.listaAsignadosEspera.unshift(cursoCentroCicloModulo.listaAsignados.pop());
+          listaAsignadosOpcion1.pop();
           vacantesDisponibles++;
         }
       }
+      lista = lista.concat(listaAsignadosOpcion1.map(sol=>sol.applicationId));
     }
+    // Opcion 2
+    var listaAsignadosOpcion2 = Array();
+    if (vacantesDisponibles>0){
+      // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
+      listaAsignadosOpcion2 = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
+        && ((sol.listaCentrosCiclosModulos[1]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[1]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[1]?.codigoModulo || '')).includes(claveCurso)))
+        .sort(sortCandidates).slice(0,vacantesDisponibles);
+        vacantesDisponibles -= listaAsignadosOpcion2.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
+      if (vacantesDisponibles<0) {
+        const vac = vacantesDisponibles*-1
+        for (var j =0; j<vac; j++) {
+          listaAsignadosOpcion2.pop();
+          vacantesDisponibles++;
+        }
+      }
+      lista = lista.concat(listaAsignadosOpcion2.map(sol=>sol.applicationId));
+    }
+    // Opcion 3
+    var listaAsignadosOpcion3 = Array();
+    if (vacantesDisponibles>0){
+      // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
+      listaAsignadosOpcion3 = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
+        && ((sol.listaCentrosCiclosModulos[2]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[2]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[2]?.codigoModulo || '')).includes(claveCurso)))
+        .sort(sortCandidates).slice(0,vacantesDisponibles);
+      vacantesDisponibles -= listaAsignadosOpcion3.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
+      if (vacantesDisponibles<0) {
+        const vac = vacantesDisponibles*-1
+        for (var j =0; j<vac; j++) {
+          listaAsignadosOpcion3.pop();
+          vacantesDisponibles++;
+        }
+      }
+      lista = lista.concat(listaAsignadosOpcion3.map(sol=>sol.applicationId));
+    }
+    // Opcion 4
+    var listaAsignadosOpcion4 = Array();
+    if (vacantesDisponibles>0){
+      // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
+      listaAsignadosOpcion4 = listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
+        && ((sol.listaCentrosCiclosModulos[3]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[3]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[3]?.codigoModulo || '')).includes(claveCurso)))
+        .sort(sortCandidates).slice(0,vacantesDisponibles);
+      vacantesDisponibles -= listaAsignadosOpcion4.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
+      if (vacantesDisponibles<0) {
+        const vac = vacantesDisponibles*-1
+        for (var j =0; j<vac; j++) {
+          listaAsignadosOpcion4.pop();
+          vacantesDisponibles++;
+        }
+      }
+      lista = lista.concat(listaAsignadosOpcion4.map(sol=>sol.applicationId));
+    }
+
+    cursoCentroCicloModulo.listaAsignados = JSON.parse(JSON.stringify(listaAsignadosOpcion1.concat(listaAsignadosOpcion2).concat(listaAsignadosOpcion3).concat(listaAsignadosOpcion4))).sort(sortCandidates);
     cursoCentroCicloModulo.vacantesDisponibles = vacantesDisponibles;
     console.log(`cursoCentroCicloModulo.vacantesDisponibles:${cursoCentroCicloModulo.vacantesDisponibles}`);
+  }
+
+  var listaAsignadosTotal = JSON.parse(JSON.stringify(lista.sort(sortCandidates)));
+
+  console.log(`listaAsignadosTotal:${listaAsignadosTotal.length}`);
+  // Procesar listas de espera
+  for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+    const claveCurso = (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
+    cursoCentroCicloModulo.listaAsignadosEspera = JSON.parse(JSON.stringify(listaSolicitudesAceptadasCopia.filter(sol => (
+      ((sol.listaCentrosCiclosModulos.map(s=>(s.codigoCentro || '') + "_" + (s.codigoCurso || '') + "_" + (s.codigoModulo || ''))).includes(claveCurso)) &&
+      (!listaAsignadosTotal.includes(sol.applicationId)))).sort(sortCandidates)));
+
   }
 
   const filename = `${category}_${Date.now()}_`;
