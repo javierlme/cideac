@@ -169,9 +169,6 @@ async function processAssigns(category, city, filePath, config) {
       // Resto solicitantes
 
       var listaAsignadosPorPrioridad = Array();
-      if (claveCurso=='52000397_123121011_') {
-        console.log('claveCurso');
-      }
       if (vacantesDisponibles>0){
         // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
         listaAsignadosPorPrioridad = cursoCentroCicloModulo.listaAsignados.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
@@ -220,10 +217,7 @@ async function processAssigns(category, city, filePath, config) {
       if (!found) {
         found = lccm.listaAsignados.find(lccma=>lccma.applicationId == ap.applicationId);
       }
-      if (!found) {
-        //console.log(`ERROR!: NO ENCONTRADO ${ap.applicationId}`)
-      }
-      else{
+      if (found) {
         // Obtenemos la posición/prioridad de la solicitud
         const claveCurso = (lccm.codigoCentro || '') + "_" + (lccm.codigoCurso || '') + "_" + (lccm.codigoModulo || '');
         for (var indexAsignado=0; indexAsignado<ap.listaCentrosCiclosModulos.length; indexAsignado++){
@@ -237,8 +231,7 @@ async function processAssigns(category, city, filePath, config) {
               const centroEncontrado =listaCentrosCiclosModulos.find(s=>String((s.codigoCentro || '') + "_" + (s.codigoCurso || '') + "_" + (s.codigoModulo || ''))==claveAnterior);
               if (centroEncontrado) {
                 centroEncontrado.listaAsignadosEspera.push(ap);
-                var uniques = centroEncontrado.listaAsignadosEspera.filter(function(elem, index, self) { return index === self.indexOf(elem); });
-                centroEncontrado.listaAsignadosEspera = uniques.sort(sortCandidates);
+                centroEncontrado.listaAsignadosEspera = centroEncontrado.listaAsignadosEspera.sort(sortCandidates);
               }
             }
             break;
@@ -247,7 +240,6 @@ async function processAssigns(category, city, filePath, config) {
       }
     });
   });
-
 
   const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
