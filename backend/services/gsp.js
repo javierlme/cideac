@@ -119,7 +119,20 @@ async function processAssigns(category, city, filePath, config) {
   // Tratar asignaciones por prioridades
   var listaAsignadosTotal = Array();
   var lista = Array();
-  
+  var listaAsignadosDiscapacitadosTotal = Array(listaCentrosCiclosModulos.length);
+  var listaAsignadosDeportistasEliteTotal = Array(listaCentrosCiclosModulos.length);
+  var listaAsignadosATotal = Array(listaCentrosCiclosModulos.length);
+  var listaAsignadosBTotal = Array(listaCentrosCiclosModulos.length);
+  var listaAsignadosCTotal = Array(listaCentrosCiclosModulos.length);
+  for (var i=0; i<listaCentrosCiclosModulos.length; i++) {
+    listaAsignadosDiscapacitadosTotal[i] = Array();
+    listaAsignadosDeportistasEliteTotal[i] = Array();
+    listaAsignadosATotal[i] = Array();
+    listaAsignadosBTotal[i] = Array();
+    listaAsignadosCTotal[i] = Array();
+  }
+
+for (var veces=0; veces<5; veces++) {
   var listaSolicitudesAceptadasCopia = JSON.parse(JSON.stringify(listaSolicitudesAceptadas));
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     cursoCentroCicloModulo.listaAsignadosDiscapacitados = Array();
@@ -138,10 +151,7 @@ async function processAssigns(category, city, filePath, config) {
   for (var prioridad=0; prioridad<4; prioridad++) {
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
       const claveCurso = (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
-
       var vacantesDisponibles = cursoCentroCicloModulo.vacantes;
-      console.log(`vacantesDisponibles:${vacantesDisponibles}`);
-
       var listaAsignadosDiscapacitados = Array();
       const vacantesDiscapacitados = Math.ceil(cursoCentroCicloModulo.vacantes * config.percentageHandicap * config.numSlotsBySeatHandicap);
       if (vacantesDiscapacitados>0){
@@ -153,7 +163,8 @@ async function processAssigns(category, city, filePath, config) {
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
           for (var j =0; j<vac; j++) {
-            listaAsignadosDiscapacitados.pop();
+            const elementoQuitado = listaAsignadosDiscapacitados.pop();
+            lista = lista.filter(l=>l!=elementoQuitado.applicationId);            
             vacantesDisponibles++;
           }
         }
@@ -171,20 +182,18 @@ async function processAssigns(category, city, filePath, config) {
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
           for (var j =0; j<vac; j++) {
-            listaAsignadosDeportistasElite.pop();
+            const elementoQuitado = listaAsignadosDeportistasElite.pop();
+            lista = lista.filter(l=>l!=elementoQuitado.applicationId);            
             vacantesDisponibles++;
           }
         }
         lista = lista.concat(listaAsignadosDeportistasElite.map(sol=>sol.applicationId));
       }
       
-      const vacantesListaA = Math.ceil(vacantesDisponibles * config.percentageA);
-      const vacantesListaB = Math.ceil(vacantesDisponibles * config.percentageB);
-      console.log(`vacantesDisponibles:${vacantesDisponibles}  vacantesListaA:${vacantesListaA}  vacantesListaB:${vacantesListaB}`)
-
-      if (claveCurso=='51000638_123105014_') {
-        console.log('claveCurso');
-      }
+      const vacantesListaA = Math.round(vacantesDisponibles * config.percentageA);
+      const vacantesListaB = Math.round(vacantesDisponibles * config.percentageB);
+      const vacantesListaC = Math.round(vacantesDisponibles * config.percentageC);
+      console.log(`${veces} -> claveCurso:${claveCurso} vacantesDisponibles:${vacantesDisponibles}  vacantesListaA:${vacantesListaA}  vacantesListaB:${vacantesListaB}`)
 
       // Lista A
 
@@ -198,7 +207,8 @@ async function processAssigns(category, city, filePath, config) {
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
           for (var j =0; j<vac; j++) {
-            listaAsignadosPorPrioridadBolsaA.pop();
+            const elementoQuitado = listaAsignadosPorPrioridadBolsaA.pop();
+            lista = lista.filter(l=>l!=elementoQuitado.applicationId);
             vacantesDisponibles++;
           }
         }
@@ -218,7 +228,8 @@ async function processAssigns(category, city, filePath, config) {
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
           for (var j =0; j<vac; j++) {
-            listaAsignadosPorPrioridadBolsaB.pop();
+            const elementoQuitado = listaAsignadosPorPrioridadBolsaB.pop();
+            lista = lista.filter(l=>l!=elementoQuitado.applicationId);
             vacantesDisponibles++;
           }
         }
@@ -228,16 +239,22 @@ async function processAssigns(category, city, filePath, config) {
       // Lista C
 
       var listaAsignadosPorPrioridadBolsaC = Array();
-      if (vacantesDisponibles>0){
+      if (vacantesListaC>0){
         // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
         listaAsignadosPorPrioridadBolsaC = cursoCentroCicloModulo.listaAsignadosC.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (String(sol.viaAcceso).toLocaleUpperCase()=='C') 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)))
-          .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prioridad; return s;})).sort(sortCandidates).slice(0,vacantesDisponibles);
+          .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prioridad; return s;})).sort(sortCandidates).slice(0,vacantesListaC);
         vacantesDisponibles -= listaAsignadosPorPrioridadBolsaC.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
           for (var j =0; j<vac; j++) {
-            listaAsignadosPorPrioridadBolsaC.pop();
+            const elementoQuitado = listaAsignadosPorPrioridadBolsaC.pop();
+            const count1 = lista.length;
+            lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+            const count2 = lista.length;
+            if (count1!=count2){
+              console.log("OK");
+            }
             vacantesDisponibles++;
           }
         }
@@ -251,9 +268,34 @@ async function processAssigns(category, city, filePath, config) {
       cursoCentroCicloModulo.listaAsignadosC = listaAsignadosPorPrioridadBolsaC.sort(sortCandidates);
 
       cursoCentroCicloModulo.vacantesDisponibles = vacantesDisponibles;
-      console.log(`claveCurso:${claveCurso} vacantesDisponibles:${cursoCentroCicloModulo.vacantesDisponibles}`);
+      console.log(`${veces} -> claveCurso:${claveCurso} vacantesDisponibles:${cursoCentroCicloModulo.vacantesDisponibles}`);
     }
   }
+
+// Volver a asignar a las listas A B y C las plazas libres
+for (var i=0; i<listaCentrosCiclosModulos.length; i++) {
+    const cursoCentroCicloModulo = listaCentrosCiclosModulos[i];
+
+    listaAsignadosDiscapacitadosTotal[i] = listaAsignadosDiscapacitadosTotal[i].concat(cursoCentroCicloModulo.listaAsignadosDiscapacitados);
+    listaAsignadosDeportistasEliteTotal[i] = listaAsignadosDeportistasEliteTotal[i].concat(cursoCentroCicloModulo.listaAsignadosDeportistasElite);
+    listaAsignadosATotal[i] = listaAsignadosATotal[i].concat(cursoCentroCicloModulo.listaAsignadosA);
+    listaAsignadosBTotal[i] = listaAsignadosBTotal[i].concat(cursoCentroCicloModulo.listaAsignadosB);
+    listaAsignadosCTotal[i] = listaAsignadosCTotal[i].concat(cursoCentroCicloModulo.listaAsignadosC);
+    cursoCentroCicloModulo.vacantes = cursoCentroCicloModulo.vacantesDisponibles;
+  }
+  console.log("");
+}
+
+for (var i=0; i<listaCentrosCiclosModulos.length; i++) {
+  const cursoCentroCicloModulo = listaCentrosCiclosModulos[i];
+  cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitadosTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosDeportistasElite = listaAsignadosDeportistasEliteTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosA = listaAsignadosATotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosB = listaAsignadosBTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosC = listaAsignadosCTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
+}
+
+
   var listaAsignadosTotal = JSON.parse(JSON.stringify(lista.sort(sortCandidates)));
 
   console.log(`listaAsignadosTotal:${listaAsignadosTotal.length}`);
@@ -385,6 +427,7 @@ async function processAssigns(category, city, filePath, config) {
       }
     });
   });
+
 
   const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));

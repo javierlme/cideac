@@ -202,8 +202,8 @@ async function processAssigns(category, city, filePath, config) {
       lista = lista.concat(cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(sol=>sol.applicationId));
       vacantesDisponibles -= cursoCentroCicloModulo.listaAsignadosDeportistasElite.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
     }
-    const vacantesListaA = Math.ceil(vacantesDisponibles * config.percentageA);
-    const vacantesListaB = Math.ceil(vacantesDisponibles * config.percentageB);
+    const vacantesListaA = Math.round(vacantesDisponibles * config.percentageA);
+    const vacantesListaB = Math.round(vacantesDisponibles * config.percentageB);
     // Resto solicitantes Lista A
     if ((vacantesListaA>0) && (vacantesDisponibles>0)){
       // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
