@@ -175,7 +175,10 @@ async function processAssigns(category, city, filePath, config) {
         // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
         listaAsignadosPorPrioridad = cursoCentroCicloModulo.listaAsignados.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso))))
-          .sort(sortCandidates).slice(0,vacantesDisponibles);
+          .sort(sortCandidates);//.slice(0,vacantesDisponibles);
+          if (listaAsignadosPorPrioridad.find(la=>la.docId=='46154809L')){
+            console.log('Encontrado');
+          }
         vacantesDisponibles -= listaAsignadosPorPrioridad.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -184,13 +187,6 @@ async function processAssigns(category, city, filePath, config) {
             lista = lista.filter(l=>l!=elementoQuitado.applicationId);
             vacantesDisponibles++;
           }
-        }
-        if (lista.find(a=>a=='GBC22/00056')){
-          console.log('Encontrado!');
-        }
-        lista = lista.concat(listaAsignadosPorPrioridad.map(sol=>sol.applicationId));
-        if (lista.find(a=>a=='GBC22/00056')){
-          console.log('Encontrado!');
         }
       }
       cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitados.sort(sortCandidates);
