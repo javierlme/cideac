@@ -206,6 +206,7 @@ async function processAssigns(category, city, filePath, config) {
             vacantesDisponibles++;
           }
         }
+        lista = lista.concat(listaAsignadosPorPrioridad.map(sol=>sol.applicationId));
       }
       cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitados.sort(sortCandidates);
       cursoCentroCicloModulo.listaAsignadosDeportistasElite = listaAsignadosDeportistasElite.sort(sortCandidates);

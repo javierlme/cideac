@@ -158,7 +158,8 @@ for (var veces=0; veces<5; veces++) {
       var vacantesDisponibles = cursoCentroCicloModulo.vacantes;
       var listaAsignadosDiscapacitados = Array();
       const vacantesDiscapacitados = Math.ceil(cursoCentroCicloModulo.vacantes * config.percentageHandicap * config.numSlotsBySeatHandicap);
-      if (vacantesDiscapacitados>0){
+      console.log(`vacantesDiscapacitados: ${vacantesDiscapacitados}`);
+      if ((vacantesDiscapacitados>0) && (veces==0)){
         // Obtener la lista de discapacitados que correspondan al centro-ciclo-modulo
 
         const listaApp = listaSolicitudesAceptadasCopia.filter(sol => ( ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)));
@@ -192,7 +193,7 @@ for (var veces=0; veces<5; veces++) {
 
       var listaAsignadosDeportistasElite = Array();
       const vacantesDeportistasElite = Math.ceil(cursoCentroCicloModulo.vacantes * config.percentageAthlete * config.numSlotsBySeatAthlete);
-      if ((vacantesDeportistasElite>0) && (vacantesDisponibles>0)){
+      if ((vacantesDeportistasElite>0) && (vacantesDisponibles>0) && (veces==0)){
         // Obtener la lista de deportista de élite que correspondan al centro-ciclo-modulo
         listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.eliteAthlete) 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)))

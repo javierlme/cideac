@@ -206,6 +206,7 @@ async function processAssigns(category, city, filePath, config) {
             vacantesDisponibles++;
           }
         }
+        lista = lista.concat(listaAsignadosPorPrioridad.map(sol=>sol.applicationId));
       }
       cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitados.sort(sortCandidates);
       cursoCentroCicloModulo.listaAsignadosDeportistasElite = listaAsignadosDeportistasElite.sort(sortCandidates);
@@ -263,7 +264,6 @@ async function processAssigns(category, city, filePath, config) {
       }
     });
   });
-
 
   const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
