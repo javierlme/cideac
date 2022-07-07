@@ -137,6 +137,13 @@ async function processAssigns(category, city, filePath, config) {
         listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.handicapped)
          && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso))))
           .sort(sortCandidates);//.slice(0,vacantesDiscapacitados);
+
+        const longitud = listaAsignadosDiscapacitados.length;
+        for (var j=vacantesDiscapacitados; j<longitud; j++){
+          const elementoQuitado = listaAsignadosDiscapacitados.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+  
         vacantesDisponibles -= listaAsignadosDiscapacitados.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -156,6 +163,13 @@ async function processAssigns(category, city, filePath, config) {
         listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.eliteAthlete) 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso))))
           .sort(sortCandidates);//.slice(0,vacantesDeportistasElite);
+
+        const longitud = listaAsignadosDeportistasElite.length;
+        for (var j=vacantesDeportistasElite; j<longitud; j++){
+          const elementoQuitado = listaAsignadosDeportistasElite.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+  
         vacantesDisponibles -= listaAsignadosDeportistasElite.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -176,6 +190,13 @@ async function processAssigns(category, city, filePath, config) {
         listaAsignadosPorPrioridad = cursoCentroCicloModulo.listaAsignados.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso))))
           .sort(sortCandidates);//.slice(0,vacantesDisponibles);
+
+        const longitud = listaAsignadosPorPrioridad.length;
+        for (var j=vacantesDisponibles; j<longitud; j++){
+          const elementoQuitado = listaAsignadosPorPrioridad.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+  
         vacantesDisponibles -= listaAsignadosPorPrioridad.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1

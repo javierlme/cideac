@@ -159,12 +159,19 @@ for (var veces=0; veces<5; veces++) {
         listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.handicapped)
          && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)))
           .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prioridad; return s;})).sort(sortCandidates);//.slice(0,vacantesDiscapacitados);
+
+        const longitud = listaAsignadosDiscapacitados.length;
+        for (var j=vacantesDiscapacitados; j<longitud; j++){
+          const elementoQuitado = listaAsignadosDiscapacitados.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+        
         vacantesDisponibles -= listaAsignadosDiscapacitados.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
           for (var j =0; j<vac; j++) {
             const elementoQuitado = listaAsignadosDiscapacitados.pop();
-            lista = lista.filter(l=>l!=elementoQuitado.applicationId);            
+            lista = lista.filter(l=>l!=elementoQuitado.applicationId);
             vacantesDisponibles++;
           }
         }
@@ -178,6 +185,14 @@ for (var veces=0; veces<5; veces++) {
         listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.eliteAthlete) 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)))
           .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prioridad; return s;})).sort(sortCandidates);//.slice(0,vacantesDeportistasElite);
+
+        const longitud = listaAsignadosDeportistasElite.length;
+        for (var j=vacantesDeportistasElite; j<longitud; j++){
+            const elementoQuitado = listaAsignadosDeportistasElite.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+  
+
         vacantesDisponibles -= listaAsignadosDeportistasElite.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -202,7 +217,14 @@ for (var veces=0; veces<5; veces++) {
         // Obtener la lista de solicitantes que correspondan al centro-ciclo-modulo y no están en los grupos anteriores
         listaAsignadosPorPrioridadBolsaA = cursoCentroCicloModulo.listaAsignadosA.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (String(sol.viaAcceso).toLocaleUpperCase()=='A') 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)))
-          .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prioridad; return s;})).sort(sortCandidates);//.slice(0,vacantesListaA);
+          .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prinpmoridad; return s;})).sort(sortCandidates);//.slice(0,vacantesListaA);
+
+        const longitud = listaAsignadosPorPrioridadBolsaA.length;
+        for (var j=vacantesListaA; j<longitud; j++){
+          const elementoQuitado = listaAsignadosPorPrioridadBolsaA.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+  
         vacantesDisponibles -= listaAsignadosPorPrioridadBolsaA.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -224,6 +246,13 @@ for (var veces=0; veces<5; veces++) {
         listaAsignadosPorPrioridadBolsaB = cursoCentroCicloModulo.listaAsignadosB.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (String(sol.viaAcceso).toLocaleUpperCase()=='B') 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)))
           .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prioridad; return s;})).sort(sortCandidates);//.slice(0,vacantesListaB);
+
+        const longitud = listaAsignadosPorPrioridadBolsaB.length;
+        for (var j=vacantesListaB; j<longitud; j++){
+            const elementoQuitado = listaAsignadosPorPrioridadBolsaB.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+  
         vacantesDisponibles -= listaAsignadosPorPrioridadBolsaB.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -244,6 +273,13 @@ for (var veces=0; veces<5; veces++) {
         listaAsignadosPorPrioridadBolsaC = cursoCentroCicloModulo.listaAsignadosC.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (String(sol.viaAcceso).toLocaleUpperCase()=='C') 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso)))
           .map(s=>{ s.preferencia =s.listaCentrosCiclosModulos[prioridad].prioridad; return s;})).sort(sortCandidates);//.slice(0,vacantesListaC);
+
+        const longitud = listaAsignadosPorPrioridadBolsaC.length;
+        for (var j=vacantesListaC; j<longitud; j++){
+            const elementoQuitado = listaAsignadosPorPrioridadBolsaC.pop();
+          lista = lista.filter(l=>l!=elementoQuitado.applicationId);
+        }
+  
         vacantesDisponibles -= listaAsignadosPorPrioridadBolsaC.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
