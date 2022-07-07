@@ -136,7 +136,7 @@ async function processAssigns(category, city, filePath, config) {
         // Obtener la lista de discapacitados que correspondan al centro-ciclo-modulo
         listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.handicapped)
          && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso))))
-          .sort(sortCandidates).slice(0,vacantesDiscapacitados);
+          .sort(sortCandidates);//.slice(0,vacantesDiscapacitados);
         vacantesDisponibles -= listaAsignadosDiscapacitados.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -155,7 +155,7 @@ async function processAssigns(category, city, filePath, config) {
         // Obtener la lista de deportista de élite que correspondan al centro-ciclo-modulo
         listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId)) && (sol.eliteAthlete) 
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso))))
-          .sort(sortCandidates).slice(0,vacantesDeportistasElite);
+          .sort(sortCandidates);//.slice(0,vacantesDeportistasElite);
         vacantesDisponibles -= listaAsignadosDeportistasElite.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -176,9 +176,6 @@ async function processAssigns(category, city, filePath, config) {
         listaAsignadosPorPrioridad = cursoCentroCicloModulo.listaAsignados.concat(listaSolicitudesAceptadasCopia.filter(sol => ((!lista.includes(sol.applicationId))
           && ((sol.listaCentrosCiclosModulos[prioridad]?.codigoCentro || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoCurso || '') + "_" + (sol.listaCentrosCiclosModulos[prioridad]?.codigoModulo || '')).includes(claveCurso))))
           .sort(sortCandidates);//.slice(0,vacantesDisponibles);
-          if (listaAsignadosPorPrioridad.find(la=>la.docId=='46154809L')){
-            console.log('Encontrado');
-          }
         vacantesDisponibles -= listaAsignadosPorPrioridad.reduce(function(total, sol){ return (total + (sol.especialNeeds?Number(2):Number(1)))}, Number(0));
         if (vacantesDisponibles<0) {
           const vac = vacantesDisponibles*-1
@@ -245,6 +242,7 @@ async function processAssigns(category, city, filePath, config) {
       }
     });
   });
+
 
   const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
