@@ -334,11 +334,11 @@ for (var i=0; i<listaCentrosCiclosModulos.length; i++) {
 
 for (var i=0; i<listaCentrosCiclosModulos.length; i++) {
   const cursoCentroCicloModulo = listaCentrosCiclosModulos[i];
-  cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitadosTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
-  cursoCentroCicloModulo.listaAsignadosDeportistasElite = listaAsignadosDeportistasEliteTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
-  cursoCentroCicloModulo.listaAsignadosA = listaAsignadosATotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
-  cursoCentroCicloModulo.listaAsignadosB = listaAsignadosBTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
-  cursoCentroCicloModulo.listaAsignadosC = listaAsignadosCTotal[i].sort(sortCandidates);//.filter(function(elem, index, self) { return index === self.indexOf(elem);}).sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaAsignadosDiscapacitadosTotal[i].sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosDeportistasElite = listaAsignadosDeportistasEliteTotal[i].sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosA = listaAsignadosATotal[i].sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosB = listaAsignadosBTotal[i].sort(sortCandidates);
+  cursoCentroCicloModulo.listaAsignadosC = listaAsignadosCTotal[i].sort(sortCandidates);
 }
 
 
