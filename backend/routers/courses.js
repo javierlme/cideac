@@ -113,7 +113,7 @@ exports.getCategoryCourses = async (city, category) => {
         codigoModulo: getCellValue('E'+rowIndex),
         modulo: getCellValue('F'+rowIndex),
         maxHorasModulo: getCellValue('G'+rowIndex),
-        vacantes: getCellValue('H'+rowIndex),
+        vacantes: Number(getCellValue('H'+rowIndex)),
         abreviaturaModulo: getCellValue('I'+rowIndex),
         numeroCurso: getCellValue('J'+rowIndex)
       });
@@ -126,7 +126,7 @@ exports.getCategoryCourses = async (city, category) => {
         centro: getCellValue('B'+rowIndex),
         codigoCurso: getCellValue('C'+rowIndex),
         curso: getCellValue('D'+rowIndex),
-        vacantes: getCellValue('E'+rowIndex)
+        vacantes: Number(getCellValue('E'+rowIndex))
       });
       rowIndex++;
     }
