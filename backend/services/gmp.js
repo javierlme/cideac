@@ -313,7 +313,7 @@ async function processAssigns(category, city, filePath, config) {
   }
 
   var listaDesplazados = Array();
-  const maxVueltas = 6;
+  const maxVueltas = 10;
   for (var vuelta=0; vuelta<maxVueltas; vuelta++){ 
     console.log(`------------------------------ VUELTA ${vuelta}------------------------------`);
     const listaCopia = JSON.parse(JSON.stringify(listaDesplazados));

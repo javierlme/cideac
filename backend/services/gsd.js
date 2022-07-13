@@ -15,6 +15,9 @@ async function processAssigns(category, city, filePath, config) {
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
   const sortCandidates = (c1, c2) => {
+    if ((typeof c1.preferencia === 'undefined') || (typeof c2.preferencia === 'undefined')){
+      console.log("ERROR EN SORT");
+    }
     if (Number(c1.preferencia) != Number(c2.preferencia)) {
       return Number(c2.preferencia) - Number(c1.preferencia);
     }
@@ -344,7 +347,7 @@ async function processAssigns(category, city, filePath, config) {
   }
 
   var listaDesplazados = Array();
-  const maxVueltas = 6;
+  const maxVueltas = 10;
   for (var vuelta=0; vuelta<maxVueltas; vuelta++){ 
     console.log(`------------------------------ VUELTA ${vuelta}------------------------------`);
     const listaCopia = JSON.parse(JSON.stringify(listaDesplazados));
