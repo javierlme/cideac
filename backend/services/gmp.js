@@ -213,6 +213,11 @@ async function processAssigns(category, city, filePath, config) {
   var docIdAdmitidos = Array();
   
   const asignarCandidato = (lista, cursoCentroCicloModulo, candidato, comprobarVacantes = true) => {
+
+    if (candidato.applicationId=='GMPC22/00795'){
+      console.log(`ASIGNAR -> ${JSON.stringify(cursoCentroCicloModulo.curso)}`);
+    }
+
     if ((!cursoCentroCicloModulo) || (!candidato) || (comprobarVacantes && cursoCentroCicloModulo.vacantesDisponibles<=0)) return null;
     const vacantesDisponibles = cursoCentroCicloModulo.vacantesDisponibles - candidato.especialNeeds?Number(2):Number(1);
     if (vacantesDisponibles<0) {
@@ -234,9 +239,47 @@ async function processAssigns(category, city, filePath, config) {
 
   const quitarUltimoCandidato = (lista, cursoCentroCicloModulo) => {
     const candidatoUltimo = lista.pop();
+    if (candidatoUltimo.applicationId=='GMPC22/00795'){
+      console.log(`QUITAR  -> ${JSON.stringify(cursoCentroCicloModulo.curso)}`);
+    }
     docIdAdmitidos = docIdAdmitidos.filter(l=>l!=candidatoUltimo.applicationId);
     cursoCentroCicloModulo.vacantesDisponibles += candidatoUltimo.especialNeeds?Number(2):Number(1);
+    listaEliminadosPorDesplazamientoBaremo.push(candidatoUltimo.applicationId)
   }
+
+  const quitarCandidatoTodasListas = (applicationId) => {
+
+    if (!docIdAdmitidos.find(l=>l==applicationId)) return;
+
+    const candidato = listaSolicitudesAceptadas.find(l=>l.applicationId==applicationId);
+    if (!candidato) return;
+
+    for (var cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+      cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.filter(l=>l.applicationId!=applicationId);
+      cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.filter(l=>l.applicationId!=applicationId);
+      const antes = `A:${cursoCentroCicloModulo.listaAsignadosA.length} B:${cursoCentroCicloModulo.listaAsignadosB.length} C:${cursoCentroCicloModulo.listaAsignadosC.length} `;
+      cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.filter(l=>l.applicationId!=applicationId);
+      cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.filter(l=>l.applicationId!=applicationId);
+      cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.filter(l=>l.applicationId!=applicationId);
+      const despues = `A:${cursoCentroCicloModulo.listaAsignadosA.length} B:${cursoCentroCicloModulo.listaAsignadosB.length} C:${cursoCentroCicloModulo.listaAsignadosC.length} `;
+      docIdAdmitidos = docIdAdmitidos.filter(l=>l!=applicationId);
+      if (antes!=despues){
+        docIdAdmitidos = docIdAdmitidos.filter(l=>l!=applicationId);
+        cursoCentroCicloModulo.vacantesDisponibles += candidato.especialNeeds?Number(2):Number(1);
+
+        console.log(`${antes} vs ${despues}`);
+
+      }
+      else {
+        if (docIdAdmitidos.find(l=>l==applicationId)) {
+          console.log("ERROR");
+        }
+      }
+    }
+  }
+
+
+
 
   // Comprobar si los candidatos sin asignar pueden desplazar a los asignados por baremo
   const asignarSiMejorCandidato = (cursoCentroCicloModulo, lista, candidato, vacantes) => {
@@ -278,8 +321,29 @@ async function processAssigns(category, city, filePath, config) {
     cursoCentroCicloModulo.listaAsignadosCEspera = Array();
     cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes;
   }
- 
-  for (var prioridad=0; (prioridad<4); prioridad++){
+
+  var listaEliminadosPorDesplazamientoBaremo = Array();    
+
+for (var k=0; k<100; k++){ 
+
+  if (listaEliminadosPorDesplazamientoBaremo.includes('GMPC22/00795')){
+    console.log("Depurar");
+  }
+  else {
+    console.log("Depurar");
+  }
+  listaEliminadosPorDesplazamientoBaremo.forEach(el=>quitarCandidatoTodasListas(el));
+  listaEliminadosPorDesplazamientoBaremo = Array();
+
+  for (var prioridad=0; prioridad<4; prioridad++){
+
+    if (docIdAdmitidos.includes('GMPC22/00795')){
+      console.log(`ASIGNADO con prioridad ${prioridad}`);
+    }
+    else {
+      console.log(`NO ASIGNADO con prioridad ${prioridad}`);
+    }
+
     var listaCandidatosNoAsignadosMinusvalido = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.handicapped)) );
     var listaCandidatosNoAsignadosDeportista = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (!l?.handicapped) && (l?.eliteAthlete)) );
     var listaCandidatosNoAsignadosGrupoA = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (!l?.handicapped) && (!l?.eliteAthlete) && (l?.viaAcceso=='A')) );
@@ -315,6 +379,12 @@ async function processAssigns(category, city, filePath, config) {
       if (candidatoPosible) {
         const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(candidatoPosible.centroCicloModulo.codigoCentro==l.codigoCentro) && (candidatoPosible.centroCicloModulo.codigoCurso==l.codigoCurso));
         if (cursoCentroCicloModulo) {
+          
+        if (candidatoPosible.applicationId=='GMPC22/00795'){
+          console.log(`Pasando por centro ${cursoCentroCicloModulo.curso} Prioridad:${prioridad}`);
+        }
+    
+
           //const vacantesA = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageA);
           const vacantesA = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length));
           asignarSiMejorCandidato(cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosA, candidatoPosible, vacantesA);
@@ -394,7 +464,7 @@ async function processAssigns(category, city, filePath, config) {
   }
 }
 
-
+} // for veces
 
 
   //////////////////////////////////////////////////////////////////////////
