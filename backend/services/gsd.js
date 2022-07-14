@@ -93,6 +93,7 @@ async function processAssigns(category, city, filePath, config) {
         }
       }
     }
+    var listaModulosComprobados = Array();
     for (const modulo of listaModulos) {
       const selectedCourse = listaCentrosCiclosModulos.find(c =>(String(c.codigoCentro+c.codigoCurso+c.codigoModulo)==modulo));
       if (selectedCourse == null) {
@@ -114,9 +115,10 @@ async function processAssigns(category, city, filePath, config) {
           abreviaturaModulo: selectedCourse.abreviaturaModulo,
           prioridad: prioridad
         }
-        infoSolicitud.listaCentrosCiclosModulos.push(centrosCiclosModulo);
+        listaModulosComprobados.push(centrosCiclosModulo);
       }
     }
+    infoSolicitud.listaCentrosCiclosModulos.push(listaModulosComprobados)
   }
 
   // Leer del excel los datos de las listaSolicitudesAceptadas
@@ -257,8 +259,13 @@ async function processAssigns(category, city, filePath, config) {
 
     // podemos asignarlo
     cursoCentroCicloModulo.vacantesDisponibles -= candidato.especialNeeds?Number(2):Number(1);
-    docIdAdmitidos.push(candidato.applicationId);
-    cursoAdmitidos[candidato.applicationId] = prioridad;
+
+    // Lo anotamos cuando sea el ultimo módulo pedido
+    if ((candidato.centroCicloModulo[candidato.centroCicloModulo.length-1].codigoModulo==cursoCentroCicloModulo.codigoModulo) && (candidato.centroCicloModulo[candidato.centroCicloModulo.length-1].codigoCurso==cursoCentroCicloModulo.codigoCurso)) {
+      docIdAdmitidos.push(candidato.applicationId);
+      cursoAdmitidos[candidato.applicationId] = prioridad;
+    }
+
     lista.push(candidato);
     lista=lista.sort(sortCandidates);
 
@@ -367,55 +374,65 @@ async function processAssigns(category, city, filePath, config) {
       for (const candidato of listaCandidatosNoAsignadosMinusvalido){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
         if (candidatoPosible) {
-          const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(candidatoPosible.centroCicloModulo.codigoCentro==l.codigoCentro) && (candidatoPosible.centroCicloModulo.codigoCurso==l.codigoCurso));
-          if (cursoCentroCicloModulo) {
-            const vacantesDiscapacitados = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap * config.numSlotsBySeatHandicap);
-            asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosDiscapacitados, candidatoPosible, vacantesDiscapacitados);
-          }
+          candidatoPosible.centroCicloModulo.forEach(ccm=>{
+            const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(ccm.codigoCentro==l.codigoCentro) && (ccm.codigoCurso==l.codigoCurso) && (ccm.codigoModulo==l.codigoModulo));
+            if (cursoCentroCicloModulo) {
+              const vacantesDiscapacitados = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap * config.numSlotsBySeatHandicap);
+              asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosDiscapacitados, candidatoPosible, vacantesDiscapacitados);
+            }
+          });
         }
       }
       // Deportistas de élite
       for (const candidato of listaCandidatosNoAsignadosDeportista){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
         if (candidatoPosible) {
-          const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(candidatoPosible.centroCicloModulo.codigoCentro==l.codigoCentro) && (candidatoPosible.centroCicloModulo.codigoCurso==l.codigoCurso));
-          if (cursoCentroCicloModulo) {
-            const vacantesDeportistas = redondear(cursoCentroCicloModulo.vacantes * config.percentageAthlete * config.numSlotsBySeatAthlete);
-            asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosDeportistasElite, candidatoPosible, vacantesDeportistas);
-          }
+          candidatoPosible.centroCicloModulo.forEach(ccm=>{
+            const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(ccm.codigoCentro==l.codigoCentro) && (ccm.codigoCurso==l.codigoCurso) && (ccm.codigoModulo==l.codigoModulo));
+            if (cursoCentroCicloModulo) {
+              const vacantesDeportistas = redondear(cursoCentroCicloModulo.vacantes * config.percentageAthlete * config.numSlotsBySeatAthlete);
+              asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosDeportistasElite, candidatoPosible, vacantesDeportistas);
+            }
+          });
         }
       }
-      // Grupo A ( o resto cuando no hay grupos)
+      // Grupo A
       for (const candidato of listaCandidatosNoAsignadosGrupoA){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
         if (candidatoPosible) {
-          const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(candidatoPosible.centroCicloModulo.codigoCentro==l.codigoCentro) && (candidatoPosible.centroCicloModulo.codigoCurso==l.codigoCurso));
-          if (cursoCentroCicloModulo) {   
-            const vacantesA = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length));
-            asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosA, candidatoPosible, vacantesA);
-          }
+          candidatoPosible.centroCicloModulo.forEach(ccm=>{
+            const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(ccm.codigoCentro==l.codigoCentro) && (ccm.codigoCurso==l.codigoCurso) && (ccm.codigoModulo==l.codigoModulo));
+            if (cursoCentroCicloModulo) {   
+              const vacantesA = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length));
+              asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosA, candidatoPosible, vacantesA);
+            }
+          });
         }
       }
       // Grupo B
       for (const candidato of listaCandidatosNoAsignadosGrupoB){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
         if (candidatoPosible) {
-          const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(candidatoPosible.centroCicloModulo.codigoCentro==l.codigoCentro) && (candidatoPosible.centroCicloModulo.codigoCurso==l.codigoCurso));
-          if (cursoCentroCicloModulo) {
-            const vacantesB = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length));
-            asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosB, candidatoPosible, vacantesB);
-          }
+          candidatoPosible.centroCicloModulo.forEach(ccm=>{
+            const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(ccm.codigoCentro==l.codigoCentro) && (ccm.codigoCurso==l.codigoCurso) && (ccm.codigoModulo==l.codigoModulo));
+            if (cursoCentroCicloModulo) {
+              const vacantesB = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length));
+              asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosB, candidatoPosible, vacantesB);
+            }  
+          });
         }
       }
       // Grupo C
       for (const candidato of listaCandidatosNoAsignadosGrupoC){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
         if (candidatoPosible) {
-          const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(candidatoPosible.centroCicloModulo.codigoCentro==l.codigoCentro) && (candidatoPosible.centroCicloModulo.codigoCurso==l.codigoCurso));
-          if (cursoCentroCicloModulo) {
-            const vacantesC = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length));
-            asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosC, candidatoPosible, vacantesC);
-          }
+          candidatoPosible.centroCicloModulo.forEach(ccm=>{
+            const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>(ccm.codigoCentro==l.codigoCentro) && (ccm.codigoCurso==l.codigoCurso) && (ccm.codigoModulo==l.codigoModulo));
+            if (cursoCentroCicloModulo) {
+              const vacantesC = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length));
+              asignarSiMejorCandidato(prioridad, cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosC, candidatoPosible, vacantesC);
+            }
+          });
         }
       }
 
@@ -543,7 +560,7 @@ async function processAssigns(category, city, filePath, config) {
     cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.sort(sortCandidates);
     cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.sort(sortCandidates);
     if (cursoCentroCicloModulo.vacantesDisponibles!=0){
-      console.log(`¿REALMENTE TENEMOS MAS PLAZAS QUE CANDIDATOS?: cursoCentroCicloModulo:${JSON.stringify(cursoCentroCicloModulo.curso)} Plazas disponibles -> ${cursoCentroCicloModulo.vacantesDisponibles} de ${cursoCentroCicloModulo.vacantes} `);
+      console.log(`¿REALMENTE TENEMOS MAS PLAZAS QUE CANDIDATOS?: cursoCentroCicloModulo:${cursoCentroCicloModulo.curso} ${cursoCentroCicloModulo.modulo} Plazas disponibles -> ${cursoCentroCicloModulo.vacantesDisponibles} de ${cursoCentroCicloModulo.vacantes} `);
     }
   }
 
@@ -759,6 +776,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosA.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -771,6 +789,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosAEspera.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -783,6 +802,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosB.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -795,6 +815,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosBEspera.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -807,6 +828,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosC.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -819,6 +841,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosCEspera.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -831,6 +854,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosDeportistasElite.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -843,6 +867,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosDeportistasEliteEspera.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -855,6 +880,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosDiscapacitados.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -867,6 +893,7 @@ async function processAssigns(category, city, filePath, config) {
         const datosAux = listaAsignadosDiscapacitadosEspera.find(l=>l.docId==lista.docId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
