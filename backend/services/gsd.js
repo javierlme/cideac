@@ -75,7 +75,8 @@ async function processAssigns(category, city, filePath, config) {
 
   let rowIndex = 2;
   let infoSolicitud;
-  const validateAndAppendCourse = (field, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, infoSolicitud, prioridad, mandatory = false) => {
+  const validateAndAppendCourse = (field, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, infoSolicitud, prioridad, textoCursoCompleto, mandatory = false) => {
+    var cursoCompleto = false;
     const curso   = readCell(field, rowIndex).split(' ')[0]
     var listaModulos = Array();
     const modulo1 = readCell(mod1,  rowIndex).split('#')[0];
@@ -99,6 +100,7 @@ async function processAssigns(category, city, filePath, config) {
     if (modulo9!='')  { listaModulos.push(curso + modulo9); }
     if (modulo10!='') { listaModulos.push(curso + modulo10);}
     if ((listaModulos.length==0) && (curso.length>0)) {
+      cursoCompleto = true;
       const key = String(readCell(field, rowIndex).split(' ')[0] + readCell(field, rowIndex).split('#')[1].split(' ')[1].split('-')[0]);
       listaModulos = listaCentrosCiclosModulos.filter(lccm=>((String(lccm.numeroCurso)==String('1')) && (key==String(lccm.codigoCentro+lccm.codigoCurso))))
         .map(lccm=>String (lccm.codigoCentro+lccm.codigoCurso+lccm.codigoModulo));
@@ -137,7 +139,9 @@ async function processAssigns(category, city, filePath, config) {
           codigoModulo: selectedCourse.codigoModulo,
           modulo: selectedCourse.modulo,
           abreviaturaModulo: selectedCourse.abreviaturaModulo,
-          prioridad: prioridad
+          prioridad: prioridad,
+          cursoCompleto: cursoCompleto,
+          textoCursoCompleto: textoCursoCompleto
         }
         listaModulosComprobados.push(centrosCiclosModulo);
       }
@@ -160,8 +164,6 @@ async function processAssigns(category, city, filePath, config) {
     validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
     validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
     infoSolicitud.viaAcceso = readCell('H', rowIndex);
-    /*infoSolicitud.scoring = Number(readCell('BM', rowIndex).replace('.','').replace(',','.')) + Number(readCell('BN', rowIndex).split(' ')[0].replace('.','').replace(',','.'));
-    infoSolicitud.scoringTotal = Number(readCell('BO', rowIndex).replace('.','').replace(',','.'));*/
     infoSolicitud.scoring = Number(readCell('BO', rowIndex).replace('.','').replace(',','.'));
     console.log(`${infoSolicitud.scoring} vs ${infoSolicitud.scoringTotal}`);
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
@@ -970,6 +972,7 @@ async function processAssigns(category, city, filePath, config) {
       var orden=0;
       if (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length>0) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -987,7 +990,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1007,6 +1010,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosDeportistasElite.length>0) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -1024,7 +1028,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1044,6 +1048,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosA.length>0) {
         cursoCentroCicloModulo.listaAsignadosA.map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -1061,7 +1066,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1080,6 +1085,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosB.length>0) {
         cursoCentroCicloModulo.listaAsignadosB.map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -1097,7 +1103,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1116,6 +1122,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosC.length>0) {
         cursoCentroCicloModulo.listaAsignadosC.map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -1133,7 +1140,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1154,6 +1161,7 @@ async function processAssigns(category, city, filePath, config) {
       if (cursoCentroCicloModulo.listaAsignadosAEspera.length>0) {
         const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
         cursoCentroCicloModulo.listaAsignadosAEspera.sort(sortCandidatesEspera(clave)).map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -1171,7 +1179,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `   <td>${(orden)}</td>`;
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -1191,6 +1199,7 @@ async function processAssigns(category, city, filePath, config) {
       if (cursoCentroCicloModulo.listaAsignadosBEspera.length>0) {
         const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
         cursoCentroCicloModulo.listaAsignadosBEspera.sort(sortCandidatesEspera(clave)).map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -1208,7 +1217,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `   <td>${(orden)}</td>`;
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -1228,6 +1237,7 @@ async function processAssigns(category, city, filePath, config) {
       if (cursoCentroCicloModulo.listaAsignadosCEspera.length>0) {
         const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
         cursoCentroCicloModulo.listaAsignadosAEspera.sort(sortCandidatesEspera(clave)).map(ap => {
+          const textoCursoCompletoModulos = ap.centroCicloModulo[0].cursoCompleto? ap.centroCicloModulo[0].textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -1245,7 +1255,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `    <td>${(orden)}</td>`;
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-          htmlListaEspera += `	  <td>${ap.listaCentrosCiclosModulos.map(m=>m).join(' ')}</td>`;
+          htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
