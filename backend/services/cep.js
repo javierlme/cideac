@@ -560,7 +560,6 @@ async function processAssigns(category, city, filePath, config) {
   console.log(`-----------------------------`)
 
 
-
   // Procesar listas de espera
   var listaSolicitudesAceptadasCopia = JSON.parse(JSON.stringify(listaSolicitudesAceptadas));
   var listaAsignadosTotal = JSON.parse(JSON.stringify(docIdAdmitidos));
