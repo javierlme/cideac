@@ -345,10 +345,6 @@ async function processAssigns(category, city, filePath, config) {
             && lsam.viaAcceso=='C')).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosC = mejorarPosicionesCandidatos(cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosC, listaSolicitantesC);
 
-        if (listaSolicitantesA.length>0){
-          console.log(JSON.stringify(listaSolicitantesA))
-        }
-
         // Asignamos al Grupo A (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.concat(
           rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-cursoCentroCicloModulo.listaAsignadosDiscapacitados.length-cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageA), 
@@ -364,6 +360,31 @@ async function processAssigns(category, city, filePath, config) {
           rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-cursoCentroCicloModulo.listaAsignadosDiscapacitados.length-cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageC), 
             listaSolicitantesC, 'vacantesPendientesC')).sort(ordenarCandidatos);
 
+      }
+
+      // Tenemos que verificar en cada vuelta de prioridad si todo el curso está asignado completamente
+      const listaApplicationId = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && lsam.cursoCompleto)).map(l=>l.applicationId).filter((v, i, a) => a.indexOf(v) === i);
+      for (solicitud of listaApplicationId){
+        const modulos = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.cursoCompleto && lsam.prioridadPeticion==opcionSolicitud && lsam.applicationId==solicitud));
+        if (modulos.find(l=>!l.asignado)){
+          // El curso no se puede asignar completamente. Quitarlo
+          modulos.forEach(modulo=>{
+            const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>l.claveCentroCicloModulo==modulo.claveCentroCicloModulo);
+            if (cursoCentroCicloModulo) {
+              if (modulo.asignado){
+                cursoCentroCicloModulo.vacantesDisponibles += modulo.especialNeeds?Number(2):Number(1);
+              }
+              listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==modulo.applicationId && lsam.claveCentroCicloModulo==modulo.claveCentroCicloModulo)).map(l=>l.espera=true);
+              listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==modulo.applicationId && lsam.claveCentroCicloModulo==modulo.claveCentroCicloModulo)).map(l=>l.asignado=false);
+              // Eliminarlos de las listas
+              cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.filter(l=>l.applicationId!=modulo.applicationId);
+            }
+          });
+        }
       }
     }
   

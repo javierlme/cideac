@@ -14,57 +14,12 @@ async function processAssigns(category, city, filePath, config) {
     const cellValue = wb.Sheets[dataSheet][`${column}${row}`];
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
-  const sortCandidates = (c1, c2) => {
-    if ((typeof c1.preferencia === 'undefined') || (typeof c2.preferencia === 'undefined')){
-      console.log("ERROR EN SORT");
-    }
-    if (Number(c1.preferencia) != Number(c2.preferencia)) {
-      return Number(c2.preferencia) - Number(c1.preferencia);
-    }
-    else {
-        if (c1.scoring != c2.scoring) {
-        return c2.scoring - c1.scoring;
-      } else {
-        // NOTE: Si hay empate en scoring, se escoge el que más cerca esté del randomNumber, en dirección siempre creciente-modular
-        if (((c1.randomNumber - config.randomNumberSelected) >= 0 && (c2.randomNumber - config.randomNumberSelected) >= 0) ||
-          (((c1.randomNumber - config.randomNumberSelected) < 0 && (c2.randomNumber - config.randomNumberSelected) < 0))) {
-          return c1.randomNumber - c2.randomNumber;
-        } else {
-          return c2.randomNumber - c1.randomNumber;
-        }
-      }
-    }
-  }
-  const sortCandidatesEspera = (clave) => {
-    return function (c1, c2) {
-      if ((typeof c1.preferencia[clave] === 'undefined') || (typeof c2.preferencia[clave] === 'undefined')){
-        console.log("ERROR EN SORT");
-      }
-      if (Number(c1.preferencia[clave]) != Number(c2.preferencia[clave])) {
-        return Number(c2.preferencia[clave]) - Number(c1.preferencia[clave]);
-      }
-      else {
-          if (c1.scoring != c2.scoring) {
-          return c2.scoring - c1.scoring;
-        } else {
-          // NOTE: Si hay empate en scoring, se escoge el que más cerca esté del randomNumber, en dirección siempre creciente-modular
-          if (((c1.randomNumber - config.randomNumberSelected) >= 0 && (c2.randomNumber - config.randomNumberSelected) >= 0) ||
-            (((c1.randomNumber - config.randomNumberSelected) < 0 && (c2.randomNumber - config.randomNumberSelected) < 0))) {
-            return c1.randomNumber - c2.randomNumber;
-          } else {
-            return c2.randomNumber - c1.randomNumber;
-          }
-        }
-      }
-    }
-  }
 
-
-  const generarTextoExclusionGS = (texto) => {
+  const generarTextoExclusionCE = (texto) => {
     var motivo = String();
-    if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGSR1 + ' / ';
-    if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textGSR2 + ' / ';
-    if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textGSR3 + ' / ';
+    if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textCER1 + ' / ';
+    if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textCER2 + ' / ';
+    if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textCER3 + ' / ';
     return motivo.slice(0,-2)
   }
 
@@ -204,30 +159,36 @@ async function processAssigns(category, city, filePath, config) {
   }
   const mapearLinealmenteDatosIniciales = (registro, index) => { 
     if ((!registro) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
-    return {
-      applicationId: registro.applicationId,
-      asignado: false,
-      espera: true,
-      prioridadPeticion: index,
-      preferencia: registro.listaCentrosCiclosModulos[index][0].prioridad? registro.listaCentrosCiclosModulos[index][0].prioridad : false,
-      scoring : registro.scoring? Number(registro.scoring) : Number(0),
-      viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
-      eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
-      handicapped: registro.handicapped? registro.handicapped : false,
-      especialNeeds: registro.especialNeeds? registro.especialNeeds : false,
-      randomNumber: Number(registro.randomNumber),
-      docId: registro.docId,
-      personalId: registro.personalId,
-      claveCentroCicloModulo: generarClave(registro.listaCentrosCiclosModulos[index][0]),
-      centro: registro.listaCentrosCiclosModulos[index][0].centro || '',
-      codigoCentro: registro.listaCentrosCiclosModulos[index][0].codigoCentro || '',
-      curso: registro.listaCentrosCiclosModulos[index][0].curso || '',
-      codigoCurso: registro.listaCentrosCiclosModulos[index][0].codigoCurso || '',
-      modulo: registro.listaCentrosCiclosModulos[index][0].modulo || '',
-      codigoModulo: registro.listaCentrosCiclosModulos[index][0].codigoModulo || '',
-      textoCursoCompleto: registro.listaCentrosCiclosModulos[index][0].textoCursoCompleto || '',
-      cursoCompleto: registro.listaCentrosCiclosModulos[index][0].cursoCompleto? true:false
-    }
+    const listaModulos = Array();
+    
+    registro.listaCentrosCiclosModulos[index].map(modulo=>{
+      listaModulos.push( {
+        applicationId: registro.applicationId,
+        asignado: false,
+        espera: true,
+        prioridadPeticion: index,
+        preferencia: modulo.prioridad? modulo.prioridad : false,
+        scoring : registro.scoring? Number(registro.scoring) : Number(0),
+        viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
+        eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
+        handicapped: registro.handicapped? registro.handicapped : false,
+        especialNeeds: registro.especialNeeds? registro.especialNeeds : false,
+        randomNumber: Number(registro.randomNumber),
+        docId: registro.docId,
+        personalId: registro.personalId,
+        claveCentroCicloModulo: generarClave(modulo),
+        centro: modulo.centro || '',
+        codigoCentro: modulo.codigoCentro || '',
+        curso: modulo.curso || '',
+        codigoCurso: modulo.codigoCurso || '',
+        modulo: modulo.modulo || '',
+        codigoModulo: modulo.codigoModulo || '',
+        textoCursoCompleto: modulo.textoCursoCompleto || '',
+        cursoCompleto: modulo.cursoCompleto? true:false,
+        abreviaturaModulo: generarTextoModulo(modulo.codigoModulo)
+      })
+    });
+    return listaModulos;
   }
 
   const ordenarCandidatos = (c1, c2) => {
@@ -254,9 +215,9 @@ async function processAssigns(category, city, filePath, config) {
 
   const listaSolicitudesAceptadasMapeadas = listaSolicitudesAceptadas.reduce(function(listaAcumulada, solicitud){
     for (var i=0; i<4; i++){
-      const registro = mapearLinealmenteDatosIniciales(solicitud, i);
-      if ((registro) && (registro!=null)){
-        listaAcumulada.push(registro);
+      const listaModulos = mapearLinealmenteDatosIniciales(solicitud, i);
+      if ((listaModulos) && (listaModulos!=null)){
+        listaAcumulada = listaAcumulada.concat(listaModulos);
       }
     }
     return listaAcumulada;
@@ -278,9 +239,9 @@ async function processAssigns(category, city, filePath, config) {
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
         candidatoSelecionado.asignado = true;
         candidatoSelecionado.espera = false;
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=valorEspera);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo&& lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo&& lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=valorEspera);
         vacantesAsignadas++;
       }
       else {
@@ -301,8 +262,8 @@ async function processAssigns(category, city, filePath, config) {
     const copia = listaAsignados.concat(listaCandidatos).sort(ordenarCandidatos);
     listaAsignados.forEach(la=>{
       cursoCentroCicloModulo.vacantesDisponibles += la.especialNeeds?Number(2):Number(1);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId)).map(l=>l.espera=true);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId)).map(l=>l.asignado=false);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==la.claveCentroCicloModulo)).map(l=>l.espera=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==la.claveCentroCicloModulo)).map(l=>l.asignado=false);
     });
 
     listaAsignados = Array();
@@ -313,9 +274,9 @@ async function processAssigns(category, city, filePath, config) {
       cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
       candidatoSelecionado.asignado = true;
       candidatoSelecionado.espera = false;
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=valorEspera);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=valorEspera);
     }
     return listaAsignados;
   }
@@ -400,6 +361,31 @@ async function processAssigns(category, city, filePath, config) {
             listaSolicitantesC, 'vacantesPendientesC')).sort(ordenarCandidatos);
 
       }
+
+      // Tenemos que verificar en cada vuelta de prioridad si todo el curso está asignado completamente
+      const listaApplicationId = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && lsam.cursoCompleto)).map(l=>l.applicationId).filter((v, i, a) => a.indexOf(v) === i);
+      for (solicitud of listaApplicationId){
+        const modulos = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.cursoCompleto && lsam.prioridadPeticion==opcionSolicitud && lsam.applicationId==solicitud));
+        if (modulos.find(l=>!l.asignado)){
+          // El curso no se puede asignar completamente. Quitarlo
+          modulos.forEach(modulo=>{
+            const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>l.claveCentroCicloModulo==modulo.claveCentroCicloModulo);
+            if (cursoCentroCicloModulo) {
+              if (modulo.asignado){
+                cursoCentroCicloModulo.vacantesDisponibles += modulo.especialNeeds?Number(2):Number(1);
+              }
+              listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==modulo.applicationId && lsam.claveCentroCicloModulo==modulo.claveCentroCicloModulo)).map(l=>l.espera=true);
+              listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==modulo.applicationId && lsam.claveCentroCicloModulo==modulo.claveCentroCicloModulo)).map(l=>l.asignado=false);
+              // Eliminarlos de las listas
+              cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.filter(l=>l.applicationId!=modulo.applicationId);
+              cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.filter(l=>l.applicationId!=modulo.applicationId);
+            }
+          });
+        }
+      }
     }
   
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
@@ -474,7 +460,7 @@ async function processAssigns(category, city, filePath, config) {
 
     cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes - (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length);
     
-    if (cursoCentroCicloModulo.vacantesDisponibles==0) {
+    if (cursoCentroCicloModulo.vacantesDisponibles!=cursoCentroCicloModulo.vacantes) {
       console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} (${cursoCentroCicloModulo.claveCentroCicloModulo})-----------------`);
       console.log(`Discapacitados ${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length}`);
       console.log(`Deportitas     ${cursoCentroCicloModulo.listaAsignadosDeportistasElite.length}`);
@@ -551,13 +537,14 @@ async function processAssigns(category, city, filePath, config) {
         listaAsignadosC = Array();
         listaAsignadosCEspera = Array();
         listaAsignadosDeportistasElite = Array();
+        listaAsignadosDeportistasEliteEspera = Array();
         listaAsignadosDiscapacitados = Array();
+        listaAsignadosDiscapacitadosEspera = Array();
       }
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA))) {
-        const datosAux = listaAsignadosA.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosA.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -567,10 +554,9 @@ async function processAssigns(category, city, filePath, config) {
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosAEspera))) {
-        const datosAux = listaAsignadosAEspera.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosAEspera.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -580,10 +566,9 @@ async function processAssigns(category, city, filePath, config) {
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosB))) {
-        const datosAux = listaAsignadosB.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosB.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -593,10 +578,9 @@ async function processAssigns(category, city, filePath, config) {
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosBEspera))) {
-        const datosAux = listaAsignadosBEspera.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosBEspera.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -606,10 +590,9 @@ async function processAssigns(category, city, filePath, config) {
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosC))) {
-        const datosAux = listaAsignadosC.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosC.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -619,10 +602,9 @@ async function processAssigns(category, city, filePath, config) {
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosCEspera))) {
-        const datosAux = listaAsignadosCEspera.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosCEspera.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -632,10 +614,9 @@ async function processAssigns(category, city, filePath, config) {
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDeportistasElite))) {
-        const datosAux = listaAsignadosDeportistasElite.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosDeportistasElite.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -645,10 +626,9 @@ async function processAssigns(category, city, filePath, config) {
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDiscapacitados))) {
-        const datosAux = listaAsignadosDiscapacitados.find(l=>l.docId==lista.docId)
+        const datosAux = listaAsignadosDiscapacitados.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
@@ -680,36 +660,25 @@ async function processAssigns(category, city, filePath, config) {
 
     // Ordenar todas las listas
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulosAgrupada) {
-      cursoCentroCicloModulo.listaAsignadosA = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosA)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosAEspera = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosAEspera)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosB = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosB)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosBEspera = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosBEspera)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosC = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosC)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosCEspera = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosCEspera)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosDeportistasElite = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosDeportistasElite)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosDiscapacitados = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosDiscapacitados)).sort(ordenarCandidatos);
-    }
 
-    for (const cursoCentroCicloModulo of listaCentrosCiclosModulosAgrupada) {
-      
     // Generar lista admitidos
       
       // Asignados discapacitados
       var orden=0;
       if (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length>0) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeHandicap)
+            .replace('##textCETypeGeneral##', config.textCETypeHandicap)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -736,18 +705,18 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosDeportistasElite.length>0) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeAthlete)
+            .replace('##textCETypeGeneral##', config.textCETypeAthlete)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -774,18 +743,18 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosA.length>0) {
         cursoCentroCicloModulo.listaAsignadosA.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeA)
+            .replace('##textCETypeGeneral##', config.textCETypeA)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -811,18 +780,18 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosB.length>0) {
         cursoCentroCicloModulo.listaAsignadosB.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeB)
+            .replace('##textCETypeGeneral##', config.textCETypeB)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -848,18 +817,18 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosC.length>0) {
         cursoCentroCicloModulo.listaAsignadosC.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeC)
+            .replace('##textCETypeGeneral##', config.textCETypeC)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -885,20 +854,19 @@ async function processAssigns(category, city, filePath, config) {
       // Generar lista espera resto lista A
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosAEspera.length>0) {
-        const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
-        cursoCentroCicloModulo.listaAsignadosAEspera.sort(sortCandidatesEspera(clave)).map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+        cursoCentroCicloModulo.listaAsignadosAEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeA)
+            .replace('##textCETypeGeneral##', config.textCETypeA)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -906,12 +874,12 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia[clave]? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -923,20 +891,19 @@ async function processAssigns(category, city, filePath, config) {
       // Generar lista espera resto lista B
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosBEspera.length>0) {
-        const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
-        cursoCentroCicloModulo.listaAsignadosBEspera.sort(sortCandidatesEspera(clave)).map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+        cursoCentroCicloModulo.listaAsignadosBEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeB)
+            .replace('##textCETypeGeneral##', config.textCETypeB)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -944,12 +911,12 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia[clave]? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -961,20 +928,19 @@ async function processAssigns(category, city, filePath, config) {
       // Generar lista espera resto lista C
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosCEspera.length>0) {
-        const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
-        cursoCentroCicloModulo.listaAsignadosAEspera.sort(sortCandidatesEspera(clave)).map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+        cursoCentroCicloModulo.listaAsignadosCEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeC)
+            .replace('##textCETypeGeneral##', config.textCETypeC)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -982,12 +948,12 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia[clave]? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -1011,11 +977,11 @@ async function processAssigns(category, city, filePath, config) {
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
         .replace('##titleGeneral##', config.titleGeneral)
-        .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+        .replace('##textCETitleGeneral##', config.textCETitleGeneral)
         .replace('##city##', city)
         .replace('##titleCurse##', config.titleCurse)
         .replace('##titleRejected##', config.titleRejected)
-        .replace('##textGSTypeGeneral##', config.textGSTypeGeneral)
+        .replace('##textCETypeGeneral##', config.textCETypeGeneral)
         .replace('##titleWarning##', config.titleWarning)
       }  
 
@@ -1023,9 +989,9 @@ async function processAssigns(category, city, filePath, config) {
       htmlListaExcluidos += `	  <td>${orden}</td>`;
       htmlListaExcluidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
       htmlListaExcluidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-      htmlListaExcluidos += `	  <td>${generarTextoExclusionGS(ap.incumple)}</td>`;
+      htmlListaExcluidos += `	  <td>${generarTextoExclusionCE(ap.incumple)}</td>`;
       htmlListaExcluidos += `  </tr>`;
-      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId};${ap.incumple};${generarTextoExclusionGS(ap.incumple)}\r\n`;
+      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId};${ap.incumple};${generarTextoExclusionCE(ap.incumple)}\r\n`;
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += '</table>';
         htmlListaExcluidos += `<div style="page-break-after:always"></div>`;
