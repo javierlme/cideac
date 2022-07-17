@@ -262,8 +262,8 @@ async function processAssigns(category, city, filePath, config) {
     const copia = listaAsignados.concat(listaCandidatos).sort(ordenarCandidatos);
     listaAsignados.forEach(la=>{
       cursoCentroCicloModulo.vacantesDisponibles += la.especialNeeds?Number(2):Number(1);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo)).map(l=>l.espera=true);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo)).map(l=>l.asignado=false);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==la.claveCentroCicloModulo)).map(l=>l.espera=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==la.claveCentroCicloModulo)).map(l=>l.asignado=false);
     });
 
     listaAsignados = Array();
