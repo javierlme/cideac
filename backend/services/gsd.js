@@ -14,51 +14,6 @@ async function processAssigns(category, city, filePath, config) {
     const cellValue = wb.Sheets[dataSheet][`${column}${row}`];
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
-  const sortCandidates = (c1, c2) => {
-    if ((typeof c1.preferencia === 'undefined') || (typeof c2.preferencia === 'undefined')){
-      console.log("ERROR EN SORT");
-    }
-    if (Number(c1.preferencia) != Number(c2.preferencia)) {
-      return Number(c2.preferencia) - Number(c1.preferencia);
-    }
-    else {
-        if (c1.scoring != c2.scoring) {
-        return c2.scoring - c1.scoring;
-      } else {
-        // NOTE: Si hay empate en scoring, se escoge el que más cerca esté del randomNumber, en dirección siempre creciente-modular
-        if (((c1.randomNumber - config.randomNumberSelected) >= 0 && (c2.randomNumber - config.randomNumberSelected) >= 0) ||
-          (((c1.randomNumber - config.randomNumberSelected) < 0 && (c2.randomNumber - config.randomNumberSelected) < 0))) {
-          return c1.randomNumber - c2.randomNumber;
-        } else {
-          return c2.randomNumber - c1.randomNumber;
-        }
-      }
-    }
-  }
-  const sortCandidatesEspera = (clave) => {
-    return function (c1, c2) {
-      if ((typeof c1.preferencia[clave] === 'undefined') || (typeof c2.preferencia[clave] === 'undefined')){
-        console.log("ERROR EN SORT");
-      }
-      if (Number(c1.preferencia[clave]) != Number(c2.preferencia[clave])) {
-        return Number(c2.preferencia[clave]) - Number(c1.preferencia[clave]);
-      }
-      else {
-          if (c1.scoring != c2.scoring) {
-          return c2.scoring - c1.scoring;
-        } else {
-          // NOTE: Si hay empate en scoring, se escoge el que más cerca esté del randomNumber, en dirección siempre creciente-modular
-          if (((c1.randomNumber - config.randomNumberSelected) >= 0 && (c2.randomNumber - config.randomNumberSelected) >= 0) ||
-            (((c1.randomNumber - config.randomNumberSelected) < 0 && (c2.randomNumber - config.randomNumberSelected) < 0))) {
-            return c1.randomNumber - c2.randomNumber;
-          } else {
-            return c2.randomNumber - c1.randomNumber;
-          }
-        }
-      }
-    }
-  }
-
 
   const generarTextoExclusionGS = (texto) => {
     var motivo = String();
@@ -165,7 +120,6 @@ async function processAssigns(category, city, filePath, config) {
     validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
     infoSolicitud.viaAcceso = readCell('H', rowIndex);
     infoSolicitud.scoring = Number(readCell('BO', rowIndex).replace('.','').replace(',','.'));
-    console.log(`${infoSolicitud.scoring} vs ${infoSolicitud.scoringTotal}`);
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple =  readCell('BS', rowIndex).toLowerCase();
@@ -227,7 +181,8 @@ async function processAssigns(category, city, filePath, config) {
       modulo: registro.listaCentrosCiclosModulos[index][0].modulo || '',
       codigoModulo: registro.listaCentrosCiclosModulos[index][0].codigoModulo || '',
       textoCursoCompleto: registro.listaCentrosCiclosModulos[index][0].textoCursoCompleto || '',
-      cursoCompleto: registro.listaCentrosCiclosModulos[index][0].cursoCompleto? true:false
+      cursoCompleto: registro.listaCentrosCiclosModulos[index][0].cursoCompleto? true:false,
+      abreviaturaModulo: generarTextoModulo(registro.listaCentrosCiclosModulos[index][0].codigoModulo)
     }
   }
 
@@ -424,15 +379,6 @@ async function processAssigns(category, city, filePath, config) {
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
 
     if (cursoCentroCicloModulo.vacantesDisponibles>0) {
-      console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} -----------------`);
-      console.log(`Discapacitados ${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length}`);
-      console.log(`Deportitas     ${cursoCentroCicloModulo.listaAsignadosDeportistasElite.length}`);
-      console.log(`Grupo A        ${cursoCentroCicloModulo.listaAsignadosA.length}`);
-      console.log(`Grupo B        ${cursoCentroCicloModulo.listaAsignadosB.length}`);
-      console.log(`Grupo C        ${cursoCentroCicloModulo.listaAsignadosC.length}`);
-      console.log(`Total          ${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length}`)
-      console.log(`Vacantes disponibles ${cursoCentroCicloModulo.vacantesDisponibles} de ${cursoCentroCicloModulo.vacantes}`);
-
       const existenCandidatosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
         && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
           && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='A')).sort(ordenarCandidatos).slice(0, cursoCentroCicloModulo.vacantesDisponibles);
@@ -484,8 +430,8 @@ async function processAssigns(category, city, filePath, config) {
 
     cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes - (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length);
     
-    if (cursoCentroCicloModulo.vacantesDisponibles>0) {
-      console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} -----------------`);
+    if (cursoCentroCicloModulo.vacantesDisponibles<0) {
+      console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} (${cursoCentroCicloModulo.claveCentroCicloModulo})-----------------`);
       console.log(`Discapacitados ${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length}`);
       console.log(`Deportitas     ${cursoCentroCicloModulo.listaAsignadosDeportistasElite.length}`);
       console.log(`Grupo A        ${cursoCentroCicloModulo.listaAsignadosA.length}`);
@@ -494,9 +440,10 @@ async function processAssigns(category, city, filePath, config) {
       console.log(`Total          ${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length}`)
       console.log(`Vacantes disponibles ${cursoCentroCicloModulo.vacantesDisponibles} de ${cursoCentroCicloModulo.vacantes}`);
     }
-
-    // Rellenar las listas de espera
-
+  }
+   
+  // Rellenar las listas de espera
+  for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     cursoCentroCicloModulo.listaAsignadosAEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
       && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
         && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='A')).sort(ordenarCandidatos);
@@ -507,6 +454,11 @@ async function processAssigns(category, city, filePath, config) {
       && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
         && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='C')).sort(ordenarCandidatos);
 
+    if ((cursoCentroCicloModulo.listaAsignadosAEspera.length>0) || (cursoCentroCicloModulo.listaAsignadosBEspera.length>0) || (cursoCentroCicloModulo.listaAsignadosCEspera.length>0)){
+      console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} (${cursoCentroCicloModulo.claveCentroCicloModulo})-----------------`);
+      console.log(`En espera un total de  ${cursoCentroCicloModulo.listaAsignadosAEspera.length+cursoCentroCicloModulo.listaAsignadosBEspera.length+cursoCentroCicloModulo.listaAsignadosCEspera.length}`);
+
+    }
 
   }  
 
@@ -531,170 +483,8 @@ async function processAssigns(category, city, filePath, config) {
     const numLinesPerPage = 50;
 
 
-    const listaCentrosCiclosModulosAgrupada = Array();
-    var listaAsignadosA = Array();
-    var listaAsignadosAEspera = Array();
-    var listaAsignadosB = Array();
-    var listaAsignadosBEspera = Array();
-    var listaAsignadosC = Array();
-    var listaAsignadosCEspera = Array();
-    var listaAsignadosDeportistasElite = Array();
-    var listaAsignadosDiscapacitados = Array();
-  
-    var keyAnterior = String('');
 
-    listaCentrosCiclosModulos.forEach(lccm => {
-
-      const key = String(lccm.codigoCentro + '_' + lccm.codigoCurso);
-      if (keyAnterior!=key){
-        keyAnterior = key;
-        listaAsignadosA = Array();
-        listaAsignadosAEspera = Array();
-        listaAsignadosB = Array();
-        listaAsignadosBEspera = Array();
-        listaAsignadosC = Array();
-        listaAsignadosCEspera = Array();
-        listaAsignadosDeportistasElite = Array();
-        listaAsignadosDiscapacitados = Array();
-      }
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA))) {
-        const datosAux = listaAsignadosA.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosA.push(data);
-        }
-      };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosAEspera))) {
-        const datosAux = listaAsignadosAEspera.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosAEspera.push(data);
-        }
-      };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosB))) {
-        const datosAux = listaAsignadosB.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosB.push(data);
-        }
-      };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosBEspera))) {
-        const datosAux = listaAsignadosBEspera.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosBEspera.push(data);
-        }
-      };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosC))) {
-        const datosAux = listaAsignadosC.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosC.push(data);
-        }
-      };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosCEspera))) {
-        const datosAux = listaAsignadosCEspera.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosCEspera.push(data);
-        }
-      };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDeportistasElite))) {
-        const datosAux = listaAsignadosDeportistasElite.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosDeportistasElite.push(data);
-        }
-      };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosDiscapacitados))) {
-        const datosAux = listaAsignadosDiscapacitados.find(l=>l.docId==lista.docId)
-        if (datosAux){
-          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          datosAux.listaCentrosCiclosModulos = datosAux.listaCentrosCiclosModulos.filter((v, i, a) => a.indexOf(v) === i);
-        }
-        else {
-          const data = JSON.parse(JSON.stringify(lista));
-          data.listaCentrosCiclosModulos = Array();
-          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
-          listaAsignadosDiscapacitados.push(data);
-        }
-      };
-      
-      var datosListaCentrosCiclosModulosAgrupada = listaCentrosCiclosModulosAgrupada.find(lccma=>String(lccma.codigoCentro + '_' + lccma.codigoCurso)==key);
-      if (!datosListaCentrosCiclosModulosAgrupada){
-        const centroCiclo = {
-          codigoCentro: lccm.codigoCentro,
-          centro: lccm.centro,
-          codigoCurso: lccm.codigoCurso,
-          curso: lccm.curso,
-          listaAsignadosA: listaAsignadosA,
-          listaAsignadosAEspera: listaAsignadosAEspera,
-          listaAsignadosB: listaAsignadosB,
-          listaAsignadosBEspera: listaAsignadosBEspera,
-          listaAsignadosC: listaAsignadosC,
-          listaAsignadosCEspera: listaAsignadosCEspera,
-          listaAsignadosDeportistasElite: listaAsignadosDeportistasElite,
-          listaAsignadosDiscapacitados: listaAsignadosDiscapacitados,
-        }
-        listaCentrosCiclosModulosAgrupada.push(centroCiclo);
-      }
-    });
-
-    // Ordenar todas las listas
-    for (const cursoCentroCicloModulo of listaCentrosCiclosModulosAgrupada) {
-      cursoCentroCicloModulo.listaAsignadosA = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosA)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosAEspera = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosAEspera)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosB = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosB)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosBEspera = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosBEspera)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosC = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosC)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosCEspera = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosCEspera)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosDeportistasElite = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosDeportistasElite)).sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosDiscapacitados = JSON.parse(JSON.stringify(cursoCentroCicloModulo.listaAsignadosDiscapacitados)).sort(ordenarCandidatos);
-    }
-
-    for (const cursoCentroCicloModulo of listaCentrosCiclosModulosAgrupada) {
+    for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
       
     // Generar lista admitidos
       
@@ -702,7 +492,7 @@ async function processAssigns(category, city, filePath, config) {
       var orden=0;
       if (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length>0) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -740,7 +530,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosDeportistasElite.length>0) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -778,7 +568,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosA.length>0) {
         cursoCentroCicloModulo.listaAsignadosA.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -815,7 +605,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosB.length>0) {
         cursoCentroCicloModulo.listaAsignadosB.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -852,7 +642,7 @@ async function processAssigns(category, city, filePath, config) {
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosC.length>0) {
         cursoCentroCicloModulo.listaAsignadosC.map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -889,9 +679,8 @@ async function processAssigns(category, city, filePath, config) {
       // Generar lista espera resto lista A
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosAEspera.length>0) {
-        const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
-        cursoCentroCicloModulo.listaAsignadosAEspera.sort(sortCandidatesEspera(clave)).map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+        cursoCentroCicloModulo.listaAsignadosAEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -910,12 +699,12 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia[clave]? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -927,9 +716,8 @@ async function processAssigns(category, city, filePath, config) {
       // Generar lista espera resto lista B
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosBEspera.length>0) {
-        const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
-        cursoCentroCicloModulo.listaAsignadosBEspera.sort(sortCandidatesEspera(clave)).map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+        cursoCentroCicloModulo.listaAsignadosBEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -948,12 +736,12 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia[clave]? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -965,9 +753,8 @@ async function processAssigns(category, city, filePath, config) {
       // Generar lista espera resto lista C
       orden=0;
       if (cursoCentroCicloModulo.listaAsignadosCEspera.length>0) {
-        const clave =  (cursoCentroCicloModulo.codigoCentro || '') + "_" + (cursoCentroCicloModulo.codigoCurso || '') + "_" + (cursoCentroCicloModulo.codigoModulo || '');
-        cursoCentroCicloModulo.listaAsignadosAEspera.sort(sortCandidatesEspera(clave)).map(ap => {
-          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(m=>m).join(' ');
+        cursoCentroCicloModulo.listaAsignadosCEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.abreviaturaModulo
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
@@ -986,12 +773,12 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia[clave]? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia[clave]? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
