@@ -117,6 +117,15 @@ async function processAssigns(category, city, filePath, config) {
   const generarClave = (registro) => {
     return `${(registro.codigoCentro||'')}_${(registro.codigoCurso||'')}_${(registro.codigoModulo||'')}`
   }
+  const contarLista = (lista) => {
+    var contador = Number(0);
+    if ((!lista) || (!Array.isArray(lista))) return contador;
+
+    for (var i=0; i<lista.length; i++){
+      contador += lista[i].especialNeeds?Number(2):Number(1);
+    }
+    return contador;
+  }
   const mapearLinealmenteDatosIniciales = (registro, index) => { 
     if ((!registro) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
     return {
@@ -189,8 +198,6 @@ async function processAssigns(category, city, filePath, config) {
         // Anotar candidato
         listaAsignados.push(candidatoSelecionado);
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        candidatoSelecionado.asignado = true;
-        candidatoSelecionado.espera = false;
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=valorEspera);
@@ -219,13 +226,11 @@ async function processAssigns(category, city, filePath, config) {
     });
 
     listaAsignados = Array();
-    for (var i=0; i<longitudLista; i++){
+    for (var i=0; ((i<longitudLista) && (cursoCentroCicloModulo.vacantesDisponibles>0)); i++){
       const candidatoSelecionado = copia[i];
       // Anotar candidato
       listaAsignados.push(candidatoSelecionado);
       cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-      candidatoSelecionado.asignado = true;
-      candidatoSelecionado.espera = false;
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=valorEspera);
@@ -234,7 +239,7 @@ async function processAssigns(category, city, filePath, config) {
   }
   
 
-  // Generamos las lista de solicitantespor los 5 grupos (minusvalidos, deportistas, A, B y C)
+  // Generamos las lista de solicitantes por los 5 grupos (minusvalidos, deportistas, A, B y C)
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     cursoCentroCicloModulo.claveCentroCicloModulo = generarClave(cursoCentroCicloModulo);
     cursoCentroCicloModulo.vacantesPendientesDiscapacitados = Number(0);
@@ -265,19 +270,19 @@ async function processAssigns(category, city, filePath, config) {
 
       // Asignamos % fijo de vacantes a minusválidos
       const vacantesMinusvalidos = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap);
-      if (vacantesMinusvalidos>cursoCentroCicloModulo.listaAsignadosDiscapacitados.length) {
+      if (vacantesMinusvalidos>contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(
           rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, vacantesMinusvalidos, listaSolicitantesDiscapacitados, 'vacantesPendientesDiscapacitados', false)).sort(ordenarCandidatos);
       }
       // Asignamos % fijo de vacantes a deportistas de élite
       const vacantesDeportistas = redondear(cursoCentroCicloModulo. vacantes * config.percentageAthlete);
-      if (vacantesDeportistas>cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) {
+      if (vacantesDeportistas>contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(
           rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, vacantesDeportistas, listaSolicitantesDeportistasElite, 'vacantesPendientesDeportistasElite', false)).sort(ordenarCandidatos);
       }
     }
   }
-  const MaxVueltas = 4;
+  const MaxVueltas = 10;
   for (var vueltas=0; vueltas<MaxVueltas; vueltas++) {
   
     for (var opcionSolicitud=0; opcionSolicitud<4; opcionSolicitud++) {
@@ -299,17 +304,17 @@ async function processAssigns(category, city, filePath, config) {
 
         // Asignamos al Grupo A (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.concat(
-          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-cursoCentroCicloModulo.listaAsignadosDiscapacitados.length-cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageA), 
+          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageA), 
             listaSolicitantesA, 'vacantesPendientesA')).sort(ordenarCandidatos);
 
         // Asignamos al Grupo B (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.concat(
-          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-cursoCentroCicloModulo.listaAsignadosDiscapacitados.length-cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageB), 
+          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageB), 
             listaSolicitantesB, 'vacantesPendientesB')).sort(ordenarCandidatos);
 
         // Asignamos al Grupo C (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.concat(
-          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-cursoCentroCicloModulo.listaAsignadosDiscapacitados.length-cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageC), 
+          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageC), 
             listaSolicitantesC, 'vacantesPendientesC')).sort(ordenarCandidatos);
 
       }
@@ -327,10 +332,10 @@ async function processAssigns(category, city, filePath, config) {
         && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
           && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='C')).sort(ordenarCandidatos).slice(0, cursoCentroCicloModulo.listaAsignadosC.length);
 
-      cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes - (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length);
-      
-    }  
+      cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes - (contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados) + contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite) + contarLista(cursoCentroCicloModulo.listaAsignadosA) + contarLista(cursoCentroCicloModulo.listaAsignadosB) + contarLista(cursoCentroCicloModulo.listaAsignadosC));
+    } 
   }
+
 
   // Asignamos los ultimos que se quedan fuera para completar las plazas.
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
@@ -385,7 +390,10 @@ async function processAssigns(category, city, filePath, config) {
       && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
         && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='C')).sort(ordenarCandidatos).slice(0, cursoCentroCicloModulo.listaAsignadosC.length);
 
-    cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes - (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length);
+    cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes - (contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados) + contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite) + contarLista(cursoCentroCicloModulo.listaAsignadosA) + contarLista(cursoCentroCicloModulo.listaAsignadosB) + contarLista(cursoCentroCicloModulo.listaAsignadosC));
+    console.log(`vacantesDisponibles:${cursoCentroCicloModulo.vacantesDisponibles}`);
+    console.log(`-------------------------------------------------------------------`);
+
     
     if (cursoCentroCicloModulo.vacantesDisponibles>0) {
       console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} -----------------`);
@@ -418,8 +426,7 @@ async function processAssigns(category, city, filePath, config) {
 
     }
 
-  }   
-
+  }  
 
   const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
