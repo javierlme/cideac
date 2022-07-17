@@ -15,11 +15,11 @@ async function processAssigns(category, city, filePath, config) {
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
 
-  const generarTextoExclusionGS = (texto) => {
+  const generarTextoExclusionGM = (texto) => {
     var motivo = String();
-    if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGSR1 + ' / ';
-    if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textGSR2 + ' / ';
-    if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textGSR3 + ' / ';
+    if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGMR1 + ' / ';
+    if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textGMR2 + ' / ';
+    if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textGMR3 + ' / ';
     return motivo.slice(0,-2)
   }
 
@@ -159,31 +159,36 @@ async function processAssigns(category, city, filePath, config) {
   }
   const mapearLinealmenteDatosIniciales = (registro, index) => { 
     if ((!registro) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
-    return {
-      applicationId: registro.applicationId,
-      asignado: false,
-      espera: true,
-      prioridadPeticion: index,
-      preferencia: registro.listaCentrosCiclosModulos[index][0].prioridad? registro.listaCentrosCiclosModulos[index][0].prioridad : false,
-      scoring : registro.scoring? Number(registro.scoring) : Number(0),
-      viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
-      eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
-      handicapped: registro.handicapped? registro.handicapped : false,
-      especialNeeds: registro.especialNeeds? registro.especialNeeds : false,
-      randomNumber: Number(registro.randomNumber),
-      docId: registro.docId,
-      personalId: registro.personalId,
-      claveCentroCicloModulo: generarClave(registro.listaCentrosCiclosModulos[index][0]),
-      centro: registro.listaCentrosCiclosModulos[index][0].centro || '',
-      codigoCentro: registro.listaCentrosCiclosModulos[index][0].codigoCentro || '',
-      curso: registro.listaCentrosCiclosModulos[index][0].curso || '',
-      codigoCurso: registro.listaCentrosCiclosModulos[index][0].codigoCurso || '',
-      modulo: registro.listaCentrosCiclosModulos[index][0].modulo || '',
-      codigoModulo: registro.listaCentrosCiclosModulos[index][0].codigoModulo || '',
-      textoCursoCompleto: registro.listaCentrosCiclosModulos[index][0].textoCursoCompleto || '',
-      cursoCompleto: registro.listaCentrosCiclosModulos[index][0].cursoCompleto? true:false,
-      abreviaturaModulo: generarTextoModulo(registro.listaCentrosCiclosModulos[index][0].codigoModulo)
-    }
+    const listaModulos = Array();
+    
+    registro.listaCentrosCiclosModulos[index].map(modulo=>{
+      listaModulos.push( {
+        applicationId: registro.applicationId,
+        asignado: false,
+        espera: true,
+        prioridadPeticion: index,
+        preferencia: modulo.prioridad? modulo.prioridad : false,
+        scoring : registro.scoring? Number(registro.scoring) : Number(0),
+        viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
+        eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
+        handicapped: registro.handicapped? registro.handicapped : false,
+        especialNeeds: registro.especialNeeds? registro.especialNeeds : false,
+        randomNumber: Number(registro.randomNumber),
+        docId: registro.docId,
+        personalId: registro.personalId,
+        claveCentroCicloModulo: generarClave(modulo),
+        centro: modulo.centro || '',
+        codigoCentro: modulo.codigoCentro || '',
+        curso: modulo.curso || '',
+        codigoCurso: modulo.codigoCurso || '',
+        modulo: modulo.modulo || '',
+        codigoModulo: modulo.codigoModulo || '',
+        textoCursoCompleto: modulo.textoCursoCompleto || '',
+        cursoCompleto: modulo.cursoCompleto? true:false,
+        abreviaturaModulo: generarTextoModulo(modulo.codigoModulo)
+      })
+    });
+    return listaModulos;
   }
 
   const ordenarCandidatos = (c1, c2) => {
@@ -210,9 +215,9 @@ async function processAssigns(category, city, filePath, config) {
 
   const listaSolicitudesAceptadasMapeadas = listaSolicitudesAceptadas.reduce(function(listaAcumulada, solicitud){
     for (var i=0; i<4; i++){
-      const registro = mapearLinealmenteDatosIniciales(solicitud, i);
-      if ((registro) && (registro!=null)){
-        listaAcumulada.push(registro);
+      const listaModulos = mapearLinealmenteDatosIniciales(solicitud, i);
+      if ((listaModulos) && (listaModulos!=null)){
+        listaAcumulada = listaAcumulada.concat(listaModulos);
       }
     }
     return listaAcumulada;
@@ -482,6 +487,8 @@ async function processAssigns(category, city, filePath, config) {
     let htmlListaExcluidos = contentHeaderFile.toString();
     const numLinesPerPage = 50;
 
+
+
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
       
     // Generar lista admitidos
@@ -494,14 +501,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeHandicap)
+            .replace('##textGMTypeGeneral##', config.textGMTypeHandicap)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -532,14 +539,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeAthlete)
+            .replace('##textGMTypeGeneral##', config.textGMTypeAthlete)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -570,14 +577,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeA)
+            .replace('##textGMTypeGeneral##', config.textGMTypeA)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -607,14 +614,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeB)
+            .replace('##textGMTypeGeneral##', config.textGMTypeB)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -644,14 +651,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeC)
+            .replace('##textGMTypeGeneral##', config.textGMTypeC)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -682,14 +689,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeA)
+            .replace('##textGMTypeGeneral##', config.textGMTypeA)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -719,14 +726,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeB)
+            .replace('##textGMTypeGeneral##', config.textGMTypeB)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -756,14 +763,14 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeC)
+            .replace('##textGMTypeGeneral##', config.textGMTypeC)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -800,11 +807,11 @@ async function processAssigns(category, city, filePath, config) {
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
         .replace('##titleGeneral##', config.titleGeneral)
-        .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+        .replace('##textGMTitleGeneral##', config.textGMTitleGeneral)
         .replace('##city##', city)
         .replace('##titleCurse##', config.titleCurse)
         .replace('##titleRejected##', config.titleRejected)
-        .replace('##textGSTypeGeneral##', config.textGSTypeGeneral)
+        .replace('##textGMTypeGeneral##', config.textGMTypeGeneral)
         .replace('##titleWarning##', config.titleWarning)
       }  
 
@@ -812,9 +819,9 @@ async function processAssigns(category, city, filePath, config) {
       htmlListaExcluidos += `	  <td>${orden}</td>`;
       htmlListaExcluidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
       htmlListaExcluidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
-      htmlListaExcluidos += `	  <td>${generarTextoExclusionGS(ap.incumple)}</td>`;
+      htmlListaExcluidos += `	  <td>${generarTextoExclusionGM(ap.incumple)}</td>`;
       htmlListaExcluidos += `  </tr>`;
-      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId};${ap.incumple};${generarTextoExclusionGS(ap.incumple)}\r\n`;
+      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId};${ap.incumple};${generarTextoExclusionGM(ap.incumple)}\r\n`;
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += '</table>';
         htmlListaExcluidos += `<div style="page-break-after:always"></div>`;

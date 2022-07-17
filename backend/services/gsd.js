@@ -159,31 +159,36 @@ async function processAssigns(category, city, filePath, config) {
   }
   const mapearLinealmenteDatosIniciales = (registro, index) => { 
     if ((!registro) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
-    return {
-      applicationId: registro.applicationId,
-      asignado: false,
-      espera: true,
-      prioridadPeticion: index,
-      preferencia: registro.listaCentrosCiclosModulos[index][0].prioridad? registro.listaCentrosCiclosModulos[index][0].prioridad : false,
-      scoring : registro.scoring? Number(registro.scoring) : Number(0),
-      viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
-      eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
-      handicapped: registro.handicapped? registro.handicapped : false,
-      especialNeeds: registro.especialNeeds? registro.especialNeeds : false,
-      randomNumber: Number(registro.randomNumber),
-      docId: registro.docId,
-      personalId: registro.personalId,
-      claveCentroCicloModulo: generarClave(registro.listaCentrosCiclosModulos[index][0]),
-      centro: registro.listaCentrosCiclosModulos[index][0].centro || '',
-      codigoCentro: registro.listaCentrosCiclosModulos[index][0].codigoCentro || '',
-      curso: registro.listaCentrosCiclosModulos[index][0].curso || '',
-      codigoCurso: registro.listaCentrosCiclosModulos[index][0].codigoCurso || '',
-      modulo: registro.listaCentrosCiclosModulos[index][0].modulo || '',
-      codigoModulo: registro.listaCentrosCiclosModulos[index][0].codigoModulo || '',
-      textoCursoCompleto: registro.listaCentrosCiclosModulos[index][0].textoCursoCompleto || '',
-      cursoCompleto: registro.listaCentrosCiclosModulos[index][0].cursoCompleto? true:false,
-      abreviaturaModulo: generarTextoModulo(registro.listaCentrosCiclosModulos[index][0].codigoModulo)
-    }
+    const listaModulos = Array();
+    
+    registro.listaCentrosCiclosModulos[index].map(modulo=>{
+      listaModulos.push( {
+        applicationId: registro.applicationId,
+        asignado: false,
+        espera: true,
+        prioridadPeticion: index,
+        preferencia: modulo.prioridad? modulo.prioridad : false,
+        scoring : registro.scoring? Number(registro.scoring) : Number(0),
+        viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
+        eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
+        handicapped: registro.handicapped? registro.handicapped : false,
+        especialNeeds: registro.especialNeeds? registro.especialNeeds : false,
+        randomNumber: Number(registro.randomNumber),
+        docId: registro.docId,
+        personalId: registro.personalId,
+        claveCentroCicloModulo: generarClave(modulo),
+        centro: modulo.centro || '',
+        codigoCentro: modulo.codigoCentro || '',
+        curso: modulo.curso || '',
+        codigoCurso: modulo.codigoCurso || '',
+        modulo: modulo.modulo || '',
+        codigoModulo: modulo.codigoModulo || '',
+        textoCursoCompleto: modulo.textoCursoCompleto || '',
+        cursoCompleto: modulo.cursoCompleto? true:false,
+        abreviaturaModulo: generarTextoModulo(modulo.codigoModulo)
+      })
+    });
+    return listaModulos;
   }
 
   const ordenarCandidatos = (c1, c2) => {
@@ -210,9 +215,9 @@ async function processAssigns(category, city, filePath, config) {
 
   const listaSolicitudesAceptadasMapeadas = listaSolicitudesAceptadas.reduce(function(listaAcumulada, solicitud){
     for (var i=0; i<4; i++){
-      const registro = mapearLinealmenteDatosIniciales(solicitud, i);
-      if ((registro) && (registro!=null)){
-        listaAcumulada.push(registro);
+      const listaModulos = mapearLinealmenteDatosIniciales(solicitud, i);
+      if ((listaModulos) && (listaModulos!=null)){
+        listaAcumulada = listaAcumulada.concat(listaModulos);
       }
     }
     return listaAcumulada;
@@ -234,9 +239,9 @@ async function processAssigns(category, city, filePath, config) {
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
         candidatoSelecionado.asignado = true;
         candidatoSelecionado.espera = false;
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=valorEspera);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo&& lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo&& lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=valorEspera);
         vacantesAsignadas++;
       }
       else {
@@ -257,8 +262,8 @@ async function processAssigns(category, city, filePath, config) {
     const copia = listaAsignados.concat(listaCandidatos).sort(ordenarCandidatos);
     listaAsignados.forEach(la=>{
       cursoCentroCicloModulo.vacantesDisponibles += la.especialNeeds?Number(2):Number(1);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId)).map(l=>l.espera=true);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId)).map(l=>l.asignado=false);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo)).map(l=>l.espera=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo)).map(l=>l.asignado=false);
     });
 
     listaAsignados = Array();
@@ -269,9 +274,9 @@ async function processAssigns(category, city, filePath, config) {
       cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
       candidatoSelecionado.asignado = true;
       candidatoSelecionado.espera = false;
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=valorEspera);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=valorEspera);
     }
     return listaAsignados;
   }
@@ -339,6 +344,10 @@ async function processAssigns(category, city, filePath, config) {
           && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
             && lsam.viaAcceso=='C')).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosC = mejorarPosicionesCandidatos(cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosC, listaSolicitantesC);
+
+        if (listaSolicitantesA.length>0){
+          console.log(JSON.stringify(listaSolicitantesA))
+        }
 
         // Asignamos al Grupo A (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.concat(
@@ -430,7 +439,7 @@ async function processAssigns(category, city, filePath, config) {
 
     cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes - (cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length);
     
-    if (cursoCentroCicloModulo.vacantesDisponibles<0) {
+    if (cursoCentroCicloModulo.vacantesDisponibles!=cursoCentroCicloModulo.vacantes) {
       console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} (${cursoCentroCicloModulo.claveCentroCicloModulo})-----------------`);
       console.log(`Discapacitados ${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length}`);
       console.log(`Deportitas     ${cursoCentroCicloModulo.listaAsignadosDeportistasElite.length}`);
