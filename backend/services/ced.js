@@ -380,6 +380,8 @@ async function processAssigns(category, city, filePath, config) {
 
   var listaDesplazados = Array();
   const maxVueltas = 10;
+
+  // Tratar discapacitados
   for (var vuelta=0; vuelta<maxVueltas; vuelta++){ 
     console.log(`------------------------------ VUELTA ${vuelta}------------------------------`);
     const listaCopia = JSON.parse(JSON.stringify(listaDesplazados));
@@ -389,12 +391,6 @@ async function processAssigns(category, city, filePath, config) {
 
     for (var prioridad=0; prioridad<4; prioridad++){
       var listaCandidatosNoAsignadosMinusvalido = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.handicapped)));
-      var listaCandidatosNoAsignadosDeportista = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.eliteAthlete)));
-      var listaCandidatosNoAsignadosGrupoA = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.viaAcceso=='A')));
-      var listaCandidatosNoAsignadosGrupoB = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.viaAcceso=='B')));
-      var listaCandidatosNoAsignadosGrupoC = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.viaAcceso=='C')));
-      var countRestantes = listaCandidatosNoAsignadosMinusvalido.length + listaCandidatosNoAsignadosDeportista.length + listaCandidatosNoAsignadosGrupoA.length + listaCandidatosNoAsignadosGrupoB.length + listaCandidatosNoAsignadosGrupoC.length;
-
       // Discapacitados
       for (const candidato of listaCandidatosNoAsignadosMinusvalido){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
@@ -406,6 +402,20 @@ async function processAssigns(category, city, filePath, config) {
           }
         }
       }
+    } // For Prioridad
+  } // For Vueltas
+
+
+  // Tratar deportista de élite
+  for (var vuelta=0; vuelta<maxVueltas; vuelta++){ 
+    console.log(`------------------------------ VUELTA ${vuelta}------------------------------`);
+    const listaCopia = JSON.parse(JSON.stringify(listaDesplazados));
+    console.log(`listaCopia longitud ->${listaCopia.length}`);
+    listaCopia.forEach(el=>quitarCandidatoTodasListas(el));
+    listaDesplazados = Array();
+
+    for (var prioridad=0; prioridad<4; prioridad++){
+      var listaCandidatosNoAsignadosDeportista = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.eliteAthlete)));
       // Deportistas de élite
       for (const candidato of listaCandidatosNoAsignadosDeportista){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
@@ -417,6 +427,24 @@ async function processAssigns(category, city, filePath, config) {
           }
         }
       }
+
+    } // For Prioridad
+  } // For Vueltas
+
+
+  // Tratar Grupos A, B y C
+  for (var vuelta=0; vuelta<maxVueltas; vuelta++){ 
+    console.log(`------------------------------ VUELTA ${vuelta}------------------------------`);
+    const listaCopia = JSON.parse(JSON.stringify(listaDesplazados));
+    console.log(`listaCopia longitud ->${listaCopia.length}`);
+    listaCopia.forEach(el=>quitarCandidatoTodasListas(el));
+    listaDesplazados = Array();
+
+    for (var prioridad=0; prioridad<4; prioridad++){
+      var listaCandidatosNoAsignadosGrupoA = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.viaAcceso=='A')));
+      var listaCandidatosNoAsignadosGrupoB = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.viaAcceso=='B')));
+      var listaCandidatosNoAsignadosGrupoC = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.viaAcceso=='C')));
+
       // Grupo A ( o resto cuando no hay grupos)
       for (const candidato of listaCandidatosNoAsignadosGrupoA){
         const candidatoPosible = mapearDatosIniciales(candidato, prioridad);
@@ -453,48 +481,56 @@ async function processAssigns(category, city, filePath, config) {
 
       // Balancear vacantes entre los grupos A B y C (para aproximarlos a los porcentajes)
       for (var cursoCentroCicloModulo of listaCentrosCiclosModulos) {
-        while (cursoCentroCicloModulo.vacantesDisponibles<0){
+        var numVueltasReparto = 0;
+        while ((cursoCentroCicloModulo.vacantesDisponibles<0) && (numVueltasReparto<10)){
+          numVueltasReparto++;
+
+          const cursoCentroCicloModuloCopied = JSON.parse(JSON.stringify(cursoCentroCicloModulo));
+
           const vacantesIdealesGrupoA = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageA);
           const vacantesIdealesGrupoB = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageB);
           const vacantesIdealesGrupoC = redondear((cursoCentroCicloModulo.vacantes - cursoCentroCicloModulo.listaAsignadosDiscapacitados.length - cursoCentroCicloModulo.listaAsignadosDeportistasElite.length) * config.percentageC);
 
-          const excesoGrupoA = (cursoCentroCicloModulo.listaAsignadosA.length-vacantesIdealesGrupoA);
-          const excesoGrupoB = (cursoCentroCicloModulo.listaAsignadosB.length-vacantesIdealesGrupoB);
-          const excesoGrupoC = (cursoCentroCicloModulo.listaAsignadosC.length-vacantesIdealesGrupoC);
+          var excesoGrupoA = (cursoCentroCicloModulo.listaAsignadosA.length-vacantesIdealesGrupoA);
+          var excesoGrupoB = (cursoCentroCicloModulo.listaAsignadosB.length-vacantesIdealesGrupoB);
+          var excesoGrupoC = (cursoCentroCicloModulo.listaAsignadosC.length-vacantesIdealesGrupoC);
+          if (excesoGrupoA<0) {
+            excesoGrupoB+=(redondear(excesoGrupoA*config.percentageB)-2);
+            excesoGrupoC+=(redondear(excesoGrupoA*config.percentageC)-2);
+          }
+          if (excesoGrupoB<0) {
+            excesoGrupoA+=(redondear(excesoGrupoB*config.percentageA)-2);
+            excesoGrupoC+=(redondear(excesoGrupoB*config.percentageC)-2);
+          }
+          if (excesoGrupoC<0) {
+            excesoGrupoA+=(redondear(excesoGrupoC*config.percentageA)-2);
+            excesoGrupoB+=(redondear(excesoGrupoC*config.percentageB)-2);
+          }
 
-          // Quitar primero el que mas vacantes por encima del umbral (comprobar si es el grupo A)
-          if ((excesoGrupoA>excesoGrupoB) && (excesoGrupoA>excesoGrupoC)){
+          // Quitar el exceso de A
+          for (var i=0; i<excesoGrupoA && (cursoCentroCicloModulo.vacantesDisponibles<0); i++){
             quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosA, cursoCentroCicloModulo);
           }
-
-          // Quitar primero el que mas vacantes por encima del umbral (comprobar si es el grupo B)
-          else if ((excesoGrupoB>excesoGrupoA) && (excesoGrupoB>excesoGrupoC)){
+          // Quitar el exceso de B
+          for (var i=0; i<excesoGrupoB && (cursoCentroCicloModulo.vacantesDisponibles<0); i++){
             quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosB, cursoCentroCicloModulo);
           }
-
-          // Quitar primero el que mas vacantes por encima del umbral (comprobar si es el grupo C)
-          else if ((excesoGrupoC>excesoGrupoA) && (excesoGrupoC>excesoGrupoB)){
+          // Quitar el exceso de C
+          for (var i=0; i<excesoGrupoC && (cursoCentroCicloModulo.vacantesDisponibles<0); i++){
             quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosC, cursoCentroCicloModulo);
           }
 
-          // Resto condiciones
-          else if (vacantesIdealesGrupoC<cursoCentroCicloModulo.listaAsignadosC.length){
+          if ((cursoCentroCicloModulo.vacantesDisponibles<0) && cursoCentroCicloModulo.listaAsignadosC.length>0){
             quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosC, cursoCentroCicloModulo);
-            }
-          else if (vacantesIdealesGrupoB<cursoCentroCicloModulo.listaAsignadosB.length){
+          } else if ((cursoCentroCicloModulo.vacantesDisponibles<0) && cursoCentroCicloModulo.listaAsignadosB.length>0){
             quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosB, cursoCentroCicloModulo);
-          } 
-          else if (vacantesIdealesGrupoA<cursoCentroCicloModulo.listaAsignadosA.length){
+          } else if ((cursoCentroCicloModulo.vacantesDisponibles<0) && cursoCentroCicloModulo.listaAsignadosA.length>0){
             quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosA, cursoCentroCicloModulo);
           }
-        
-          else if (cursoCentroCicloModulo.listaAsignadosC.length>1) {
-            quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosC, cursoCentroCicloModulo);
-          } 
-          else if (cursoCentroCicloModulo.listaAsignadosB.length>1) {
-            quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosB, cursoCentroCicloModulo);
-          } 
-          else quitarUltimoCandidato(prioridad, cursoCentroCicloModulo.listaAsignadosA, cursoCentroCicloModulo);
+          //console.log(`Vuelta de reparto ${numVueltasReparto} quedando con resultado -> ${cursoCentroCicloModulo.vacantesDisponibles}`);
+          if (cursoCentroCicloModulo.vacantesDisponibles>0) {
+            console.log(`ERROR EN BALANCEO eENTRE GRUPOS -> ${JSON.stringify(cursoCentroCicloModuloCopied)}`);
+          }
         }
       }
     } // For Prioridad
@@ -568,12 +604,20 @@ async function processAssigns(category, city, filePath, config) {
     }
   }
 
+  var countVerificacion = 0;
   for (var cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.sort(sortCandidates);
     cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.sort(sortCandidates);
     cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.sort(sortCandidates);
     cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.sort(sortCandidates);
     cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.sort(sortCandidates);
+
+    countVerificacion += cursoCentroCicloModulo.listaAsignadosDiscapacitados.length;
+    countVerificacion += cursoCentroCicloModulo.listaAsignadosDeportistasElite.length;
+    countVerificacion += cursoCentroCicloModulo.listaAsignadosA.length;
+    countVerificacion += cursoCentroCicloModulo.listaAsignadosB.length;
+    countVerificacion += cursoCentroCicloModulo.listaAsignadosC.length;
+
     if (cursoCentroCicloModulo.vacantesDisponibles!=0){
       console.log(`¿REALMENTE TENEMOS MAS PLAZAS QUE CANDIDATOS?: cursoCentroCicloModulo:${JSON.stringify(cursoCentroCicloModulo.curso)} Plazas disponibles -> ${cursoCentroCicloModulo.vacantesDisponibles} de ${cursoCentroCicloModulo.vacantes} `);
     }
@@ -581,14 +625,9 @@ async function processAssigns(category, city, filePath, config) {
 
 
 
-  var listaCandidatosNoAsignadosMinusvalido = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (l?.handicapped)) );
-  var listaCandidatosNoAsignadosDeportista = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (!l?.handicapped) && (l?.eliteAthlete)) );
-  var listaCandidatosNoAsignadosGrupoA = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (!l?.handicapped) && (!l?.eliteAthlete) && (l?.viaAcceso=='A')) );
-  var listaCandidatosNoAsignadosGrupoB = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (!l?.handicapped) && (!l?.eliteAthlete) && (l?.viaAcceso=='B')) );
-  var listaCandidatosNoAsignadosGrupoC = listaSolicitudesAceptadas.filter(l=>((!docIdAdmitidos.includes(l.applicationId)) && (!l?.handicapped) && (!l?.eliteAthlete) && (l?.viaAcceso=='C')) );
-  var countRestantes = listaCandidatosNoAsignadosMinusvalido.length + listaCandidatosNoAsignadosDeportista.length + listaCandidatosNoAsignadosGrupoA.length + listaCandidatosNoAsignadosGrupoB.length + listaCandidatosNoAsignadosGrupoC.length;
+  var countRestantes = listaSolicitudesAceptadas.filter(l=>(!docIdAdmitidos.includes(l.applicationId))).length;
   console.log(`-----------------------------`)
-  console.log(`Total admitidos: ${docIdAdmitidos.length} de ${listaSolicitudesAceptadas.length}`)
+  console.log(`Total admitidos: ${countVerificacion}==${docIdAdmitidos.length} de ${listaSolicitudesAceptadas.length}`)
   console.log(`Total sin admitidos: ${countRestantes} de ${listaSolicitudesAceptadas.length}`)
   console.log(`Total admitidos + sin admitidos: ${docIdAdmitidos.length+countRestantes} de ${listaSolicitudesAceptadas.length}`)
 
@@ -599,7 +638,6 @@ async function processAssigns(category, city, filePath, config) {
   console.log(`Total sin admitidos: ${countRestantes} de ${listaSolicitudesAceptadas.length}`)
   console.log(`Total admitidos + sin admitidos: ${docIdAdmitidos.length+countRestantes} de ${listaSolicitudesAceptadas.length}`)
   console.log(`-----------------------------`)
-
 
   // Procesar listas de espera
   var listaSolicitudesAceptadasCopia = JSON.parse(JSON.stringify(listaSolicitudesAceptadas));
