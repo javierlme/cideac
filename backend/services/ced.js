@@ -330,7 +330,7 @@ async function processAssigns(category, city, filePath, config) {
       }
     }
   }
-  const MaxVueltas = 10;
+  const MaxVueltas = 5;
   for (var vueltas=0; vueltas<MaxVueltas; vueltas++) {
   
     for (var opcionSolicitud=0; opcionSolicitud<4; opcionSolicitud++) {
