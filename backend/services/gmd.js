@@ -3,6 +3,7 @@ const path = require('path');
 const courseService = require('../routers/courses');
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
+const { Console } = require('console');
 
 async function processAssigns(category, city, filePath, config) {
   const listaSolicitudesAceptadas = Array();
@@ -246,12 +247,9 @@ async function processAssigns(category, city, filePath, config) {
         // Anotar candidato
         listaAsignados.push(candidatoSelecionado);
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo 
-          && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId 
-          && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId 
-          && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo && lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=true);
         vacantesAsignadas++;
       }
       else {
@@ -270,8 +268,8 @@ async function processAssigns(category, city, filePath, config) {
     const copia = listaAsignados.concat(listaCandidatos).sort(ordenarCandidatos);
     listaAsignados.forEach(la=>{
       cursoCentroCicloModulo.vacantesDisponibles += la.especialNeeds?Number(2):Number(1);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==la.claveCentroCicloModulo)).map(l=>l.espera=true);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && lsam.claveCentroCicloModulo==la.claveCentroCicloModulo)).map(l=>l.asignado=false);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo)).map(l=>l.espera=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo)).map(l=>l.asignado=false);
     });
 
     listaAsignados = Array();
@@ -280,12 +278,9 @@ async function processAssigns(category, city, filePath, config) {
       // Anotar candidato
       listaAsignados.push(candidatoSelecionado);
       cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo 
-        && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo 
-        && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.claveCentroCicloModulo==candidatoSelecionado.claveCentroCicloModulo 
-        && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
     }
     return listaAsignados;
   }
@@ -298,7 +293,6 @@ async function processAssigns(category, city, filePath, config) {
       if (modulos && Array.isArray(modulos) && (modulos.length>0)) {
         if (modulos.find(l=>!l.asignado)){
           // El curso no se puede asignar completamente. Quitarlo
-          console.log(`${solicitud} ${opcionSolicitud} curso completo no posible`);
           modulos.forEach(modulo=>{
             const cursoCentroCicloModulo = listaCentrosCiclosModulos.find(l=>l.claveCentroCicloModulo==modulo.claveCentroCicloModulo);
             if (cursoCentroCicloModulo) {
@@ -318,6 +312,52 @@ async function processAssigns(category, city, filePath, config) {
         }
         else {
           // Todo el curso está completado. Bloquear resto de opciones
+          listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.applicationId==solicitud).map(l=>l.espera=false);
+        }
+      }
+    }
+
+    // Miramos si vamos por modulos si hemos finalizado (será cuando al menos tengamos 1)
+    const listaApplicationIdModulos = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && !lsam.espera && !lsam.cursoCompleto && lsam.prioridadPeticion==opcionSolicitud)).map(l=>l.applicationId).filter((v, i, a) => a.indexOf(v) === i);
+    for (solicitud of listaApplicationIdModulos){
+      const modulos = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.cursoCompleto && lsam.prioridadPeticion==opcionSolicitud && lsam.applicationId==solicitud));
+      if (modulos && Array.isArray(modulos) && (modulos.length>0)) {
+        if (modulos.find(l=>l.asignado)){
+          listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.applicationId==solicitud).map(l=>l.espera=false);
+        }
+      }
+    }
+  }
+
+
+  const siCompletaCursoParamos = (candidato) => {
+
+    if ((!candidato) || (!candidato.applicationId)) return;
+
+    for (var opcionSolicitud=0; opcionSolicitud<4; opcionSolicitud++) {
+
+      const modulos = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.cursoCompleto && lsam.prioridadPeticion==opcionSolicitud && lsam.applicationId==candidato.applicationId));
+      if (modulos && Array.isArray(modulos) && (modulos.length>0)) {
+        if (modulos.find(l=>!l.asignado)){
+        }
+        else {
+          // Todo el curso está completado. Bloquear resto de opciones
+          if (candidato.applicationId=='GMDC22/00068') {
+            console.log("parar");
+          }
+  
+          listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.applicationId==candidato.applicationId).map(l=>l.espera=false);
+        }
+      }
+    }
+    //TODO FALTARIA mirar si tenemos que borrarlo porque existan 2 asignados
+
+    // Miramos si vamos por modulos si hemos finalizado (será cuando al menos tengamos 1)
+    const listaApplicationIdModulos = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && !lsam.espera && !lsam.cursoCompleto && lsam.prioridadPeticion==opcionSolicitud)).map(l=>l.applicationId).filter((v, i, a) => a.indexOf(v) === i);
+    for (solicitud of listaApplicationIdModulos){
+      const modulos = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.cursoCompleto && lsam.prioridadPeticion==opcionSolicitud && lsam.applicationId==solicitud));
+      if (modulos && Array.isArray(modulos) && (modulos.length>0)) {
+        if (modulos.find(l=>l.asignado)){
           listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.applicationId==solicitud).map(l=>l.espera=false);
         }
       }
@@ -452,20 +492,25 @@ async function processAssigns(category, city, filePath, config) {
           existenCandidatosB.forEach(candidatoSelecionado=>{
         cursoCentroCicloModulo.listaAsignadosB.push(candidatoSelecionado)
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        comprobarCursoCompleto(candidatoSelecionado.prioridadPeticion);
       });
       // Asignamos CON porcentaje la C
       const existenCandidatosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
         && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
           && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='C')).sort(ordenarCandidatos).slice(0, Math.round(cursoCentroCicloModulo.vacantesDisponibles * config.percentageC));
       existenCandidatosC.forEach(candidatoSelecionado=>{
+        if (candidatoSelecionado.applicationId=='GMDC22/00068') {
+          console.log("parar");
+        }
         cursoCentroCicloModulo.listaAsignadosC.push(candidatoSelecionado)
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        siCompletaCursoParamos(candidatoSelecionado);
       });
       // El resto a la A SIN porcentaje
       const existenCandidatosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
@@ -474,9 +519,10 @@ async function processAssigns(category, city, filePath, config) {
       existenCandidatosA.forEach(candidatoSelecionado=>{
         cursoCentroCicloModulo.listaAsignadosA.push(candidatoSelecionado)
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        siCompletaCursoParamos(candidatoSelecionado);
       });
     }
 
@@ -489,9 +535,10 @@ async function processAssigns(category, city, filePath, config) {
       existenCandidatosA.forEach(candidatoSelecionado=>{
         cursoCentroCicloModulo.listaAsignadosA.push(candidatoSelecionado)
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        siCompletaCursoParamos(candidatoSelecionado);
       });
       // Todo lo de B sin porcentaje al B hasta completar
       const existenCandidatosB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
@@ -500,20 +547,25 @@ async function processAssigns(category, city, filePath, config) {
           existenCandidatosB.forEach(candidatoSelecionado=>{
         cursoCentroCicloModulo.listaAsignadosB.push(candidatoSelecionado)
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        siCompletaCursoParamos(candidatoSelecionado);
       });
       // Todo lo de C sin porcentaje al C hasta completar
       const existenCandidatosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
         && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
           && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='C')).sort(ordenarCandidatos).slice(0, cursoCentroCicloModulo.vacantesDisponibles);
       existenCandidatosC.forEach(candidatoSelecionado=>{
+        if (candidatoSelecionado.applicationId=='GMDC22/00068') {
+          console.log("parar");
+        }
         cursoCentroCicloModulo.listaAsignadosC.push(candidatoSelecionado)
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
-        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
+        siCompletaCursoParamos(candidatoSelecionado);
       });
     }
 
@@ -548,32 +600,65 @@ async function processAssigns(category, city, filePath, config) {
       console.log(`Vacantes disponibles ${cursoCentroCicloModulo.vacantesDisponibles} de ${cursoCentroCicloModulo.vacantes}`);
     }
 
+
   }
+    // Tenemos que verificar en cada vuelta de prioridad si todo el curso está asignado completamente
+    /*comprobarCursoCompleto(0);
+    comprobarCursoCompleto(1);
+    comprobarCursoCompleto(2);
+    comprobarCursoCompleto(3);*/
 
-  // Tenemos que verificar en cada vuelta de prioridad si todo el curso está asignado completamente
-  comprobarCursoCompleto(0);
-  comprobarCursoCompleto(1);
-  comprobarCursoCompleto(2);
-  comprobarCursoCompleto(3);
 
-    
   // Rellenar las listas de espera
-  for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
-    cursoCentroCicloModulo.listaAsignadosAEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
-      && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='A')).sort(ordenarCandidatos);
-    cursoCentroCicloModulo.listaAsignadosBEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
-      && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='B')).sort(ordenarCandidatos);
-    cursoCentroCicloModulo.listaAsignadosCEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
-      && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='C')).sort(ordenarCandidatos);
 
-    if ((cursoCentroCicloModulo.listaAsignadosAEspera.length>0) || (cursoCentroCicloModulo.listaAsignadosBEspera.length>0) || (cursoCentroCicloModulo.listaAsignadosCEspera.length>0)){
-      console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} (${cursoCentroCicloModulo.claveCentroCicloModulo})-----------------`);
-      console.log(`En espera un total de  ${cursoCentroCicloModulo.listaAsignadosAEspera.length+cursoCentroCicloModulo.listaAsignadosBEspera.length+cursoCentroCicloModulo.listaAsignadosCEspera.length}`);
+    // Le sumamos las que están por debajo de la asignada para la A
+    var candidatosGrupoA = Array();
+    listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && !lsam.espera && lsam.prioridadPeticion>0 && lsam.viaAcceso=='A')).map(la=>la.applicationId).filter((v, i, a) => a.indexOf(v) === i).forEach(applicationId=>{
+      const candidato = listaSolicitudesAceptadasMapeadas.find(l=>l.applicationId==applicationId && l.asignado && !l.espera && l.prioridadPeticion>0 && l.viaAcceso=='A');
+      if (candidato) {
+        console.log(`${applicationId}`);
+        candidatosGrupoA = candidatosGrupoA.concat(listaSolicitudesAceptadasMapeadas.filter(ls=>(ls.applicationId==candidato.applicationId && ls.prioridadPeticion<candidato.prioridadPeticion))).filter((v, i, a) => a.indexOf(v) === i).sort(ordenarCandidatos);
+      }
+    });
+    // Le sumamos las que están por debajo de la asignada para la B
+    var candidatosGrupoB = Array();
+    listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && !lsam.espera && lsam.prioridadPeticion>0 && lsam.viaAcceso=='B')).map(la=>la.applicationId).filter((v, i, a) => a.indexOf(v) === i).forEach(applicationId=>{
+      const candidato = listaSolicitudesAceptadasMapeadas.find(l=>l.applicationId==applicationId && l.asignado && !l.espera && l.prioridadPeticion>0 && l.viaAcceso=='B');
+      if (candidato) {
+        console.log(`${applicationId}`);
+        candidatosGrupoB = candidatosGrupoB.concat(listaSolicitudesAceptadasMapeadas.filter(ls=>(ls.applicationId==candidato.applicationId && ls.prioridadPeticion<candidato.prioridadPeticion))).filter((v, i, a) => a.indexOf(v) === i).sort(ordenarCandidatos);
+      }
+    });
+    // Le sumamos las que están por debajo de la asignada para la C
+    var candidatosGrupoC = Array();
+    listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && !lsam.espera && lsam.prioridadPeticion>0 && lsam.viaAcceso=='C')).map(la=>la.applicationId).filter((v, i, a) => a.indexOf(v) === i).forEach(applicationId=>{
+      const candidato = listaSolicitudesAceptadasMapeadas.find(l=>l.applicationId==applicationId && l.asignado && !l.espera && l.prioridadPeticion>0 && l.viaAcceso=='C');
+      if (candidato) {
+        console.log(`${applicationId}`);
+        candidatosGrupoC = candidatosGrupoC.concat(listaSolicitudesAceptadasMapeadas.filter(ls=>(ls.applicationId==candidato.applicationId && ls.prioridadPeticion<candidato.prioridadPeticion))).filter((v, i, a) => a.indexOf(v) === i).sort(ordenarCandidatos);
+      }
+    });
 
-    }
-  }  
 
+    // Las que no estén en ningún lado
+    for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+      cursoCentroCicloModulo.listaAsignadosAEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
+        && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='A')).sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosBEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
+        && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='B')).sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosCEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera 
+        && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='C')).sort(ordenarCandidatos);
 
+      cursoCentroCicloModulo.listaAsignadosAEspera = cursoCentroCicloModulo.listaAsignadosAEspera.concat(candidatosGrupoA.filter(l=>cursoCentroCicloModulo.claveCentroCicloModulo==l.claveCentroCicloModulo)).filter((v, i, a) => a.indexOf(v) === i).sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosBEspera = cursoCentroCicloModulo.listaAsignadosBEspera.concat(candidatosGrupoB.filter(l=>cursoCentroCicloModulo.claveCentroCicloModulo==l.claveCentroCicloModulo)).filter((v, i, a) => a.indexOf(v) === i).sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosCEspera = cursoCentroCicloModulo.listaAsignadosCEspera.concat(candidatosGrupoC.filter(l=>cursoCentroCicloModulo.claveCentroCicloModulo==l.claveCentroCicloModulo)).filter((v, i, a) => a.indexOf(v) === i).sort(ordenarCandidatos);
+
+      if ((cursoCentroCicloModulo.listaAsignadosAEspera.length>0) || (cursoCentroCicloModulo.listaAsignadosBEspera.length>0) || (cursoCentroCicloModulo.listaAsignadosCEspera.length>0)){
+        console.log(`----------------- ${cursoCentroCicloModulo.centro || ''} ${cursoCentroCicloModulo.curso || ''} ${cursoCentroCicloModulo.modulo || ''} (${cursoCentroCicloModulo.claveCentroCicloModulo})-----------------`);
+        console.log(`En espera un total de  ${cursoCentroCicloModulo.listaAsignadosAEspera.length+cursoCentroCicloModulo.listaAsignadosBEspera.length+cursoCentroCicloModulo.listaAsignadosCEspera.length}`);
+      }
+    }  
+  
   var lm = 0;
   var ld = 0;
   var lA = 0;
@@ -599,17 +684,10 @@ async function processAssigns(category, city, filePath, config) {
 
   var contadorPersonasDistintasAdmitidas = listaAsgnadosTotales.map(la=>la.applicationId).filter((v, i, a) => a.indexOf(v) === i).length;
   var contadorPersonasDistintasNoAdmitidas = listaSolicitudesAceptadasMapeadas.filter(lsam=>!lsam.asignado && lsam.espera).map(la=>la.applicationId).filter((v, i, a) => a.indexOf(v) === i).length;
-  var contadorPersonasDistintasAdmitidas2 = listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.asignado).map(la=>la.applicationId).filter((v, i, a) => a.indexOf(v) === i).length;
-  var contadorPersonasDistintasNoAdmitidas2 = listaSolicitudesAceptadasMapeadas.filter(lsam=>!lsam.asignado).map(la=>la.applicationId).filter((v, i, a) => a.indexOf(v) === i).length;
   
   console.log(`Total Personas distintas Admitidas     -> ${contadorPersonasDistintasAdmitidas}`);
   console.log(`Total Personas distintas NO admitidas  -> ${contadorPersonasDistintasNoAdmitidas}`);
   console.log(`Total                                  -> ${contadorPersonasDistintasAdmitidas+contadorPersonasDistintasNoAdmitidas}`);
-
-  console.log(`Total Personas distintas Admitidas 2   -> ${contadorPersonasDistintasAdmitidas2}`);
-  console.log(`Total Personas distintas NO admitidas 2-> ${contadorPersonasDistintasNoAdmitidas2}`);
-  console.log(`Total 2                                -> ${contadorPersonasDistintasAdmitidas2+contadorPersonasDistintasNoAdmitidas2}`);
-
 
 
 
