@@ -140,7 +140,7 @@ async function processAssigns(category, city, filePath, config) {
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple =  readCell('BS', rowIndex).toLowerCase();
-    infoSolicitud.permitirSegundo =  ['no'].includes(readCell('BT', rowIndex).toLowerCase())?false:true;
+    infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
     if (String(infoSolicitud.incumple || '') == '') {
       listaSolicitudesAceptadas.push(infoSolicitud);
     }
@@ -221,6 +221,7 @@ var algunaSolicitudCambia = true;
           codigoModulo: modulo.codigoModulo || '',
           textoCursoCompleto: modulo.textoCursoCompleto || '',
           cursoCompleto: modulo.cursoCompleto? true:false,
+          permitirSegundo: registro.permitirSegundo,
           abreviaturaModulo: generarTextoModulo(modulo.codigoModulo)
         })
       }
