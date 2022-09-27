@@ -14,7 +14,16 @@ async function processAssigns(category, city, filePath, config) {
     const cellValue = wb.Sheets[dataSheet][`${column}${row}`];
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
-
+  const DESCARTADO = 'DESCARTADO-MEJORA';
+  const writeCell = (column, row, cellValue) => {
+    if (wb.Sheets[dataSheet][`${column}${row}`]?.v){
+      wb.Sheets[dataSheet][`${column}${row}`].v = cellValue;
+      wb.Sheets[dataSheet][`${column}${row}`].w = cellValue;
+    }
+    else {
+      xlsx.utils.sheet_add_aoa(wb.Sheets[dataSheet], [[cellValue]], {origin: `${column}${row}`});
+    }
+  }
   const generarTextoExclusionGB = (texto) => {
     var motivo = String();
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGBR1 + ' / ';
@@ -67,28 +76,30 @@ async function processAssigns(category, city, filePath, config) {
 
   // Leer del excel los datos de las listaSolicitudesAceptadas
   while (readCell('A', rowIndex) != '') {
-    infoSolicitud = {
-      docId: readCell('A', rowIndex),
-      applicationId: readCell('B', rowIndex),
-      randomNumber: Number(readCell('C', rowIndex).replace(',','')),
-      personalId: readCell('D', rowIndex),
-      especialNeeds: ['si','sí'].includes(readCell('E', rowIndex).toLowerCase()),
-      listaCentrosCiclosModulos: Array()
-    };  
-    validateAndAppendCourse('F', infoSolicitud);
-    validateAndAppendCourse('G', infoSolicitud);
-    validateAndAppendCourse('H', infoSolicitud);
-    validateAndAppendCourse('I', infoSolicitud);
-    infoSolicitud.viaAcceso = 'A';
-    infoSolicitud.scoring = Number(readCell('M', rowIndex).replace('.','').replace(',','.'));
-    infoSolicitud.handicapped = ['si','sí'].includes(readCell('N', rowIndex).toLowerCase());
-    infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('O', rowIndex).toLowerCase());
-    infoSolicitud.incumple =  readCell('P', rowIndex).toLowerCase();
-    if (String(infoSolicitud.incumple || '') == '') {
-      listaSolicitudesAceptadas.push(infoSolicitud);
-    }
-    else{
-      listaSolicitudesNoAceptadas.push(infoSolicitud);
+    if (DESCARTADO!=readCell('A', rowIndex)){    
+      infoSolicitud = {
+        docId: readCell('A', rowIndex),
+        applicationId: readCell('B', rowIndex),
+        randomNumber: Number(readCell('C', rowIndex).replace(',','')),
+        personalId: readCell('D', rowIndex),
+        especialNeeds: ['si','sí'].includes(readCell('E', rowIndex).toLowerCase()),
+        listaCentrosCiclosModulos: Array()
+      };  
+      validateAndAppendCourse('F', infoSolicitud);
+      validateAndAppendCourse('G', infoSolicitud);
+      validateAndAppendCourse('H', infoSolicitud);
+      validateAndAppendCourse('I', infoSolicitud);
+      infoSolicitud.viaAcceso = 'A';
+      infoSolicitud.scoring = Number(readCell('M', rowIndex).replace('.','').replace(',','.'));
+      infoSolicitud.handicapped = ['si','sí'].includes(readCell('N', rowIndex).toLowerCase());
+      infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('O', rowIndex).toLowerCase());
+      infoSolicitud.incumple =  readCell('P', rowIndex).toLowerCase();
+      if (String(infoSolicitud.incumple || '') == '') {
+        listaSolicitudesAceptadas.push(infoSolicitud);
+      }
+      else{
+        listaSolicitudesNoAceptadas.push(infoSolicitud);
+      }
     }
     rowIndex++;
   }
@@ -662,7 +673,41 @@ async function processAssigns(category, city, filePath, config) {
       });
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.pdf"), contentExcluidosPdf);
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.csv"), contentExcluidosExcel, 'latin1');
+
     
+    //////////////////
+    // PROCESAR MEJORA
+    //////////////////
+    rowIndex = 2;
+    while (readCell('A', rowIndex) != '') {
+      // Dejar a vacio las columnas de minusválidos y deportistas de élite
+      writeCell('N', rowIndex, '');
+      writeCell('O', rowIndex, '');
+      // Incumple
+      if ((readCell('P', rowIndex).toLowerCase() || '') != '') {
+        // Borrar linea no desplazarla
+        writeCell('A', rowIndex, DESCARTADO);
+      }
+      const applicationId = readCell('B', rowIndex);
+      const candidato = listaSolicitudesAceptadasMapeadas.find(lsam=>(lsam.applicationId==applicationId && lsam.asignado));
+      if (candidato){
+        if (candidato.prioridadPeticion==0){ // NO existe mejora posible
+          // Borrar linea no desplazarla
+          writeCell('A', rowIndex, DESCARTADO);
+        }
+        else {
+          if (candidato.prioridadPeticion<2){
+            writeCell('G', rowIndex, '');
+          }
+          if (candidato.prioridadPeticion<3){
+            writeCell('H', rowIndex, '');
+          }
+          writeCell('I', rowIndex, '');
+        }
+      }
+      rowIndex++;
+    }
+    xlsx.writeFile(wb, path.join(__dirname, '..', 'temp', filename+"Mejora.xlsx"), { type: 'base64' } );
   }
 
   return `${filename}`;

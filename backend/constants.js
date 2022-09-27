@@ -16,7 +16,7 @@ module.exports = {
     { name: 'Melilla CEP', code: 'CEP', city: 'Melilla', type: 'CE' },
     { name: 'CIDEAD GMD',  code: 'GMD', city: 'CIDEAD',  type: 'GM' },
     { name: 'CIDEAD GSD',  code: 'GSD', city: 'CIDEAD',  type: 'GS' },
-    { name: 'CIDEAD CEP',  code: 'CEP', city: 'CIDEAD',  type: 'CE' },
+    //{ name: 'CIDEAD CEP',  code: 'CEP', city: 'CIDEAD',  type: 'CE' },
     { name: 'CIDEAD CED',  code: 'CED', city: 'CIDEAD',  type: 'CE' }
   ]
 };

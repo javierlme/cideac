@@ -14,6 +14,9 @@ const GMDService = require('../services/gmd');
 const GMPService = require('../services/gmp');
 const GSDService = require('../services/gsd');
 const GSPService = require('../services/gsp');
+const CGMDService = require('../services/cgmd');
+const CGSDService = require('../services/cgsd');
+const CCEDService = require('../services/cced');
 const LeyendasService = require('../services/leyendas')
 const {Buffer} = require('buffer');
 
@@ -172,7 +175,12 @@ router.post('/assign', guard.check([['admin']]),
           break;
         }
         case 'GMD': {
-          url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          if (req.body.city=='CIDEAD') {
+            url = await CGMDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          }
+          else {
+            url = await GMDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          }
           break;
         }
         case 'GMP': {
@@ -180,7 +188,12 @@ router.post('/assign', guard.check([['admin']]),
           break;
         }
         case 'GSD': {
-          url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          if (req.body.city=='CIDEAD') {
+            url = await CGSDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          }
+          else {
+            url = await GSDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          }
           break;
         }
         case 'GSP': {
@@ -192,9 +205,15 @@ router.post('/assign', guard.check([['admin']]),
           break;
         }
         case 'CED': {
-          url = await CEDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          if (req.body.city=='CIDEAD') {
+           url = await CCEDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          }
+          else {
+            url = await CEDService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          }
           break;
-        }
+        }        
+
         default: {
           return common.respond(req, res, 400, { 
             codigoCurso: 'ERR_INVALID_CATEGORY',
@@ -290,6 +309,25 @@ router.get('/files/pdf/:filename', guard.check([['admin']]), async (req, res) =>
     }
     const filePath = path.join(__dirname, '..', 'temp', `${filename}`);
     const contentFile = await fs.readFileSync(filePath);
+    if (!contentFile) {
+      return common.respond(req, res, 404, { codigoCurso: 'ERR_FILE_NOT_FOUND', additionalInfo: { param: 'filename' } });
+    }
+    const bufferBase64 = Buffer(contentFile).toString('base64')
+    common.respond(req, res, 200, bufferBase64);
+  } catch (err) {
+    common.handleException(req, res, err);
+  }
+});
+
+router.get('/files/xlsx/:filename', guard.check([['admin']]), async (req, res) => {
+  try {
+    const filename = req.params.filename
+    console.log(`filename:${filename}`)
+    if (!filename) {
+      return common.respond(req, res, 400, { codigoCurso: 'ERR_MISSING_PARAM', additionalInfo: { param: 'filename' } });
+    }
+    const filePath = path.join(__dirname, '..', 'temp', `${filename}`);
+    const contentFile = await fs.readFileSync(filePath)
     if (!contentFile) {
       return common.respond(req, res, 404, { codigoCurso: 'ERR_FILE_NOT_FOUND', additionalInfo: { param: 'filename' } });
     }
