@@ -56,6 +56,7 @@ let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGMR1 = 'Identidad alumno';
 let textGMR2 = 'Forma de acceso';
 let textGMR3 = 'Consentimiento progenitores firmado (menores de edad)';
+let textGMR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
 
 let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
 let textGSTypeA = 'Bachillerato';
@@ -66,14 +67,18 @@ let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGSR1 = 'Identidad alumno';
 let textGSR2 = 'Forma de acceso';
 let textGSR3 = 'Consentimiento progenitores firmado (menores de edad)';
+let textGSR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
 
 let textCETitleGeneral = 'CICLOS FORMATIVOS DE CURSO ESPECIALIZACIÓN';
-let textCETypeGeneral = 'General';
+let textCETypeA = 'A';
+let textCETypeB = 'B';
+let textCETypeC = 'C';
 let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textCER1 = 'Identidad alumno';
 let textCER2 = 'Forma de acceso';
 let textCER3 = 'Consentimiento progenitores firmado (menores de edad)';
+let textCER4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
 
 
 export default function Home() {
@@ -158,6 +163,7 @@ export default function Home() {
     formData.set('textGMR1', textGMR1);
     formData.set('textGMR2', textGMR2);
     formData.set('textGMR3', textGMR3);
+    formData.set('textGMR4', textGMR4);
 
     formData.set('textGSTitleGeneral', textGSTitleGeneral);
     formData.set('textGSTypeA', textGSTypeA);
@@ -168,14 +174,18 @@ export default function Home() {
     formData.set('textGSR1', textGSR1);
     formData.set('textGSR2', textGSR2);
     formData.set('textGSR3', textGSR3);
+    formData.set('textGSR4', textGSR4);
 
     formData.set('textCETitleGeneral', textCETitleGeneral);
-    formData.set('textCETypeGeneral', textCETypeGeneral);
+    formData.set('textCETypeA', textCETypeA);
+    formData.set('textCETypeB', textCETypeB);
+    formData.set('textCETypeC', textCETypeC);
     formData.set('textCETypeAthlete', textCETypeAthlete);
     formData.set('textCETypeHandicap', textCETypeHandicap);
     formData.set('textCER1', textCER1);
     formData.set('textCER2', textCER2);
     formData.set('textCER3', textCER3);
+    formData.set('textCER4', textCER4);
 
     try {
       const index = steps.indexOf(step);
@@ -637,6 +647,14 @@ export default function Home() {
                   <input class="inputConfig" id="textGMR3Input" value={textGMR3} onChange={(e) => { textGMR3 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R4
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMR4Input" value={textGMR4} onChange={(e) => { textGMR4 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
             <h4><b>Vía acceso Grado Superior (GS)</b></h4>
             <table>
@@ -712,6 +730,14 @@ export default function Home() {
                   <input class="inputConfig" id="textGSR3Input" value={textGSR3} onChange={(e) => { textGSR3 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R4
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSR4Input" value={textGSR4} onChange={(e) => { textGSR4 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
             <h4><b>Vía acceso Curso Especialización (CE)</b></h4>
             <table>
@@ -725,10 +751,26 @@ export default function Home() {
               </tr>
               <tr>
                 <td class="tdConfig">
-                  Texto vía acceso general
+                  Texto acceso tipo A
                 </td>
                 <td>
-                  <input class="inputConfig" id="textCETypeGeneralInput" value={textCETypeGeneral} onChange={(e) => { textCETypeGeneral = e.target.value; resetSteps(); } } />
+                  <input class="inputConfig" id="textGSTypeAInput" value={textCETypeA} onChange={(e) => { textCETypeA = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo B
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeBInput" value={textCETypeB} onChange={(e) => { textCETypeB = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo C
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeCInput" value={textCETypeC} onChange={(e) => { textCETypeC = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
@@ -769,6 +811,14 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textCER3Input" value={textCER3} onChange={(e) => { textCER3 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R4
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCER4Input" value={textCER4} onChange={(e) => { textCER4 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>

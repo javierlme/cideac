@@ -20,6 +20,7 @@ async function processAssigns(category, city, filePath, config) {
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGMR1 + ' / ';
     if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textGMR2 + ' / ';
     if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textGMR3 + ' / ';
+    if (texto.match(new RegExp('r4', 'i')) != null) motivo+=config.textGMR4 + ' / ';
     return motivo.slice(0,-2)
   }
 
@@ -41,6 +42,23 @@ async function processAssigns(category, city, filePath, config) {
     }
 
     return result;
+  }
+
+  const algunModuloPrimero = (listaCentrosCiclosModulos) => {
+    if (Array.isArray(listaCentrosCiclosModulos)){
+      for (var i=0; i<listaCentrosCiclosModulos.length; i++){
+        if (listaCentrosCiclosModulos[i]){
+          const found = listaCentrosCiclosModulos[i].filter(l=>Number(l.numeroCurso)==Number(1));
+          if (found && found.length>0){
+            return true;
+          }
+        }
+      }
+    }
+    else {
+      return true;
+    }
+    return false;
   }
 
   let rowIndex = 2;
@@ -141,6 +159,10 @@ async function processAssigns(category, city, filePath, config) {
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple =  readCell('BS', rowIndex).toLowerCase();
     infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
+    // Condicion especial de solicitud SOLO de segundo y sin embargo NO se permite segundo
+    if ((!infoSolicitud.permitirSegundo) && (!algunModuloPrimero(infoSolicitud.listaCentrosCiclosModulos)) ) {
+      infoSolicitud.incumple = 'r4';
+    }
     if (String(infoSolicitud.incumple || '') == '') {
       listaSolicitudesAceptadas.push(infoSolicitud);
     }
@@ -306,6 +328,9 @@ var algunaSolicitudCambia = true;
         // Existe mejora
         solicitudUltima.asignado = SIN_ASIGNAR;
         solicitud.asignado = tipoAsignacion;
+        // Quitar las que estén asignadas por encima de esta
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==solicitud.applicationId && lsam.asignado!=SIN_ASIGNAR 
+          && lsam.prioridadPeticion>solicitud.prioridadPeticion && lsam.claveCentroCicloModulo!=solicitud.claveCentroCicloModulo)).map(sol=>sol.asignado=SIN_ASIGNAR);
         hayCambios = true;
       }
     }

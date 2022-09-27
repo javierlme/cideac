@@ -109,16 +109,16 @@ exports.getCategoryCourses = async (city, category) => {
   if (listDistanceCode.includes(sheet)) {
     while (getCellValue('H'+rowIndex) != '') {
       courses.push({
-        codigoCentro: getCellValue('A'+rowIndex),
+        codigoCentro: getCellValue('A'+rowIndex).replace('.',''),
         centro: getCellValue('B'+rowIndex),
-        codigoCurso: getCellValue('C'+rowIndex),
+        codigoCurso: getCellValue('C'+rowIndex).replace('.',''),
         curso: getCellValue('D'+rowIndex),
-        codigoModulo: getCellValue('E'+rowIndex),
+        codigoModulo: getCellValue('E'+rowIndex).replace('.',''),
         modulo: getCellValue('F'+rowIndex),
         maxHorasModulo: getCellValue('G'+rowIndex),
         vacantes: Number(getCellValue('H'+rowIndex)),
         abreviaturaModulo: getCellValue('I'+rowIndex),
-        numeroCurso: getCellValue('J'+rowIndex)
+        numeroCurso: getCellValue('J'+rowIndex)==''?Number(1):Number(getCellValue('J'+rowIndex))
       });
       rowIndex++;
     }
@@ -375,6 +375,7 @@ const buildConfig = (req) => {
     "textGMR1": String(req.body.textGMR1?req.body.textGMR1:String()),
     "textGMR2": String(req.body.textGMR2?req.body.textGMR2:String()),
     "textGMR3": String(req.body.textGMR3?req.body.textGMR3:String()),
+    "textGMR4": String(req.body.textGMR4?req.body.textGMR4:String()),
 
     "textGSTitleGeneral": String(req.body.textGSTitleGeneral?req.body.textGSTitleGeneral:String()),
     "textGSTypeA": String(req.body.textGSTypeA?req.body.textGSTypeA:String()),
@@ -385,14 +386,18 @@ const buildConfig = (req) => {
     "textGSR1": String(req.body.textGSR1?req.body.textGSR1:String()),
     "textGSR2": String(req.body.textGSR2?req.body.textGSR2:String()),
     "textGSR3": String(req.body.textGSR3?req.body.textGSR3:String()),
+    "textGSR4": String(req.body.textGSR4?req.body.textGSR4:String()),
 
     "textCETitleGeneral": String(req.body.textCETitleGeneral?req.body.textCETitleGeneral:String()),
-    "textCETypeGeneral": String(req.body.textCETypeGeneral?req.body.textCETypeGeneral:String()),
+    "textCETypeA": String(req.body.textCETypeA?req.body.textCETypeA:String()),
+    "textCETypeB": String(req.body.textCETypeB?req.body.textCETypeB:String()),
+    "textCETypeC": String(req.body.textCETypeC?req.body.textCETypeC:String()),
     "textCETypeAthlete": String(req.body.textCETypeAthlete?req.body.textCETypeAthlete:String()),
     "textCETypeHandicap": String(req.body.textCETypeHandicap?req.body.textCETypeHandicap:String()),
     "textCER1": String(req.body.textCER1?req.body.textCER1:String()),
     "textCER2": String(req.body.textCER2?req.body.textCER2:String()),
-    "textCER3": String(req.body.textCER3?req.body.textCER3:String())
+    "textCER3": String(req.body.textCER3?req.body.textCER3:String()),
+    "textCER4": String(req.body.textCER4?req.body.textCER4:String())
   }
 
 }
