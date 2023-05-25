@@ -32,11 +32,11 @@ let percentageB = 30;
 let percentageC = 10;
 
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
-let titleCurse = 'Curso 2022/2023';
-let titleAdmitted = 'LISTADO DEFINITIVO DE ADMITIDOS';
-let titleWaiting = 'LISTAS DE ESPERA DEFINITIVAS';
-let titleRejected = 'LISTADO DEFINITIVO DE EXCLUIDOS';
-let titleSlot = 'LISTADO DEFINITIVO DE VACANTES';
+let titleCurse = 'Curso 2023/2024';
+let titleAdmitted = 'LISTADO PROVISIONAL DE ADMITIDOS';
+let titleWaiting = 'LISTAS DE ESPERA PROVISIONALES';
+let titleRejected = 'LISTADO PROVISIONAL DE EXCLUIDOS';
+let titleSlot = 'LISTADO PROVISIONAL DE VACANTES';
 let titleWarning = ''
 
 let textGBTitleGeneral = 'CICLOS FORMATIVOS BÁSICO';
@@ -50,7 +50,7 @@ let textGBR3 = 'Consentimiento';
 let textGMTitleGeneral = 'CICLOS FORMATIVOS DE GRADO MEDIO';
 let textGMTypeA = 'Título de graduado en ESO';
 let textGMTypeB = 'Título de Formación Profesional Básica';
-let textGMTypeC = 'Prueba de Acceso / Otras formas de acceso';
+let textGMTypeC = 'Prueba de acceso / Cursos de acceso / Otras formas de acceso contempladas en la normativa';
 let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGMR1 = 'Identidad alumno';
@@ -61,7 +61,7 @@ let textGMR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir
 let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
 let textGSTypeA = 'Bachillerato';
 let textGSTypeB = 'Título de Técnico (G.M. LOE/LOGSE)';
-let textGSTypeC = 'Prueba de Acceso / Otras formas de acceso';
+let textGSTypeC = 'Prueba de acceso / Cursos de acceso / Otras formas de acceso contempladas en la normativa';
 let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGSR1 = 'Identidad alumno';
@@ -345,7 +345,7 @@ export default function Home() {
         </Button>
       </header>
       <section className="intro">
-        <h2><b>Plataforma de asignación de plazas de formación profesional</b></h2>
+        <h2><b>Plataforma de asignación de plazas de formación profesional 2023</b></h2>
         <p>Para comenzar sigue los pasos a continuación:</p>
         <label className="selector">
           Seleccionar ciclo

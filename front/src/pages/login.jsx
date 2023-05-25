@@ -38,7 +38,7 @@ export default function Login(props) {
       <div className="content">
         <div className="info">
           <img src="assets/logo.png" alt="" />
-          Plataforma de Asignación de plazas de ciclos de formación 2022
+          Plataforma de Asignación de plazas de ciclos de formación 2023
         </div>
         <form onSubmit={handleSubmit}>
           <h1>Iniciar sesión</h1>
