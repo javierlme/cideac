@@ -219,6 +219,7 @@ var algunaSolicitudCambia = true;
     
     registro.listaCentrosCiclosModulos[index].map(modulo=>{
       if (registro.permitirSegundo || (!registro.permitirSegundo && modulo.numeroCurso==1)){
+        
         listaModulos.push( {
           applicationId: registro.applicationId,
           claveCentroCicloModulo: generarClave(modulo),
@@ -318,7 +319,11 @@ var algunaSolicitudCambia = true;
 
     // Caso básico. Existen vacantes disponibles asignación directa
     if (contarLista(listaAceptados)<vacantes){
+
       solicitud.asignado = tipoAsignacion;
+      // Quitar las que estén asignadas por encima de esta
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==solicitud.applicationId && lsam.asignado!=SIN_ASIGNAR 
+        && lsam.prioridadPeticion>solicitud.prioridadPeticion && lsam.claveCentroCicloModulo!=solicitud.claveCentroCicloModulo)).map(sol=>sol.asignado=SIN_ASIGNAR);
       hayCambios = true;
     }
     else{
@@ -519,9 +524,9 @@ else{
   const esperaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `esperaBase${category}.html`));
   const excluidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `excluidosBase${category}.html`));
 
-  var contentAdmitidosExcel = 'ORDEN;NÚMERO DOCUMENTO DE IDENTIDAD;NUMERO SOLICITUD;IDENTIFICACION;CENTRO Y CICLO FORMATIVO;MODULO_1;MODULO_2;MODULO_3;MODULO_4;MODULO_5;MODULO_6;MODULO_7;MODULO_8;MODULO_9;MODULO_10;LISTA;PREFERENCIA;PUNTUACION;MINUSVALÍA;ATLETA;\r\n';
-  var contentEsperaExcel = 'ORDEN;NÚMERO DOCUMENTO DE IDENTIDAD;NUMERO SOLICITUD;IDENTIFICACION;CENTRO Y CICLO FORMATIVO;MODULO_1;MODULO_2;MODULO_3;MODULO_4;MODULO_5;MODULO_6;MODULO_7;MODULO_8;MODULO_9;MODULO_10;LISTA;PREFERENCIA;PUNTUACION;MINUSVALÍA;ATLETA;\r\n';
-  var contentExcluidosExcel = 'NUMERO;NOMBRE;MOTIVO EXCLUSION;\r\n';
+  var contentAdmitidosExcel = 'ORDEN;NÚMERO DOCUMENTO DE IDENTIDAD;NÚMERO SOLICITUD;CENTRO;CÓDIGO CENTRO;CICLO;CÓDIGO CICLO;LISTA;PREFERENCIA;PUNTUACIÓN;MINUSVALÍA;ATLETA;MODULO_1;MODULO_2;MODULO_3;MODULO_4;MODULO_5;MODULO_6;MODULO_7;MODULO_8;MODULO_9;MODULO_10;\r\n';
+  var contentEsperaExcel = contentAdmitidosExcel;
+  var contentExcluidosExcel = 'NÚMERO;DNI;NOMBRE;CÓDIGO EXCLUSIÓN;MOTIVO EXCLUSIÓN;\r\n';
 
   if (contentHeaderFile && admitidosBaseHtml && esperaBaseHtml){
 
@@ -563,11 +568,14 @@ else{
         const datosAux = listaAsignadosA.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosA.push(data);
         }
       };
@@ -575,11 +583,14 @@ else{
         const datosAux = listaAsignadosAEspera.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosAEspera.push(data);
         }
       };
@@ -587,11 +598,14 @@ else{
         const datosAux = listaAsignadosB.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosB.push(data);
         }
       };
@@ -599,11 +613,14 @@ else{
         const datosAux = listaAsignadosBEspera.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosBEspera.push(data);
         }
       };
@@ -611,11 +628,14 @@ else{
         const datosAux = listaAsignadosC.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosC.push(data);
         }
       };
@@ -623,11 +643,14 @@ else{
         const datosAux = listaAsignadosCEspera.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosCEspera.push(data);
         }
       };
@@ -635,11 +658,14 @@ else{
         const datosAux = listaAsignadosDeportistasElite.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosDeportistasElite.push(data);
         }
       };
@@ -647,11 +673,14 @@ else{
         const datosAux = listaAsignadosDiscapacitados.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
         }
         else {
           const data = JSON.parse(JSON.stringify(lista));
           data.listaCentrosCiclosModulos = Array();
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
           listaAsignadosDiscapacitados.push(data);
         }
       };
@@ -718,9 +747,10 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
-          contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -756,9 +786,10 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
-          contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -794,9 +825,10 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
-          contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -831,9 +863,10 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
-          contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -868,9 +901,10 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
-          contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -906,9 +940,10 @@ else{
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
-          contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -943,9 +978,10 @@ else{
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
-          contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -980,9 +1016,10 @@ else{
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `  </tr>`;
-          contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
-            +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+          contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -1001,7 +1038,6 @@ else{
     
     // Generar lista exclusión
     orden=0;
-    var contentExcluidosExcel = 'NUMERO;DNI;NOMBRE;CODIGO EXCLUSION;MOTIVO EXCLUSION;\r\n';
     listaSolicitudesNoAceptadas.sort(function(a,b){return (String(a.personalId.substr(a.personalId.indexOf(', ') + 2)).localeCompare(String(b.personalId.substr(b.personalId.indexOf(', ') + 2))))}).map(ap => {
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
@@ -1020,7 +1056,7 @@ else{
       htmlListaExcluidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
       htmlListaExcluidos += `	  <td>${generarTextoExclusionCE(ap.incumple)}</td>`;
       htmlListaExcluidos += `  </tr>`;
-      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId};${ap.incumple};${generarTextoExclusionCE(ap.incumple)}\r\n`;
+      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'};${ap.incumple};${generarTextoExclusionGM(ap.incumple)}\r\n`;
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += '</table>';
         htmlListaExcluidos += `<div style="page-break-after:always"></div>`;
