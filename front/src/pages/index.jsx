@@ -34,51 +34,51 @@ let percentageC = 10;
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
 let titleCurse = 'Curso 2023/2024';
 let titleAdmitted = 'LISTADO PROVISIONAL DE ADMITIDOS';
-let titleWaiting = 'LISTAS DE ESPERA PROVISIONALES';
+let titleWaiting = 'LISTAS PROVISIONAL DE ESPERA';
 let titleRejected = 'LISTADO PROVISIONAL DE EXCLUIDOS';
 let titleSlot = 'LISTADO PROVISIONAL DE VACANTES';
 let titleWarning = ''
 
-let textGBTitleGeneral = 'CICLOS FORMATIVOS BÁSICO';
+let textGBTitleGeneral = 'CICLOS FORMATIVOS DE GRADO BÁSICO';
 let textGBTypeGeneral = 'General';
 let textGBTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGBTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGBR1 = 'Identidad alumno';
-let textGBR2 = 'Consejo Orientador firmado';
-let textGBR3 = 'Consentimiento';
+let textGBR2 = 'Consejo Orientador';
+let textGBR3 = 'Declaración responsable (menores de edad)';
 
 let textGMTitleGeneral = 'CICLOS FORMATIVOS DE GRADO MEDIO';
 let textGMTypeA = 'Título de graduado en ESO';
 let textGMTypeB = 'Título de Formación Profesional Básica';
-let textGMTypeC = 'Prueba de acceso / Cursos de acceso / Otras formas de acceso contempladas en la normativa';
+let textGMTypeC = 'Prueba de acceso / Otras formas de acceso';
 let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGMR1 = 'Identidad alumno';
 let textGMR2 = 'Forma de acceso';
-let textGMR3 = 'Consentimiento progenitores firmado (menores de edad)';
+let textGMR3 = 'Declaración responsable (menores de edad)';
 let textGMR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
 
 let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
 let textGSTypeA = 'Bachillerato';
 let textGSTypeB = 'Título de Técnico (G.M. LOE/LOGSE)';
-let textGSTypeC = 'Prueba de acceso / Cursos de acceso / Otras formas de acceso contempladas en la normativa';
+let textGSTypeC = 'Prueba de acceso / Otras formas de acceso';
 let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGSR1 = 'Identidad alumno';
 let textGSR2 = 'Forma de acceso';
-let textGSR3 = 'Consentimiento progenitores firmado (menores de edad)';
+let textGSR3 = 'Declaración responsable (menores de edad)';
 let textGSR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
 
-let textCETitleGeneral = 'CICLOS FORMATIVOS DE CURSO ESPECIALIZACIÓN';
-let textCETypeA = 'A';
-let textCETypeB = 'B';
-let textCETypeC = 'C';
+let textCETitleGeneral = 'CURSO ESPECIALIZACIÓN';
+let textCETypeA = '';
+let textCETypeB = '';
+let textCETypeC = '';
 let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textCER1 = 'Identidad alumno';
 let textCER2 = 'Forma de acceso';
-let textCER3 = 'Consentimiento progenitores firmado (menores de edad)';
-let textCER4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
+let textCER3 = 'Declaración responsable (menores de edad)';
+let textCER4 = '';
 
 
 export default function Home() {
