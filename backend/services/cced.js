@@ -3,6 +3,12 @@ const path = require('path');
 const courseService = require('../routers/courses');
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
+const toNumber = (valor) => {
+  if (isNaN(valor)){
+    return Number(valor.replace('.','').replace(',','.'))
+  }
+  return Number (valor)
+}
 
 async function processAssigns(category, city, filePath, config) {
   const listaSolicitudesAceptadas = Array();
@@ -144,7 +150,7 @@ async function processAssigns(category, city, filePath, config) {
     infoSolicitud = {
       docId: readCell('A', rowIndex),
       applicationId: readCell('B', rowIndex),
-      randomNumber: Number(readCell('C', rowIndex).replace(',','')),
+      randomNumber: toNumber(readCell('C', rowIndex)),
       personalId: readCell('D', rowIndex),
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
@@ -154,7 +160,7 @@ async function processAssigns(category, city, filePath, config) {
     validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
     validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
     infoSolicitud.viaAcceso = readCell('H', rowIndex);
-    infoSolicitud.scoring = Number(readCell('BO', rowIndex).replace('.','').replace(',','.'));
+    infoSolicitud.scoring = toNumber(readCell('BO', rowIndex));
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple = readCell('BS', rowIndex).toLowerCase();

@@ -4,8 +4,6 @@ const courseService = require('../routers/courses');
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
 
-
-
 const sortLeyendasDistancia = (c1, c2) => {
   return (Number(c1.codigoCentro) != Number(c2.codigoCentro))? Number(c2.codigoCentro) - Number(c1.codigoCentro) :
     (Number(c1.codigoCurso) != Number(c2.codigoCurso))? Number(c2.codigoCurso) - Number(c1.codigoCurso) :  
