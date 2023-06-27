@@ -389,15 +389,12 @@ const buildConfig = (req) => {
     "textGSR4": String(req.body.textGSR4?req.body.textGSR4:String()),
 
     "textCETitleGeneral": String(req.body.textCETitleGeneral?req.body.textCETitleGeneral:String()),
-    "textCETypeA": String(req.body.textCETypeA?req.body.textCETypeA:String()),
-    "textCETypeB": String(req.body.textCETypeB?req.body.textCETypeB:String()),
-    "textCETypeC": String(req.body.textCETypeC?req.body.textCETypeC:String()),
+    "textCETypeGeneral": String(req.body.textCETypeGeneral?req.body.textCETypeGeneral:String()),
     "textCETypeAthlete": String(req.body.textCETypeAthlete?req.body.textCETypeAthlete:String()),
     "textCETypeHandicap": String(req.body.textCETypeHandicap?req.body.textCETypeHandicap:String()),
     "textCER1": String(req.body.textCER1?req.body.textCER1:String()),
     "textCER2": String(req.body.textCER2?req.body.textCER2:String()),
-    "textCER3": String(req.body.textCER3?req.body.textCER3:String()),
-    "textCER4": String(req.body.textCER4?req.body.textCER4:String())
+    "textCER3": String(req.body.textCER3?req.body.textCER3:String())
   }
 
 }

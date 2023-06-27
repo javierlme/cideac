@@ -70,16 +70,12 @@ let textGSR3 = 'Declaración responsable (menores de edad)';
 let textGSR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
 
 let textCETitleGeneral = 'CURSO ESPECIALIZACIÓN';
-let textCETypeA = '';
-let textCETypeB = '';
-let textCETypeC = '';
+let textCETypeGeneral = 'General';
 let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textCER1 = 'Identidad alumno';
 let textCER2 = 'Forma de acceso';
 let textCER3 = 'Declaración responsable (menores de edad)';
-let textCER4 = '';
-
 
 export default function Home() {
   const [user, logout] = useSession(selector, shallow);
@@ -177,15 +173,12 @@ export default function Home() {
     formData.set('textGSR4', textGSR4);
 
     formData.set('textCETitleGeneral', textCETitleGeneral);
-    formData.set('textCETypeA', textCETypeA);
-    formData.set('textCETypeB', textCETypeB);
-    formData.set('textCETypeC', textCETypeC);
+    formData.set('textCETypeGeneral', textCETypeGeneral);
     formData.set('textCETypeAthlete', textCETypeAthlete);
     formData.set('textCETypeHandicap', textCETypeHandicap);
     formData.set('textCER1', textCER1);
     formData.set('textCER2', textCER2);
     formData.set('textCER3', textCER3);
-    formData.set('textCER4', textCER4);
 
     try {
       const index = steps.indexOf(step);
@@ -751,28 +744,12 @@ export default function Home() {
               </tr>
               <tr>
                 <td class="tdConfig">
-                  Texto acceso tipo A
+                  Texto vía acceso general
                 </td>
                 <td>
-                  <input class="inputConfig" id="textGSTypeAInput" value={textCETypeA} onChange={(e) => { textCETypeA = e.target.value; resetSteps(); } } />
+                  <input class="inputConfig" id="textCETypeGeneralInput" value={textCETypeGeneral} onChange={(e) => { textCETypeGeneral = e.target.value; resetSteps(); } } />
                 </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo B
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeBInput" value={textCETypeB} onChange={(e) => { textCETypeB = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo C
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeCInput" value={textCETypeC} onChange={(e) => { textCETypeC = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
+              </tr>              
               <tr>
                 <td class="tdConfig">
                   Texto acceso deportista élite
@@ -811,14 +788,6 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textCER3Input" value={textCER3} onChange={(e) => { textCER3 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R4
-                </td>
-                <td>
-                  <input class="inputConfig" id="textCER4Input" value={textCER4} onChange={(e) => { textCER4 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>
