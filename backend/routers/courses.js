@@ -109,11 +109,11 @@ exports.getCategoryCourses = async (city, category) => {
   if (listDistanceCode.includes(sheet)) {
     while (getCellValue('H'+rowIndex) != '') {
       courses.push({
-        codigoCentro: getCellValue('A'+rowIndex).replace('.',''),
+        codigoCentro: String(getCellValue('A'+rowIndex).replace('.','')).trim(),
         centro: getCellValue('B'+rowIndex),
-        codigoCurso: getCellValue('C'+rowIndex).replace('.',''),
+        codigoCurso: String(getCellValue('C'+rowIndex).replace('.','')).trim(),
         curso: getCellValue('D'+rowIndex),
-        codigoModulo: getCellValue('E'+rowIndex).replace('.',''),
+        codigoModulo: String(getCellValue('E'+rowIndex).replace('.','')).trim(),
         modulo: getCellValue('F'+rowIndex),
         maxHorasModulo: getCellValue('G'+rowIndex),
         vacantes: Number(getCellValue('H'+rowIndex)),

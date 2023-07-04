@@ -22,7 +22,7 @@ const defaultSteps = [
 
 // Configuration
 let openConfig = false;
-let randomNumberSelected = 147;
+let randomNumberSelected = 620;
 let percentageHandicap = 5;
 let numSlotsBySeatHandicap = 1;
 let percentageAthlete = 5;

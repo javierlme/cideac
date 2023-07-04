@@ -71,18 +71,18 @@ async function processAssigns(category, city, filePath, config) {
   let infoSolicitud;
   const validateAndAppendCourse = (field, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, infoSolicitud, prioridad, textoCursoCompleto, mandatory = false) => {
     var cursoCompleto = false;
-    const curso   = readCell(field, rowIndex).split(' ')[0]
+    const curso   = readCell(field, rowIndex).split(' ')[0].trim();
     var listaModulos = Array();
-    const modulo1 = readCell(mod1,  rowIndex).split('#')[0];
-    const modulo2 = readCell(mod2,  rowIndex).split('#')[0];
-    const modulo3 = readCell(mod3,  rowIndex).split('#')[0];
-    const modulo4 = readCell(mod4,  rowIndex).split('#')[0];
-    const modulo5 = readCell(mod5,  rowIndex).split('#')[0];
-    const modulo6 = readCell(mod6,  rowIndex).split('#')[0];
-    const modulo7 = readCell(mod7,  rowIndex).split('#')[0];
-    const modulo8 = readCell(mod8,  rowIndex).split('#')[0];
-    const modulo9 = readCell(mod9,  rowIndex).split('#')[0];
-    const modulo10=  readCell(mod10, rowIndex).split('#')[0];
+    const modulo1 = readCell(mod1,  rowIndex).split('#')[0].trim();
+    const modulo2 = readCell(mod2,  rowIndex).split('#')[0].trim();
+    const modulo3 = readCell(mod3,  rowIndex).split('#')[0].trim();
+    const modulo4 = readCell(mod4,  rowIndex).split('#')[0].trim();
+    const modulo5 = readCell(mod5,  rowIndex).split('#')[0].trim();
+    const modulo6 = readCell(mod6,  rowIndex).split('#')[0].trim();
+    const modulo7 = readCell(mod7,  rowIndex).split('#')[0].trim();
+    const modulo8 = readCell(mod8,  rowIndex).split('#')[0].trim();
+    const modulo9 = readCell(mod9,  rowIndex).split('#')[0].trim();
+    const modulo10=  readCell(mod10, rowIndex).split('#')[0].trim();
     if (modulo1!='')  { listaModulos.push(curso + modulo1); }
     if (modulo2!='')  { listaModulos.push(curso + modulo2); }
     if (modulo3!='')  { listaModulos.push(curso + modulo3); }
