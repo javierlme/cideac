@@ -5,6 +5,12 @@ const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
 const toNumber = (valor) => {
   if (isNaN(valor)){
+    return Number(valor.replace('.','').replace(',','.'))
+  }
+  return Number (valor)
+}
+const toNumberRandom = (valor) => {
+  if (isNaN(valor)){
     return Number(valor.replace(',',''))
   }
   return Number (valor)
@@ -76,7 +82,7 @@ async function processAssigns(category, city, filePath, config) {
     infoSolicitud = {
       docId: readCell('A', rowIndex),
       applicationId: readCell('B', rowIndex),
-      randomNumber: toNumber(readCell('C', rowIndex)),
+      randomNumber: toNumberRandom(readCell('C', rowIndex)),
       personalId: readCell('D', rowIndex),
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
