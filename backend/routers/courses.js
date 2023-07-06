@@ -113,7 +113,7 @@ exports.getCategoryCourses = async (city, category) => {
         centro: getCellValue('B'+rowIndex),
         codigoCurso: String(getCellValue('C'+rowIndex).replace('.','')).trim(),
         curso: getCellValue('D'+rowIndex),
-        codigoModulo: String(getCellValue('E'+rowIndex).replace('.','')).trim(),
+        codigoModulo: String(getCellValue('E'+rowIndex).replace('.','')).trim(),//.padStart(4, '0'),
         modulo: getCellValue('F'+rowIndex),
         maxHorasModulo: getCellValue('G'+rowIndex),
         vacantes: Number(getCellValue('H'+rowIndex)),

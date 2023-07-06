@@ -5,7 +5,7 @@ const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
 const toNumber = (valor) => {
   if (isNaN(valor)){
-    return Number(valor.replace('.','').replace(',','.'))
+    return Number(valor.replace(',',''))
   }
   return Number (valor)
 }
@@ -1062,7 +1062,7 @@ else{
       htmlListaExcluidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
       htmlListaExcluidos += `	  <td>${generarTextoExclusionGS(ap.incumple)}</td>`;
       htmlListaExcluidos += `  </tr>`;
-      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'};${ap.incumple};${generarTextoExclusionGM(ap.incumple)}\r\n`;
+      contentExcluidosExcel+= `${(orden || '')};${ap.docId ? `${ap.docId}` : 'Ninguno'};${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'};${ap.incumple};${generarTextoExclusionGS(ap.incumple)}\r\n`;
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += '</table>';
         htmlListaExcluidos += `<div style="page-break-after:always"></div>`;

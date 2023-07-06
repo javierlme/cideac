@@ -5,7 +5,7 @@ const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
 const toNumber = (valor) => {
   if (isNaN(valor)){
-    return Number(valor.replace('.','').replace(',','.'))
+    return Number(valor.replace(',',''))
   }
   return Number (valor)
 }
