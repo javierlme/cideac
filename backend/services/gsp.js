@@ -601,6 +601,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -636,6 +637,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -671,6 +673,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -705,6 +708,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -739,6 +743,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -774,6 +779,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -808,6 +814,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -844,6 +851,7 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`

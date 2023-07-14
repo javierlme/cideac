@@ -759,6 +759,7 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
@@ -799,6 +800,7 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
@@ -839,6 +841,7 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
@@ -878,6 +881,7 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
@@ -917,6 +921,7 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
@@ -957,6 +962,7 @@ else{
           htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
@@ -996,6 +1002,7 @@ else{
           htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
@@ -1035,6 +1042,7 @@ else{
           htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
