@@ -82,7 +82,13 @@ async function processAssigns(category, city, filePath, config) {
         curso: selectedCourse.curso,
         prioridad: false,
       }
-      infoSolicitud.listaCentrosCiclosModulos.push(centrosCiclosModulo);
+      if (Number(selectedCourse.vacantes>0)){
+        infoSolicitud.listaCentrosCiclosModulos.push(centrosCiclosModulo);
+      }
+      else{
+        console.log(`Eliminada peticion ${infoSolicitud.applicationId} porque el curso ${selectedCourse.curso} no tiene plazas.`);
+        infoSolicitud.eliminadaPeticion = true;
+      }
     }
   }
 
@@ -110,7 +116,7 @@ async function processAssigns(category, city, filePath, config) {
         listaSolicitudesAceptadas.push(infoSolicitud);
       }
       else{
-        listaSolicitudesNoAceptadas.push(infoSolicitud);
+          listaSolicitudesNoAceptadas.push(infoSolicitud);
       }
     }
     rowIndex++;

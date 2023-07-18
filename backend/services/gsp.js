@@ -82,7 +82,13 @@ async function processAssigns(category, city, filePath, config) {
         curso: selectedCourse.curso,
         prioridad: prioridad,
       }
-      infoSolicitud.listaCentrosCiclosModulos.push(centrosCiclosModulo);
+      if (Number(selectedCourse.vacantes>0)){
+        infoSolicitud.listaCentrosCiclosModulos.push(centrosCiclosModulo);
+      }
+      else{
+        console.log(`Eliminada peticion ${infoSolicitud.applicationId} porque el curso ${selectedCourse.curso} no tiene plazas.`);
+        infoSolicitud.eliminadaPeticion = true;
+      }
     }
   }
 
