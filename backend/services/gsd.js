@@ -26,7 +26,16 @@ async function processAssigns(category, city, filePath, config) {
     const cellValue = wb.Sheets[dataSheet][`${column}${row}`];
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
-
+  const DESCARTADO = 'DESCARTADO-MEJORA';
+  const writeCell = (column, row, cellValue) => {
+    if (wb.Sheets[dataSheet][`${column}${row}`]?.v){
+      wb.Sheets[dataSheet][`${column}${row}`].v = cellValue;
+      wb.Sheets[dataSheet][`${column}${row}`].w = cellValue;
+    }
+    else {
+      xlsx.utils.sheet_add_aoa(wb.Sheets[dataSheet], [[cellValue]], {origin: `${column}${row}`});
+    }
+  }
   const generarTextoExclusionGS = (texto) => {
     var motivo = String();
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGSR1 + ' / ';
@@ -158,33 +167,35 @@ async function processAssigns(category, city, filePath, config) {
 
   // Leer del excel los datos de las listaSolicitudesAceptadas
   while (readCell('A', rowIndex) != '') {
-    infoSolicitud = {
-      docId: readCell('A', rowIndex),
-      applicationId: readCell('B', rowIndex),
-      randomNumber: toNumberRandom(readCell('C', rowIndex)),
-      personalId: readCell('D', rowIndex),
-      especialNeeds: false,
-      listaCentrosCiclosModulos: Array()
-    };  
-    validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, ['si','sí'].includes(readCell('U',  rowIndex).toLowerCase()), readCell('J', rowIndex));
-    validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
-    validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
-    validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
-    infoSolicitud.viaAcceso = readCell('H', rowIndex);
-    infoSolicitud.scoring = toNumber(readCell('BO', rowIndex));
-    infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
-    infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
-    infoSolicitud.incumple =  readCell('BS', rowIndex).toLowerCase();
-    infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
-    // Condicion especial de solicitud SOLO de segundo y sin embargo NO se permite segundo
-    if ((!infoSolicitud.permitirSegundo) && (!algunModuloPrimero(infoSolicitud.listaCentrosCiclosModulos)) ) {
-      infoSolicitud.incumple = 'r4';
-    }
-    if (String(infoSolicitud.incumple || '') == '') {
-      listaSolicitudesAceptadas.push(infoSolicitud);
-    }
-    else{
-      listaSolicitudesNoAceptadas.push(infoSolicitud);
+    if (DESCARTADO!=readCell('A', rowIndex)){
+      infoSolicitud = {
+        docId: readCell('A', rowIndex),
+        applicationId: readCell('B', rowIndex),
+        randomNumber: toNumberRandom(readCell('C', rowIndex)),
+        personalId: readCell('D', rowIndex),
+        especialNeeds: false,
+        listaCentrosCiclosModulos: Array()
+      };  
+      validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, ['si','sí'].includes(readCell('U',  rowIndex).toLowerCase()), readCell('J', rowIndex));
+      validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
+      validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
+      validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
+      infoSolicitud.viaAcceso = readCell('H', rowIndex);
+      infoSolicitud.scoring = toNumber(readCell('BO', rowIndex));
+      infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
+      infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
+      infoSolicitud.incumple =  readCell('BS', rowIndex).toLowerCase();
+      infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
+      // Condicion especial de solicitud SOLO de segundo y sin embargo NO se permite segundo
+      if ((!infoSolicitud.permitirSegundo) && (!algunModuloPrimero(infoSolicitud.listaCentrosCiclosModulos)) ) {
+        infoSolicitud.incumple = 'r4';
+      }
+      if (String(infoSolicitud.incumple || '') == '') {
+        listaSolicitudesAceptadas.push(infoSolicitud);
+      }
+      else{
+        listaSolicitudesNoAceptadas.push(infoSolicitud);
+      }
     }
     rowIndex++;
   }
@@ -1123,6 +1134,82 @@ else{
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.pdf"), contentExcluidosPdf);
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.csv"), contentExcluidosExcel, 'latin1');
     
+    //////////////////
+    // PROCESAR MEJORA
+    //////////////////
+    rowIndex = 2;
+    while (readCell('A', rowIndex) != '') {
+      // Dejar a vacio las columnas de minusválidos y deportistas de élite
+      writeCell('BQ', rowIndex, '');
+      writeCell('BR', rowIndex, '');
+      // Incumple
+      if ((readCell('BS', rowIndex).toLowerCase() || '') != '') {
+        // Borrar linea no desplazarla
+        writeCell('A', rowIndex, DESCARTADO);
+      }
+      const applicationId = readCell('B', rowIndex);
+      const candidato = listaSolicitudesAceptadasMapeadas.find(lsam=>(lsam.applicationId==applicationId && lsam.asignado));
+      if (candidato){
+        if (candidato.prioridadPeticion==0){ // NO existe mejora posible
+          // Borrar linea no desplazarla
+          writeCell('A', rowIndex, DESCARTADO);
+        }
+        else {
+          if (candidato.prioridadPeticion<2){
+            writeCell('W', rowIndex, '');
+            writeCell('X', rowIndex, '');
+            writeCell('Y', rowIndex, '');
+            writeCell('Z', rowIndex, '');
+            writeCell('AA', rowIndex, '');
+            writeCell('AB', rowIndex, '');
+            writeCell('AC', rowIndex, '');
+            writeCell('AD', rowIndex, '');
+            writeCell('AE', rowIndex, '');
+            writeCell('AF', rowIndex, '');
+            writeCell('AG', rowIndex, '');
+            writeCell('AH', rowIndex, '');
+            writeCell('AI', rowIndex, '');
+            writeCell('AJ', rowIndex, '');
+          }
+          if (candidato.prioridadPeticion<3){
+            writeCell('AK', rowIndex, '');
+            writeCell('AL', rowIndex, '');
+            writeCell('AM', rowIndex, '');
+            writeCell('AN', rowIndex, '');
+            writeCell('AO', rowIndex, '');
+            writeCell('AP', rowIndex, '');
+            writeCell('AQ', rowIndex, '');
+            writeCell('AR', rowIndex, '');
+            writeCell('AS', rowIndex, '');
+            writeCell('AT', rowIndex, '');
+            writeCell('AU', rowIndex, '');
+            writeCell('AV', rowIndex, '');
+            writeCell('AW', rowIndex, '');
+            writeCell('AX', rowIndex, '');
+          }
+          writeCell('AY', rowIndex, '');
+          writeCell('AZ', rowIndex, '');
+          writeCell('BA', rowIndex, '');
+          writeCell('BB', rowIndex, '');
+          writeCell('BC', rowIndex, '');
+          writeCell('BD', rowIndex, '');
+          writeCell('BE', rowIndex, '');
+          writeCell('BF', rowIndex, '');
+          writeCell('BG', rowIndex, '');
+          writeCell('BH', rowIndex, '');
+          writeCell('BI', rowIndex, '');
+          writeCell('BJ', rowIndex, '');
+          writeCell('BK', rowIndex, '');
+          writeCell('BL', rowIndex, '');
+        }
+      }
+      rowIndex++;
+      validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
+      validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
+      validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
+
+    }
+    xlsx.writeFile(wb, path.join(__dirname, '..', 'temp', filename+"Mejora.xlsx"), { type: 'base64' } );
   }
 
   return `${filename}`;

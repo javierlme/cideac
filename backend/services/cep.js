@@ -26,7 +26,16 @@ async function processAssigns(category, city, filePath, config) {
     const cellValue = wb.Sheets[dataSheet][`${column}${row}`];
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
-
+  const DESCARTADO = 'DESCARTADO-MEJORA';
+  const writeCell = (column, row, cellValue) => {
+    if (wb.Sheets[dataSheet][`${column}${row}`]?.v){
+      wb.Sheets[dataSheet][`${column}${row}`].v = cellValue;
+      wb.Sheets[dataSheet][`${column}${row}`].w = cellValue;
+    }
+    else {
+      xlsx.utils.sheet_add_aoa(wb.Sheets[dataSheet], [[cellValue]], {origin: `${column}${row}`});
+    }
+  }
   const generarTextoExclusionCEP = (texto) => {
     var motivo = String();
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textCER1 + ' / ';
@@ -86,28 +95,30 @@ async function processAssigns(category, city, filePath, config) {
 
   // Leer del excel los datos de las listaSolicitudesAceptadas
   while (readCell('A', rowIndex) != '') {
-    infoSolicitud = {
-      docId: readCell('A', rowIndex),
-      applicationId: readCell('B', rowIndex),
-      randomNumber: toNumberRandom(readCell('C', rowIndex)),
-      personalId: readCell('D', rowIndex),
-      especialNeeds: false,
-      listaCentrosCiclosModulos: Array()
-    };  
-    validateAndAppendCourse('E', infoSolicitud);
-    validateAndAppendCourse('F', infoSolicitud);
-    validateAndAppendCourse('G', infoSolicitud);
-    validateAndAppendCourse('H', infoSolicitud);
-    infoSolicitud.viaAcceso = 'A';
-    infoSolicitud.scoring = toNumber(readCell('I', rowIndex));
-    infoSolicitud.handicapped = ['si','sí'].includes(readCell('J', rowIndex).toLowerCase());
-    infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('K', rowIndex).toLowerCase());
-    infoSolicitud.incumple =  readCell('L', rowIndex).toLowerCase();
-    if (String(infoSolicitud.incumple || '') == '') {
-      listaSolicitudesAceptadas.push(infoSolicitud);
-    }
-    else{
-      listaSolicitudesNoAceptadas.push(infoSolicitud);
+    if (DESCARTADO!=readCell('A', rowIndex)){
+      infoSolicitud = {
+        docId: readCell('A', rowIndex),
+        applicationId: readCell('B', rowIndex),
+        randomNumber: toNumberRandom(readCell('C', rowIndex)),
+        personalId: readCell('D', rowIndex),
+        especialNeeds: false,
+        listaCentrosCiclosModulos: Array()
+      };  
+      validateAndAppendCourse('E', infoSolicitud);
+      validateAndAppendCourse('F', infoSolicitud);
+      validateAndAppendCourse('G', infoSolicitud);
+      validateAndAppendCourse('H', infoSolicitud);
+      infoSolicitud.viaAcceso = 'A';
+      infoSolicitud.scoring = toNumber(readCell('I', rowIndex));
+      infoSolicitud.handicapped = ['si','sí'].includes(readCell('J', rowIndex).toLowerCase());
+      infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('K', rowIndex).toLowerCase());
+      infoSolicitud.incumple =  readCell('L', rowIndex).toLowerCase();
+      if (String(infoSolicitud.incumple || '') == '') {
+        listaSolicitudesAceptadas.push(infoSolicitud);
+      }
+      else{
+        listaSolicitudesNoAceptadas.push(infoSolicitud);
+      }
     }
     rowIndex++;
   }
@@ -687,6 +698,39 @@ async function processAssigns(category, city, filePath, config) {
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.pdf"), contentExcluidosPdf);
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.csv"), contentExcluidosExcel, 'latin1');
     
+    //////////////////
+    // PROCESAR MEJORA
+    //////////////////
+    rowIndex = 2;
+    while (readCell('A', rowIndex) != '') {
+      // Dejar a vacio las columnas de minusválidos y deportistas de élite
+      writeCell('J', rowIndex, '');
+      writeCell('K', rowIndex, '');
+      // Incumple
+      if ((readCell('L', rowIndex).toLowerCase() || '') != '') {
+        // Borrar linea no desplazarla
+        writeCell('A', rowIndex, DESCARTADO);
+      }
+      const applicationId = readCell('B', rowIndex);
+      const candidato = listaSolicitudesAceptadasMapeadas.find(lsam=>(lsam.applicationId==applicationId && lsam.asignado));
+      if (candidato){
+        if (candidato.prioridadPeticion==0){ // NO existe mejora posible
+          // Borrar linea no desplazarla
+          writeCell('A', rowIndex, DESCARTADO);
+        }
+        else {
+          if (candidato.prioridadPeticion<2){
+            writeCell('F', rowIndex, '');
+          }
+          if (candidato.prioridadPeticion<3){
+            writeCell('G', rowIndex, '');
+          }
+          writeCell('H', rowIndex, '');
+        }
+      }
+      rowIndex++;
+    }
+    xlsx.writeFile(wb, path.join(__dirname, '..', 'temp', filename+"Mejora.xlsx"), { type: 'base64' } );
   }
 
   return `${filename}`;
