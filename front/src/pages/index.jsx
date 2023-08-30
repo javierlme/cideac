@@ -314,6 +314,20 @@ export default function Home() {
     }
   };
 
+  const downloadMejoraExcel = async (step) => {
+    const filename = step.filename + "Mejora.xlsx"
+    const { data } = await API.get(`/courses/files/excel/${filename}`);
+    if (data) {
+      let pdfContent = Buffer(data, 'base64');
+      const blob = new Blob([pdfContent], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  };
+
   const downloadExcluidosPdf = async (step) => {
     const filename = step.filename + "Excluidos.pdf"
     const { data } = await API.get(`/courses/files/pdf/${filename}`);
@@ -810,6 +824,7 @@ export default function Home() {
             onUpload={uploadFile}
             onRemove={removeFile}
             onShowErrors={(step) => setPopupOpen(step)}
+            onDownloadMejoraExcel={downloadMejoraExcel}
           />
         ))}
       </section>
@@ -841,7 +856,7 @@ input.accept = '.xls,.xlsx';
 
 function Step(props) {
   const { step, index, city, onUpload, onDownloadAdmitidosExcel, onDownloadAdmitidosPdf, onDownloadEsperaExcel, onDownloadEsperaPdf,
-    onDownloadExcluidosExcel, onDownloadExcluidosPdf, onDownloadVacantesPdf, onRemove, onShowErrors } = props;
+    onDownloadExcluidosExcel, onDownloadExcluidosPdf, onDownloadVacantesPdf, onRemove, onShowErrors, onDownloadMejoraExcel } = props;
   const uploadFile = () => {
     input.onchange = () => {
       onUpload(step, input.files[0]);
@@ -895,6 +910,16 @@ function Step(props) {
                   <tr>
                     <td><Button secondary onClick={() => onDownloadExcluidosPdf(step)}><Icon icon={pdf}/>Pdf&nbsp;&nbsp;&nbsp;&nbsp;</Button></td>
                     <td><Button secondary onClick={() => onDownloadExcluidosExcel(step)}><Icon icon={excel} />Excel</Button></td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td style="text-align:center;font-weight:bold;">Mejora</td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td><Button secondary onClick={() => onDownloadMejoraExcel(step)}><Icon icon={excel} />Excel</Button></td>
                   </tr>
                 </table>
             </Fragment>
