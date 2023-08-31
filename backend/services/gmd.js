@@ -1139,6 +1139,7 @@ else{
     //////////////////
     rowIndex = 2;
     while (readCell('A', rowIndex) != '') {
+
       // Dejar a vacio las columnas de minusválidos y deportistas de élite
       writeCell('BQ', rowIndex, '');
       writeCell('BR', rowIndex, '');
@@ -1147,62 +1148,140 @@ else{
         // Borrar linea no desplazarla
         writeCell('A', rowIndex, DESCARTADO);
       }
+      
       const applicationId = readCell('B', rowIndex);
-      const candidato = listaSolicitudesAceptadasMapeadas.find(lsam=>(lsam.applicationId==applicationId && lsam.asignado));
-      if (candidato){
-        if (candidato.prioridadPeticion==0){ // NO existe mejora posible
-          // Borrar linea no desplazarla
-          writeCell('A', rowIndex, DESCARTADO);
-        }
-        else {
-          if (candidato.prioridadPeticion<2){
-            writeCell('W', rowIndex, '');
-            writeCell('X', rowIndex, '');
-            writeCell('Y', rowIndex, '');
-            writeCell('Z', rowIndex, '');
-            writeCell('AA', rowIndex, '');
-            writeCell('AB', rowIndex, '');
-            writeCell('AC', rowIndex, '');
-            writeCell('AD', rowIndex, '');
-            writeCell('AE', rowIndex, '');
-            writeCell('AF', rowIndex, '');
-            writeCell('AG', rowIndex, '');
-            writeCell('AH', rowIndex, '');
-            writeCell('AI', rowIndex, '');
-            writeCell('AJ', rowIndex, '');
+      const listaPeticionesAceptadas = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==applicationId));
+      var prioridadMejora = 0;
+      if (listaPeticionesAceptadas){
+        for (var i=0; i<listaPeticionesAceptadas.length; i++){
+          if (listaPeticionesAceptadas[i].asignado!=SIN_ASIGNAR){
+            var filaExcel = '';
+            if (listaPeticionesAceptadas[i].prioridadPeticion==0){
+              switch (i) {
+                case 0 : { filaExcel = 'K'; break;}
+                case 1 : { filaExcel = 'L'; break;}
+                case 2 : { filaExcel = 'M'; break;}
+                case 3 : { filaExcel = 'N'; break;}
+                case 4 : { filaExcel = 'O'; break;}
+                case 5 : { filaExcel = 'P'; break;}
+                case 6 : { filaExcel = 'Q'; break;}
+                case 7 : { filaExcel = 'R'; break;}
+                case 8 : { filaExcel = 'S'; break;}
+                case 9 : { filaExcel = 'T'; break;}
+              }
+            }
+            if (listaPeticionesAceptadas[i].prioridadPeticion==1){
+              switch (i) {
+                case 0 : { filaExcel = 'Y'; break;}
+                case 1 : { filaExcel = 'Z'; break;}
+                case 2 : { filaExcel = 'AA'; break;}
+                case 3 : { filaExcel = 'AB'; break;}
+                case 4 : { filaExcel = 'AC'; break;}
+                case 5 : { filaExcel = 'AD'; break;}
+                case 6 : { filaExcel = 'AE'; break;}
+                case 7 : { filaExcel = 'AF'; break;}
+                case 8 : { filaExcel = 'AG'; break;}
+                case 9 : { filaExcel = 'AH'; break;}
+              }
+            }
+            if (listaPeticionesAceptadas[i].prioridadPeticion==2){
+              switch (i) {
+                case 0 : { filaExcel = 'AM'; break;}
+                case 1 : { filaExcel = 'AN'; break;}
+                case 2 : { filaExcel = 'AO'; break;}
+                case 3 : { filaExcel = 'AP'; break;}
+                case 4 : { filaExcel = 'AQ'; break;}
+                case 5 : { filaExcel = 'AR'; break;}
+                case 6 : { filaExcel = 'AS'; break;}
+                case 7 : { filaExcel = 'AT'; break;}
+                case 8 : { filaExcel = 'AU'; break;}
+                case 9 : { filaExcel = 'AV'; break;}
+              }
+            }
+            if (listaPeticionesAceptadas[i].prioridadPeticion==3){
+              switch (i) {
+                case 0 : { filaExcel = 'BA'; break;}
+                case 1 : { filaExcel = 'BB'; break;}
+                case 2 : { filaExcel = 'BC'; break;}
+                case 3 : { filaExcel = 'BD'; break;}
+                case 4 : { filaExcel = 'BE'; break;}
+                case 5 : { filaExcel = 'BF'; break;}
+                case 6 : { filaExcel = 'BG'; break;}
+                case 7 : { filaExcel = 'BH'; break;}
+                case 8 : { filaExcel = 'BI'; break;}
+                case 9 : { filaExcel = 'BJ'; break;}
+              }
+            }
+            if (filaExcel!=''){
+              console.log(`Borrando filaExcel: ${filaExcel}`);
+              writeCell(filaExcel, rowIndex, '');
+              prioridadMejora = listaPeticionesAceptadas[i].prioridadPeticion;
+            }
           }
-          if (candidato.prioridadPeticion<3){
-            writeCell('AK', rowIndex, '');
-            writeCell('AL', rowIndex, '');
-            writeCell('AM', rowIndex, '');
-            writeCell('AN', rowIndex, '');
-            writeCell('AO', rowIndex, '');
-            writeCell('AP', rowIndex, '');
-            writeCell('AQ', rowIndex, '');
-            writeCell('AR', rowIndex, '');
-            writeCell('AS', rowIndex, '');
-            writeCell('AT', rowIndex, '');
-            writeCell('AU', rowIndex, '');
-            writeCell('AV', rowIndex, '');
-            writeCell('AW', rowIndex, '');
-            writeCell('AX', rowIndex, '');
-          }
-          writeCell('AY', rowIndex, '');
-          writeCell('AZ', rowIndex, '');
-          writeCell('BA', rowIndex, '');
-          writeCell('BB', rowIndex, '');
-          writeCell('BC', rowIndex, '');
-          writeCell('BD', rowIndex, '');
-          writeCell('BE', rowIndex, '');
-          writeCell('BF', rowIndex, '');
-          writeCell('BG', rowIndex, '');
-          writeCell('BH', rowIndex, '');
-          writeCell('BI', rowIndex, '');
-          writeCell('BJ', rowIndex, '');
-          writeCell('BK', rowIndex, '');
-          writeCell('BL', rowIndex, '');
         }
       }
+
+      if (prioridadMejora==0){ // NO existe mejora posible (Salvo que algun módulo no se le haya asignado)
+        const listaNivel0 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==applicationId && lsam.prioridadPeticion==0))
+        const asignadosNivel0 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==applicationId && lsam.asignado!=SIN_ASIGNAR && lsam.prioridadPeticion==0))
+        if (asignadosNivel0 && listaNivel0 && (asignadosNivel0.length==listaNivel0.length) && (asignadosNivel0.length>0)){
+          writeCell('A', rowIndex, DESCARTADO);
+          writeCell('I', rowIndex, '');
+          writeCell('J', rowIndex, '');
+          writeCell('U', rowIndex, '');
+          writeCell('V', rowIndex, '');
+          console.log(`Descartado applicationId: ${applicationId}`);
+        }
+      }
+      else {
+        if (prioridadMejora<2){
+          writeCell('W', rowIndex, '');
+          writeCell('X', rowIndex, '');
+          writeCell('Y', rowIndex, '');
+          writeCell('Z', rowIndex, '');
+          writeCell('AA', rowIndex, '');
+          writeCell('AB', rowIndex, '');
+          writeCell('AC', rowIndex, '');
+          writeCell('AD', rowIndex, '');
+          writeCell('AE', rowIndex, '');
+          writeCell('AF', rowIndex, '');
+          writeCell('AG', rowIndex, '');
+          writeCell('AH', rowIndex, '');
+          writeCell('AI', rowIndex, '');
+          writeCell('AJ', rowIndex, '');
+        }
+        if (prioridadMejora<3){
+          writeCell('AK', rowIndex, '');
+          writeCell('AL', rowIndex, '');
+          writeCell('AM', rowIndex, '');
+          writeCell('AN', rowIndex, '');
+          writeCell('AO', rowIndex, '');
+          writeCell('AP', rowIndex, '');
+          writeCell('AQ', rowIndex, '');
+          writeCell('AR', rowIndex, '');
+          writeCell('AS', rowIndex, '');
+          writeCell('AT', rowIndex, '');
+          writeCell('AU', rowIndex, '');
+          writeCell('AV', rowIndex, '');
+          writeCell('AW', rowIndex, '');
+          writeCell('AX', rowIndex, '');
+        }
+        writeCell('AY', rowIndex, '');
+        writeCell('AZ', rowIndex, '');
+        writeCell('BA', rowIndex, '');
+        writeCell('BB', rowIndex, '');
+        writeCell('BC', rowIndex, '');
+        writeCell('BD', rowIndex, '');
+        writeCell('BE', rowIndex, '');
+        writeCell('BF', rowIndex, '');
+        writeCell('BG', rowIndex, '');
+        writeCell('BH', rowIndex, '');
+        writeCell('BI', rowIndex, '');
+        writeCell('BJ', rowIndex, '');
+        writeCell('BK', rowIndex, '');
+        writeCell('BL', rowIndex, '');
+      }
+
       rowIndex++;
       validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
       validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
