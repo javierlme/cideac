@@ -537,9 +537,9 @@ else{
 
   const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));
-  const admitidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `admitidosBase${category}.html`));
-  const esperaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `esperaBase${category}.html`));
-  const excluidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `excluidosBase${category}.html`));
+  const admitidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `admitidosBaseC${category}.html`));
+  const esperaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `esperaBaseC${category}.html`));
+  const excluidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `excluidosBaseC${category}.html`));
 
   var contentAdmitidosExcel = 'ORDEN;NÚMERO DOCUMENTO DE IDENTIDAD;NÚMERO SOLICITUD;CENTRO;CÓDIGO CENTRO;CICLO;CÓDIGO CICLO;LISTA;PREFERENCIA;PUNTUACIÓN;MINUSVALÍA;ATLETA;MODULO_1;MODULO_2;MODULO_3;MODULO_4;MODULO_5;MODULO_6;MODULO_7;MODULO_8;MODULO_9;MODULO_10;\r\n';
   var contentEsperaExcel = contentAdmitidosExcel;
