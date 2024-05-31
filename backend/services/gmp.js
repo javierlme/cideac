@@ -44,7 +44,7 @@ async function processAssigns(category, city, filePath, config) {
     return motivo.slice(0,-2)
   }
 
-  let rowIndex = 2;
+  let rowIndex = 3;
   let infoSolicitud;
   const validateAndAppendCourse = (field, infoSolicitud, prioridad, mandatory = false) => {
     const curso = readCell(field, rowIndex);

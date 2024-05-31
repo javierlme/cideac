@@ -1,0 +1,33 @@
+Grado Medio
+A: Título de graduado en ESO/Título de Formación Profesional Básica  80%
+B: Prueba de acceso / Curso de acceso  15%
+C: Técnico/Técnico Superior 5%
+D: Certificados profesionales/Acreditación de competencias profesionales (Ceuta/melilla 3 plazas presencial y 4 virtual) CIDEAD:20
+
+
+Lista: [A,B,C,D]
+
+
+Grado Superior
+
+A: 80%
+	A1: Bachillerato 45%
+	A2: Título de Técnico (G.M. LOE/LOGSE) 55%
+
+B: Prueba de acceso / Curso de acceso  15%
+C: Técnico Superior 5%
+D: Certificados profesionales/Acreditación de competencias profesionales (Ceuta/melilla 3 plazas presencial y 4 virtual) CIDEAD:20
+
+Lista: [A1,A2,B,C,D]
+
+
+Cursos especializacion
+
+ Reservar el 20% (que se ponga una caja de 6)
+
+
+
+
+
+
+

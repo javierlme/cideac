@@ -1,0 +1,7 @@
+zon
+vill
+res
+cod_liv
+cfg_zon
+crit_sourcout
+crit_sourcout_param

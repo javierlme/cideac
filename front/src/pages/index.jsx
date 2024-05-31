@@ -32,7 +32,7 @@ let percentageB = 30;
 let percentageC = 10;
 
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
-let titleCurse = 'Curso 2023/2024';
+let titleCurse = 'Curso 2024/2025';
 let titleAdmitted = 'LISTADO PROVISIONAL DE ADMITIDOS';
 let titleWaiting = 'LISTAS PROVISIONAL DE ESPERA';
 let titleRejected = 'LISTADO PROVISIONAL DE EXCLUIDOS';
@@ -352,7 +352,7 @@ export default function Home() {
         </Button>
       </header>
       <section className="intro">
-        <h2><b>Plataforma de asignación de plazas de formación profesional 2023</b></h2>
+        <h2><b>Plataforma de asignación de plazas de formación profesional 2024</b></h2>
         <p>Para comenzar sigue los pasos a continuación:</p>
         <label className="selector">
           Seleccionar ciclo
