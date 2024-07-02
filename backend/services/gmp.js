@@ -399,7 +399,6 @@ async function processAssigns(category, city, filePath, config) {
           && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='D')).sort(ordenarCandidatos).slice(0, contarLista(cursoCentroCicloModulo.listaAsignadosD));
     } 
 
-
     // Si el candidato ya está en alguna lista general anterior hay que eliminarlo de las especiales (minusválido o elite) y recalculamos las vacantes disponibles
     var listaAsignadosGeneralesPorApplicationId = Array();
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
@@ -493,7 +492,6 @@ async function processAssigns(category, city, filePath, config) {
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=true);
       });
-
     }
 
     cursoCentroCicloModulo.listaAsignadosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && !lsam.espera 
@@ -508,7 +506,6 @@ async function processAssigns(category, city, filePath, config) {
     cursoCentroCicloModulo.listaAsignadosD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && !lsam.espera 
       && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
         && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo && lsam.viaAcceso=='D')).sort(ordenarCandidatos).slice(0, contarLista(cursoCentroCicloModulo.listaAsignadosD));
-
   }
   
   // Si el candidato ya está en alguna lista general anterior hay que eliminarlo de las especiales (minusválido o elite) y recalculamos las vacantes disponibles
@@ -588,9 +585,9 @@ async function processAssigns(category, city, filePath, config) {
     });    
   } 
 
-
-
+  //////////////////////////
   // Verificaciones
+  //////////////////////////
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     if (cursoCentroCicloModulo.vacantesDisponibles<0) {
       console.log(`---ERROR No se ha distribuido bien el ultimo procentaje 80 15 5 ---`);
