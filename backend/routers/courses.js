@@ -108,28 +108,31 @@ exports.getCategoryCourses = async (city, category) => {
   let rowIndex = 2;
   if (listDistanceCode.includes(sheet)) {
     while (getCellValue('H'+rowIndex) != '') {
+      const numeroCurso = getCellValue('J'+rowIndex)==''?Number(0):Number(getCellValue('J'+rowIndex))
       courses.push({
-        codigoCentro: String(getCellValue('A'+rowIndex).replace('.','')).trim(),
+        codigoCentro: String(getCellValue('A'+rowIndex)).replace('.','').trim(),
         centro: getCellValue('B'+rowIndex),
-        codigoCurso: String(getCellValue('C'+rowIndex).replace('.','')).trim(),
-        curso: getCellValue('D'+rowIndex),
-        codigoModulo: String(getCellValue('E'+rowIndex).replace('.','')).trim(),//.padStart(4, '0'),
+        codigoCurso: String(getCellValue('C'+rowIndex) + numeroCurso).replace('.','').trim(),
+        curso: `${String(getCellValue('D'+rowIndex)).trim()} ${numeroCurso?`(Curso ${numeroCurso})`:''}`,
+        codigoModulo: String(getCellValue('E'+rowIndex)).replace('.','').trim(),//.padStart(4, '0'),
         modulo: getCellValue('F'+rowIndex),
         maxHorasModulo: getCellValue('G'+rowIndex),
         vacantes: Number(getCellValue('H'+rowIndex)),
         abreviaturaModulo: getCellValue('I'+rowIndex),
-        numeroCurso: getCellValue('J'+rowIndex)==''?Number(1):Number(getCellValue('J'+rowIndex))
+        numeroCurso: numeroCurso
       });
       rowIndex++;
     }
   } else {
     while (getCellValue('E'+rowIndex) != '') {
+      const numeroCurso = getCellValue('F'+rowIndex)==''?Number(0):Number(getCellValue('F'+rowIndex))
       courses.push({
-        codigoCentro: getCellValue('A'+rowIndex),
+        codigoCentro: String(getCellValue('A'+rowIndex)).replace('.','').trim(),
         centro: getCellValue('B'+rowIndex),
-        codigoCurso: getCellValue('C'+rowIndex),
-        curso: getCellValue('D'+rowIndex),
-        vacantes: Number(getCellValue('E'+rowIndex))
+        codigoCurso: String(getCellValue('C'+rowIndex) + numeroCurso).replace('.','').trim(),
+        curso: `${String(getCellValue('D'+rowIndex)).trim()} ${numeroCurso?`(Curso ${numeroCurso})`:''}`,
+        vacantes: Number(getCellValue('E'+rowIndex)),
+        numeroCurso: numeroCurso
       });
       rowIndex++;
     }

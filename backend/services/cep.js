@@ -63,9 +63,10 @@ async function processAssigns(category, city, filePath, config) {
       }
     }
     const selectedCourse = listaCentrosCiclosModulos.find(c =>
-      (curso.match(new RegExp(c.codigoCurso, 'i')) != null) &&
+      (curso.match(new RegExp(c.codigoCurso.slice(0, -1), 'i')) != null) &&
+      (curso.match(new RegExp(`\# ${c.numeroCurso} curso`, 'i')) != null) &&
       (curso.match(new RegExp(c.codigoCentro, 'i')) != null)
-    ); // NOTE: Buscamos que contenga el código del curso y el centro
+    ); // NOTE: Buscamos que contenga el código del curso, el centro y el numero de curso si existe
     if (selectedCourse == null) {
       throw {
         httpCode: 400, codigoCurso: 'ERR_INVALID_COURSE',

@@ -63,9 +63,10 @@ async function processAssigns(category, city, filePath, config) {
       }
     }
     const selectedCourse = listaCentrosCiclosModulos.find(c =>
-      (curso.match(new RegExp(c.codigoCurso, 'i')) != null) &&
-      (curso.match(new RegExp(c.codigoCentro, 'i')) != null)
-    ); // NOTE: Buscamos que contenga el código del curso y el centro
+      (c.numeroCurso>0)?
+        ((curso.match(new RegExp(c.codigoCurso.slice(0, -1), 'i')) != null) && (curso.match(new RegExp(`\# ${c.numeroCurso} curso`, 'i')) != null) && (curso.match(new RegExp(c.codigoCentro, 'i')) != null))
+      : ((curso.match(new RegExp(c.codigoCurso.slice(0, -1), 'i')) != null) && (curso.match(new RegExp(c.codigoCentro, 'i')) != null))
+    ); // NOTE: Buscamos que contenga el código del curso, el centro y el numero de curso si existe
     if (selectedCourse == null) {
       throw {
         httpCode: 400, codigoCurso: 'ERR_INVALID_COURSE',
@@ -578,12 +579,12 @@ async function processAssigns(category, city, filePath, config) {
       if (candidatoSelecionado.handicapped && (contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)<vacantesMinusvalidos)) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosA1 = cursoCentroCicloModulo.listaAsignadosA1.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A a la de minusválido. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A1 a la de minusválido. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
       if (candidatoSelecionado.eliteAthlete && (contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)<vacantesDeportistas)) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosA1 = cursoCentroCicloModulo.listaAsignadosA1.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A1 a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
     });
     // Comprobar en lista A2
@@ -591,12 +592,12 @@ async function processAssigns(category, city, filePath, config) {
       if (candidatoSelecionado.handicapped && (contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)<vacantesMinusvalidos)) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosA2 = cursoCentroCicloModulo.listaAsignadosA2.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A a la de minusválido. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A2 a la de minusválido. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
       if (candidatoSelecionado.eliteAthlete && (contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)<vacantesDeportistas)) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosA2 = cursoCentroCicloModulo.listaAsignadosA2.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista A2 a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
     });
     // Comprobar en lista B
@@ -604,12 +605,12 @@ async function processAssigns(category, city, filePath, config) {
       if (candidatoSelecionado.handicapped && (contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)<vacantesMinusvalidos)) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista B a la de minusválido. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista B a la de minusválido. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
       if (candidatoSelecionado.eliteAthlete && (contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)<vacantesDeportistas)) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista B a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista B a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
     });
     // Comprobar en lista C
@@ -617,12 +618,12 @@ async function processAssigns(category, city, filePath, config) {
       if (candidatoSelecionado.handicapped && (contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)<vacantesMinusvalidos)) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista C a la de minusválido. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista C a la de minusválido. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
       if (candidatoSelecionado.eliteAthlete && (contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)<vacantesDeportistas)) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista C a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista C a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
     });
     // Comprobar en lista D
@@ -630,12 +631,12 @@ async function processAssigns(category, city, filePath, config) {
       if (candidatoSelecionado.handicapped && (contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)<vacantesMinusvalidos)) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosD = cursoCentroCicloModulo.listaAsignadosD.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista D a la de minusválido. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista D a la de minusválido. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
       if (candidatoSelecionado.eliteAthlete && (contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)<vacantesDeportistas)) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(candidatoSelecionado).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosD = cursoCentroCicloModulo.listaAsignadosD.filter(l=>l.applicationId!=candidatoSelecionado.applicationId).sort(ordenarCandidatos);
-        console.log(`--- Caso especial: Se ha movido una plaza general de la lista D a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado} Curso:${cursoCentroCicloModulo.curso} ---`)
+        console.log(`--- Caso especial: Se ha movido una plaza general de la lista D a la de deportista de élite. Candidato Selecionado:${candidatoSelecionado.applicationId} - ${candidatoSelecionado.personalId} Curso:${cursoCentroCicloModulo.curso} ---`)
       }
     });    
   } 
@@ -666,6 +667,16 @@ async function processAssigns(category, city, filePath, config) {
 
   }
 
+  // Verificar repetidos
+  var NumRepetedidos = 0;
+  listaSolicitudesAceptadasMapeadas.map(lsam=>lsam.applicationId).filter((value, index, self) =>self.indexOf(value) === index).forEach(applicationId=>{
+    if (listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado && lsam.applicationId==applicationId)).length>1) {
+      console.log(`ERROR. Repetidos ${applicationId}`)
+      NumRepetedidos++;
+    }
+  });
+  console.log(`Total repetidos ${NumRepetedidos}`)
+  
   listaSolicitudesAceptadasMapeadas.forEach(candidatoSelecionado=>{
 
     if (candidatoSelecionado.asignado && candidatoSelecionado.espera) {
