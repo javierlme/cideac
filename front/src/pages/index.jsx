@@ -27,9 +27,15 @@ let percentageHandicap = 5;
 let numSlotsBySeatHandicap = 1;
 let percentageAthlete = 5;
 let numSlotsBySeatAthlete = 1;
-let percentageA = 60;
-let percentageB = 30;
-let percentageC = 10;
+let percentageA = 80;
+let percentageA1 = 45;
+let percentageA2 = 55;
+let percentageB = 15;
+let percentageC = 5;
+let plazasDpresencial = 3;
+let plazasDdistancia = 4;
+let plazasDcidead = 20;
+let plazasDce = 6;
 
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
 let titleCurse = 'Curso 2024/2025';
@@ -48,9 +54,10 @@ let textGBR2 = 'Consejo Orientador';
 let textGBR3 = 'Declaración responsable (menores de edad)';
 
 let textGMTitleGeneral = 'CICLOS FORMATIVOS DE GRADO MEDIO';
-let textGMTypeA = 'Título de graduado en ESO';
-let textGMTypeB = 'Título de Formación Profesional Básica';
-let textGMTypeC = 'Prueba de acceso / Otras formas de acceso';
+let textGMTypeA = 'Título de graduado en ESO / Título de Formación Profesional Básica';
+let textGMTypeB = 'Prueba de acceso / Curso de acceso';
+let textGMTypeC = 'Técnico / Técnico Superior';
+let textGMTypeD = 'Certificados profesionales / Acreditación de competencias profesionales';
 let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGMR1 = 'Identidad alumno';
@@ -59,9 +66,11 @@ let textGMR3 = 'Declaración responsable (menores de edad)';
 let textGMR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
 
 let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
-let textGSTypeA = 'Bachillerato';
-let textGSTypeB = 'Título de Técnico (G.M. LOE/LOGSE)';
-let textGSTypeC = 'Prueba de acceso / Otras formas de acceso';
+let textGSTypeA1 = 'Bachillerato';
+let textGSTypeA2 = 'Título de Técnico (G.M. LOE/LOGSE)';
+let textGSTypeB = 'Prueba de acceso / Curso de acceso';
+let textGSTypeC = 'Técnico Superior';
+let textGSTypeD = 'Certificados profesionales / Acreditación de competencias profesionales';
 let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGSR1 = 'Identidad alumno';
@@ -131,9 +140,15 @@ export default function Home() {
     formData.set('percentageAthlete', percentageAthlete);
     formData.set('numSlotsBySeatAthlete', numSlotsBySeatAthlete);
     formData.set('percentageA', percentageA);
+    formData.set('percentageA1', percentageA1);
+    formData.set('percentageA2', percentageA2);
     formData.set('percentageB', percentageB);
     formData.set('percentageC', percentageC);
-
+    formData.set('plazasDpresencial', plazasDpresencial);
+    formData.set('plazasDdistancia', plazasDdistancia);
+    formData.set('plazasDcidead', plazasDcidead);
+    formData.set('plazasDce', plazasDce);
+    
     formData.set('titleGeneral', titleGeneral);
     formData.set('titleCurse', titleCurse);
     formData.set('titleAdmitted', titleAdmitted);
@@ -154,6 +169,7 @@ export default function Home() {
     formData.set('textGMTypeA', textGMTypeA);
     formData.set('textGMTypeB', textGMTypeB);
     formData.set('textGMTypeC', textGMTypeC);
+    formData.set('textGMTypeD', textGMTypeD);
     formData.set('textGMTypeAthlete', textGMTypeAthlete);
     formData.set('textGMTypeHandicap', textGMTypeHandicap);
     formData.set('textGMR1', textGMR1);
@@ -162,9 +178,11 @@ export default function Home() {
     formData.set('textGMR4', textGMR4);
 
     formData.set('textGSTitleGeneral', textGSTitleGeneral);
-    formData.set('textGSTypeA', textGSTypeA);
+    formData.set('textGSTypeA1', textGSTypeA1);
+    formData.set('textGSTypeA2', textGSTypeA2);
     formData.set('textGSTypeB', textGSTypeB);
     formData.set('textGSTypeC', textGSTypeC);
+    formData.set('textGSTypeD', textGSTypeD);
     formData.set('textGSTypeAthlete', textGSTypeAthlete);
     formData.set('textGSTypeHandicap', textGSTypeHandicap);
     formData.set('textGSR1', textGSR1);
@@ -427,6 +445,14 @@ export default function Home() {
                 </td>
               </tr>
               <tr>
+                <td class="tdConfig2">A1</td>
+                <td class="tdConfig"><input class="inputConfig" id="percentageTypeA1Input" value={percentageA1} onChange={(e) => { percentageA1 = e.target.value; resetSteps(); } } /> %</td>
+              </tr>
+              <tr>
+                <td class="tdConfig2">A2</td>
+                <td class="tdConfig"><input class="inputConfig" id="percentageTypeA2Input" value={percentageA2} onChange={(e) => { percentageA2 = e.target.value; resetSteps(); } } /> %</td>
+              </tr>              
+              <tr>
                 <td class="tdConfig">
                   Porcentaje plazas tipo B
                 </td>
@@ -441,6 +467,27 @@ export default function Home() {
                 <td>
                   <input class="inputConfig" id="percentageTypeAInput" value={percentageC} onChange={(e) => { percentageC = e.target.value; resetSteps(); } } />%
                 </td>
+              </tr>
+              <tr>
+                  <td class="tdConfig" colSpan="3">
+                    Porcentaje plazas tipo D
+                  </td>
+              </tr>
+              <tr>
+                <td class="tdConfig2">Presencial GM/GS (Ceuta/Melilla)</td>
+                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDpresencialInput" value={plazasDpresencial} onChange={(e) => { plazasDpresencial = e.target.value; resetSteps(); } } /> plazas</td>
+              </tr>
+              <tr>
+                <td class="tdConfig2">Distancia GM/GS (Ceuta/Melilla)</td>
+                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDdistanciaInput" value={plazasDdistancia} onChange={(e) => { plazasDdistancia = e.target.value; resetSteps(); } } /> plazas</td>
+              </tr>
+              <tr>
+                <td class="tdConfig2">CIDEAD GM/GS (Ceuta/Melilla)</td>
+                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDcideadInput" value={plazasDcidead} onChange={(e) => { plazasDcidead = e.target.value; resetSteps(); } } /> plazas</td>
+              </tr>
+              <tr>
+                <td class="tdConfig2">Curso Especialización (Ceuta/Melilla/CIDEAD)</td>
+                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDceInput" value={plazasDce} onChange={(e) => { plazasDce = e.target.value; resetSteps(); } } /> plazas</td>
               </tr>
             </table>
           </div>
@@ -616,6 +663,14 @@ export default function Home() {
               </tr>
               <tr>
                 <td class="tdConfig">
+                  Texto acceso tipo D
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMTypeDInput" value={textGMTypeD} onChange={(e) => { textGMTypeD = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
                   Texto acceso deportista élite
                 </td>
                 <td>
@@ -675,10 +730,18 @@ export default function Home() {
               </tr>
               <tr>
                 <td class="tdConfig">
-                  Texto acceso tipo A
+                  Texto acceso tipo A1
                 </td>
                 <td>
-                  <input class="inputConfig" id="textGSTypeAInput" value={textGSTypeA} onChange={(e) => { textGSTypeA = e.target.value; resetSteps(); } } />
+                  <input class="inputConfig" id="textGSTypeA1Input" value={textGSTypeA1} onChange={(e) => { textGSTypeA1 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo A2
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeA2Input" value={textGSTypeA2} onChange={(e) => { textGSTypeA2 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
@@ -695,6 +758,14 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textGSTypeCInput" value={textGSTypeC} onChange={(e) => { textGSTypeC = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso tipo D
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSTypeDInput" value={textGSTypeD} onChange={(e) => { textGSTypeD = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
               <tr>
@@ -1037,6 +1108,11 @@ const Container = styled('div')`
       padding: 0;
       margin: 0;
     }
+    .tdConfig2 {
+      width: 400px;
+      padding-left: 30px;
+      margin: 0;
+    }
   }
   .configText {
     background: white;
@@ -1056,6 +1132,11 @@ const Container = styled('div')`
     .tdConfig {
       width: 250px;
       padding: 0;
+      margin: 0;
+    }
+    .tdConfig2 {
+      width: 400px;
+      padding-left: 30px;
       margin: 0;
     }
   }

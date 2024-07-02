@@ -274,7 +274,7 @@ async function processAssigns(category, city, filePath, config) {
   }
   
 
-  // Generamos las lista de solicitantes por los 5 grupos (minusvalidos, deportistas, A, B y C)
+  // Generamos las lista de solicitantes por los 6 grupos (minusvalidos, deportistas, A, B, C y D)
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     cursoCentroCicloModulo.claveCentroCicloModulo = generarClave(cursoCentroCicloModulo);
     cursoCentroCicloModulo.vacantesPendientesDiscapacitados = Number(0);
@@ -287,9 +287,11 @@ async function processAssigns(category, city, filePath, config) {
     cursoCentroCicloModulo.listaAsignadosA = Array();
     cursoCentroCicloModulo.listaAsignadosB = Array();
     cursoCentroCicloModulo.listaAsignadosC = Array();
+    cursoCentroCicloModulo.listaAsignadosD = Array();
     cursoCentroCicloModulo.listaAsignadosAEspera = Array();
     cursoCentroCicloModulo.listaAsignadosBEspera = Array();
     cursoCentroCicloModulo.listaAsignadosCEspera = Array();
+    cursoCentroCicloModulo.listaAsignadosDEspera = Array();
     cursoCentroCicloModulo.vacantesDisponibles = cursoCentroCicloModulo.vacantes;
   }
 
@@ -336,6 +338,11 @@ async function processAssigns(category, city, filePath, config) {
           && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
             && lsam.viaAcceso=='C')).sort(ordenarCandidatos);
         cursoCentroCicloModulo.listaAsignadosC = mejorarPosicionesCandidatos(cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosC, listaSolicitantesC);
+
+        const listaSolicitantesD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(!lsam.asignado && lsam.espera && opcionSolicitud>=lsam.prioridadPeticion && cursoCentroCicloModulo.claveCentroCicloModulo==lsam.claveCentroCicloModulo 
+          && !cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(l=>l.applicationId).includes(lsam.applicationId) && !cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(l=>l.applicationId).includes(lsam.applicationId)
+            && lsam.viaAcceso=='D')).sort(ordenarCandidatos);
+        cursoCentroCicloModulo.listaAsignadosD = mejorarPosicionesCandidatos(cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosD, listaSolicitantesD);
 
         // Asignamos al Grupo A (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.concat(
