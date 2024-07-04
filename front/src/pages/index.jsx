@@ -22,7 +22,7 @@ const defaultSteps = [
 
 // Configuration
 let openConfig = false;
-let randomNumberSelected = 620;
+let randomNumberSelected = 4682;
 let percentageHandicap = 5;
 let numSlotsBySeatHandicap = 1;
 let percentageAthlete = 5;
@@ -1098,10 +1098,10 @@ const Container = styled('div')`
       line-height: 37px;
     }
     .inputConfig {
-      margin-left:20px;
+      margin-left:10px;
       margin-right:5px;
       text-align: center;
-      width: 40px;
+      width: 50px;
     }
     .tdConfig {
       width: 250px;
@@ -1124,10 +1124,10 @@ const Container = styled('div')`
       line-height: 37px;
     }
     .inputConfig {
-      margin-left:20px;
+      margin-left:10px;
       margin-right:5px;
       text-align: left;
-      width: 600px;
+      width: 750px;
     }
     .tdConfig {
       width: 250px;

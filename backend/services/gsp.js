@@ -172,7 +172,7 @@ async function processAssigns(category, city, filePath, config) {
   }
 
   const mapearLinealmenteDatosIniciales = (registro, index) => { 
-    if ((!registro) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
+    if ((!registro) || (!registro.applicationId) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
     return {
       applicationId: registro.applicationId,
       asignado: false,

@@ -232,7 +232,7 @@ var algunaSolicitudCambia = true;
     return contador;
   }
   const mapearLinealmenteDatosIniciales = (registro, index) => { 
-    if ((!registro) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
+    if ((!registro) || (!registro.applicationId) || (![0,1,2,3].includes(index)) || (!registro.listaCentrosCiclosModulos[index])) return null;
     const listaModulos = Array();
     
     registro.listaCentrosCiclosModulos[index].map(modulo=>{
