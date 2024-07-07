@@ -101,7 +101,7 @@ async function processAssigns(category, city, filePath, config) {
         applicationId: readCell('B', rowIndex),
         randomNumber: toNumberRandom(readCell('C', rowIndex)),
         personalId: readCell('D', rowIndex),
-        especialNeeds: ['si','sí'].includes(readCell('E', rowIndex).toLowerCase()),
+        especialNeeds: false,
         listaCentrosCiclosModulos: Array()
       };  
       validateAndAppendCourse('F', infoSolicitud);
@@ -173,7 +173,7 @@ async function processAssigns(category, city, filePath, config) {
       viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
       eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
       handicapped: registro.handicapped? registro.handicapped : false,
-      especialNeeds: registro.especialNeeds? registro.especialNeeds : false,
+      especialNeeds: false,
       randomNumber: Number(registro.randomNumber),
       docId: registro.docId,
       personalId: registro.personalId,
@@ -544,9 +544,9 @@ async function processAssigns(category, city, filePath, config) {
   const excluidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `excluidosBase${category}.html`));
 
   var contentAdmitidosExcel = 'ORDEN;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CICLO;DNI;IDENTIFICACION;PUNTUACION;' +
-  'NEE;MINUSVALÍA;ATLETA;\r\n';
+  'MINUSVALÍA;ATLETA;\r\n';
   var contentEsperaExcel = 'ORDEN;CODIGO CENTRO;NOMBRE CENTRO;CODIGO DE CICLO;NOMBRE DE CICLO;DNI;IDENTIFICACION;PUNTUACION;' +
-  'NEE;MINUSVALÍA;ATLETA;\r\n';
+  'MINUSVALÍA;ATLETA;\r\n';
   var contentExcluidosExcel = 'NUMERO;NOMBRE;MOTIVO EXCLUSION;\r\n';
 
   if (contentHeaderFile && admitidosBaseHtml && esperaBaseHtml){
@@ -566,13 +566,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textGBNEETitleGeneral##', config.textGBNEETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeHandicap)
+            .replace('##textGBNEETypeGeneral##', config.textGBTypeHandicap)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -581,11 +581,10 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            + `${(ap.scoring || '')};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            + `${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -602,13 +601,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textGBNEETitleGeneral##', config.textGBNEETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeAthlete)
+            .replace('##textGBNEETypeGeneral##', config.textGBTypeAthlete)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -617,11 +616,10 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            + `${(ap.scoring || '')};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            + `${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -638,13 +636,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textGBNEETitleGeneral##', config.textGBNEETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeGeneral)
+            .replace('##textGBNEETypeGeneral##', config.textGBNEETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -653,11 +651,10 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            + `${(ap.scoring || '')};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            + `${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
             htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
@@ -674,13 +671,13 @@ async function processAssigns(category, city, filePath, config) {
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+            .replace('##textGBNEETitleGeneral##', config.textGBNEETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
-            .replace('##textGBTypeGeneral##', config.textGBTypeGeneral)
+            .replace('##textGBNEETypeGeneral##', config.textGBNEETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -689,11 +686,10 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaEspera += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
-            + `${(ap.scoring || '')};${ap.especialNeeds ? 'SI' : 'NO'};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
+            + `${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
             htmlListaEspera += `<div style="page-break-after:always"></div>`;
@@ -717,11 +713,11 @@ async function processAssigns(category, city, filePath, config) {
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
         .replace('##titleGeneral##', config.titleGeneral)
-        .replace('##textGBTitleGeneral##', config.textGBTitleGeneral)
+        .replace('##textGBNEETitleGeneral##', config.textGBNEETitleGeneral)
         .replace('##city##', city)
         .replace('##titleCurse##', config.titleCurse)
         .replace('##titleRejected##', config.titleRejected)
-        .replace('##textGBTypeGeneral##', config.textGBTypeGeneral)
+        .replace('##textGBNEETypeGeneral##', config.textGBNEETypeGeneral)
         .replace('##titleWarning##', config.titleWarning)
       }  
 

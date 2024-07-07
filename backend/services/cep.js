@@ -234,6 +234,7 @@ async function processAssigns(category, city, filePath, config) {
         // Anotar candidato
         listaAsignados.push(candidatoSelecionado);
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
+        listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>prioridadPeticion)).map(l=>l.asignado=false);
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==prioridadPeticion)).map(l=>l.asignado=true);
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=prioridadPeticion)).map(l=>l.espera=false);
         listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<prioridadPeticion)).map(l=>l.espera=valorEspera);
@@ -254,7 +255,19 @@ async function processAssigns(category, city, filePath, config) {
 
     const longitudLista=listaAsignados.length;
 
-    const copia = listaAsignados.concat(listaCandidatos).sort(ordenarCandidatos);
+    const copia = Array().concat(listaAsignados);
+    listaCandidatos.forEach(lc=>{
+      if (!copia.map(lsam=>lsam.applicationId).includes(lc.applicationId)){
+        copia.push(lc);
+      }
+    });
+    // IMPORTANTE QUITAR DUPLICADOS
+    copia.map(lsam=>lsam.applicationId).filter((value, index, self) =>self.indexOf(value) === index).forEach(applicationId=>{
+      if (copia.filter(lsam=>(lsam.asignado && lsam.applicationId==applicationId)).length>1) {
+        console.log(`ERROR. Repetidos en mejorarPosicionesCandidatos, applicationId: ${applicationId}`)
+      }
+    });
+
     listaAsignados.forEach(la=>{
       cursoCentroCicloModulo.vacantesDisponibles += la.especialNeeds?Number(2):Number(1);
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==la.applicationId)).map(l=>l.espera=true);
@@ -267,6 +280,7 @@ async function processAssigns(category, city, filePath, config) {
       // Anotar candidato
       listaAsignados.push(candidatoSelecionado);
       cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
+      listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=false);
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>=candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=false);
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion<candidatoSelecionado.prioridadPeticion)).map(l=>l.espera=valorEspera);
@@ -468,8 +482,24 @@ async function processAssigns(category, city, filePath, config) {
       console.log(`En espera un total de  ${cursoCentroCicloModulo.listaAsignadosAEspera.length+cursoCentroCicloModulo.listaAsignadosBEspera.length+cursoCentroCicloModulo.listaAsignadosCEspera.length}`);
 
     }
-
   }  
+
+  var listaAsignadosGeneralesPorApplicationId = Array();
+  for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+    listaAsignadosGeneralesPorApplicationId = listaAsignadosGeneralesPorApplicationId.concat(
+      cursoCentroCicloModulo.listaAsignadosDeportistasElite.map(list=>list.applicationId),
+        cursoCentroCicloModulo.listaAsignadosDiscapacitados.map(list=>list.applicationId),
+          cursoCentroCicloModulo.listaAsignadosA.map(list=>list.applicationId),
+            cursoCentroCicloModulo.listaAsignadosB.map(list=>list.applicationId),
+              cursoCentroCicloModulo.listaAsignadosC.map(list=>list.applicationId),
+                cursoCentroCicloModulo.listaAsignadosD.map(list=>list.applicationId))
+  }
+
+  if (listaAsignadosGeneralesPorApplicationId.length!=listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.asignado).length) {
+    console.log(`ERROR DE COHERENCIA EN ASIGNADOS`)
+    console.log(`TOTAL ASIGNADOS: ${listaAsignadosGeneralesPorApplicationId.length} FRENTE a TOTAL SOLICITUDES ASIGNADAS: ${listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.asignado).length}`)
+  }
+
 
   const filename = `${category}_${Date.now()}_`;
   const contentHeaderFile = await fs.readFileSync(path.join(__dirname, '..', 'templates', 'headerBase.html'));

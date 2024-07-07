@@ -36,19 +36,19 @@ export default function ButtonPq(props) {
 const ClsPq = css`
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0px;
 
   font-family: Arial;
   font-style: normal;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 14px;
   border: 0;
   border-radius: 4px;
-  width: 65px;
+  width: 70px;
   height: 30px;
-  padding: 4px;
-  margin: 4px;
+  padding: 0px;
+  margin: 0px;
 
   &[primary] {
     background: var(--color-accent-100);

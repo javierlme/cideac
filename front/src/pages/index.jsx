@@ -53,6 +53,14 @@ let textGBR1 = 'Identidad alumno';
 let textGBR2 = 'Consejo Orientador';
 let textGBR3 = 'Declaración responsable (menores de edad)';
 
+let textGBNEETitleGeneral = 'CICLOS FORMATIVOS DE GRADO BÁSICO (NECESIDADES ESPECIALES)';
+let textGBNEETypeGeneral = 'General';
+let textGBNEETypeAthlete = 'Reserva plaza disposición cuarta 1';
+let textGBNEETypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGBNEER1 = 'Identidad alumno';
+let textGBNEER2 = 'Consejo Orientador';
+let textGBNEER3 = 'Declaración responsable (menores de edad)';
+
 let textGMTitleGeneral = 'CICLOS FORMATIVOS DE GRADO MEDIO';
 let textGMTypeA = 'Título de graduado en ESO / Título de Formación Profesional Básica';
 let textGMTypeB = 'Prueba de acceso / Curso de acceso';
@@ -164,6 +172,14 @@ export default function Home() {
     formData.set('textGBR1', textGBR1);
     formData.set('textGBR2', textGBR2);
     formData.set('textGBR3', textGBR3);
+
+    formData.set('textGBNEETitleGeneral', textGBNEETitleGeneral);
+    formData.set('textGBNEETypeGeneral', textGBNEETypeGeneral);
+    formData.set('textGBNEETypeAthlete', textGBNEETypeAthlete);
+    formData.set('textGBNEETypeHandicap', textGBNEETypeHandicap);
+    formData.set('textGBNEER1', textGBNEER1);
+    formData.set('textGBNEER2', textGBNEER2);
+    formData.set('textGBNEER3', textGBNEER3);
 
     formData.set('textGMTitleGeneral', textGMTitleGeneral);
     formData.set('textGMTypeA', textGMTypeA);
@@ -370,7 +386,7 @@ export default function Home() {
         </Button>
       </header>
       <section className="intro">
-        <h2><b>Plataforma de asignación de plazas de formación profesional 2024</b></h2>
+        <h2><b>Plataforma de asignación de plazas de formación profesional 2024/2025</b></h2>
         <p>Para comenzar sigue los pasos a continuación:</p>
         <label className="selector">
           Seleccionar ciclo
@@ -624,6 +640,65 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textGBR3Input" value={textGBR3} onChange={(e) => { textGBR3 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+            </table>
+            <h4><b>Vía acceso Grado Básico Necesidades Especiales (GB-NEE)</b></h4>
+            <table>
+              <tr>
+                <td class="tdConfig">
+                  Texto título
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBNEETitleGeneralInput" value={textGBNEETitleGeneral} onChange={(e) => { textGBNEETitleGeneral = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto vía acceso general
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBNEETypeGeneralInput" value={textGBNEETypeGeneral} onChange={(e) => { textGBNEETypeGeneral = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso deportista élite
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBNEETypeAthleteInput" value={textGBNEETypeAthlete} onChange={(e) => { textGBNEETypeAthlete = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto acceso minusvalía
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBNEETypeHandicapInput" value={textGBNEETypeHandicap} onChange={(e) => { textGBNEETypeHandicap = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R1
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBNEER1Input" value={textGBNEER1} onChange={(e) => { textGBNEER1 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R2
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBNEER2Input" value={textGBNEER2} onChange={(e) => { textGBNEER2 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R3
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGBNEER3Input" value={textGBNEER3} onChange={(e) => { textGBNEER3 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>
@@ -1022,11 +1097,12 @@ function Step(props) {
                 <table>
                   <tr>
                     <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GB')}><Icon icon={pdf}/>GB</ButtonPq></td>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GBNEE')}><Icon icon={pdf}/>GBNEE</ButtonPq></td>
                     <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GMP')}><Icon icon={pdf}/>GMP</ButtonPq></td>
                     <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GSP')}><Icon icon={pdf}/>GSP</ButtonPq></td>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'CEP')}><Icon icon={pdf}/>CEP</ButtonPq></td>
                   </tr>
                   <tr>
+                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'CEP')}><Icon icon={pdf}/>CEP</ButtonPq></td>
                     <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GMD')}><Icon icon={pdf}/>GMD</ButtonPq></td>
                     <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GSD')}><Icon icon={pdf}/>GSD</ButtonPq></td>
                     <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'CED')}><Icon icon={pdf}/>CED</ButtonPq></td>

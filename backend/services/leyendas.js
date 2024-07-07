@@ -112,7 +112,7 @@ const buildPdfPresencial = async (city, category, config) => {
           if (orden%numLinesPerPage==0){
             htmlListaLeyendas += leyendaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textGBTitleGeneral##', category.toLocaleUpperCase()=='GB'?config.textGBTitleGeneral:category.toLocaleUpperCase()=='GMP'?config.textGMTitleGeneral:category.toLocaleUpperCase()=='GSP'?config.textGSTitleGeneral:category.toLocaleUpperCase()=='CEP'?config.textCETitleGeneral:'')
+            .replace('##textGBTitleGeneral##', category.toLocaleUpperCase()=='GB'?config.textGBTitleGeneral:category.toLocaleUpperCase()=='GBNEE'?config.textGBNEETitleGeneral:category.toLocaleUpperCase()=='GMP'?config.textGMTitleGeneral:category.toLocaleUpperCase()=='GSP'?config.textGSTitleGeneral:category.toLocaleUpperCase()=='CEP'?config.textCETitleGeneral:'')
             .replace('##city##', city)
             .replace('##titleSlot##', config.titleSlot)
             .replace('##school##', ccm.centro)

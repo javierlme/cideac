@@ -7,9 +7,10 @@ const xlsx = require('xlsx');
 const path = require('path');
 const { categories, cities } = require('../constants');
 const fs = require('fs');
+const GBService = require('../services/gb');
+const GBNEEService = require('../services/gbnee');
 const CEPService = require('../services/cep');
 const CEDService = require('../services/ced');
-const GBService = require('../services/gb');
 const GMDService = require('../services/gmd');
 const GMPService = require('../services/gmp');
 const GSDService = require('../services/gsd');
@@ -21,7 +22,7 @@ const LeyendasService = require('../services/leyendas')
 const {Buffer} = require('buffer');
 
 const listDistanceCode = ['GMD', 'GSD', 'CED'];
-const listPresentialCode = ['GB', 'GMP', 'GSP', 'CEP'];
+const listPresentialCode = ['GB', 'GBNEE', 'GMP', 'GSP', 'CEP'];
 
 router.post('/slots', guard.check([['admin']]),
   upload.single('file'), async (req, res) => {
@@ -175,6 +176,10 @@ router.post('/assign', guard.check([['admin']]),
       switch (req.body.category) {
         case 'GB': {
           url = await GBService.processAssigns(req.body.category, req.body.city, req.file.path, config);
+          break;
+        }
+        case 'GBNEE': {
+          url = await GBNEEService.processAssigns(req.body.category, req.body.city, req.file.path, config);
           break;
         }
         case 'GMD': {
@@ -374,6 +379,14 @@ const buildConfig = (req) => {
     "textGBR1": String(req.body.textGBR1?req.body.textGBR1:String()),
     "textGBR2": String(req.body.textGBR2?req.body.textGBR2:String()),
     "textGBR3": String(req.body.textGBR3?req.body.textGBR3:String()),
+
+    "textGBNEETitleGeneral": String(req.body.textGBNEETitleGeneral?req.body.textGBNEETitleGeneral:String()),
+    "textGBNEETypeGeneral": String(req.body.textGBNEETypeGeneral?req.body.textGBNEETypeGeneral:String()),
+    "textGBNEETypeAthlete": String(req.body.textGBNEETypeAthlete?req.body.textGBNEETypeAthlete:String()),
+    "textGBNEETypeHandicap": String(req.body.textGBNEETypeHandicap?req.body.textGBTypeHandicap:String()),
+    "textGBNEER1": String(req.body.textGBNEER1?req.body.textGBNEER1:String()),
+    "textGBNEER2": String(req.body.textGBNEER2?req.body.textGBNEER2:String()),
+    "textGBNEER3": String(req.body.textGBNEER3?req.body.textGBNEER3:String()),
 
     "textGMTitleGeneral": String(req.body.textGMTitleGeneral?req.body.textGMTitleGeneral:String()),
     "textGMTypeA": String(req.body.textGMTypeA?req.body.textGMTypeA:String()),
