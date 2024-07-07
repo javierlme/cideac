@@ -1319,7 +1319,7 @@ async function processAssigns(category, city, filePath, config) {
     //////////////////
     // PROCESAR MEJORA
     //////////////////
-    rowIndex = 2;
+    /*rowIndex = 3;
     while (readCell('A', rowIndex) != '') {
       // Dejar a vacio las columnas de minusválidos y deportistas de élite
       writeCell('T', rowIndex, '');
@@ -1352,7 +1352,9 @@ async function processAssigns(category, city, filePath, config) {
       rowIndex++;
     }
     xlsx.writeFile(wb, path.join(__dirname, '..', 'temp', filename+"Mejora.xlsx"), { type: 'base64' } );
+    */
   }
+  
 
 
   return `${filename}`;

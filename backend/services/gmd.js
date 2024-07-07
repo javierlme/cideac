@@ -1195,7 +1195,7 @@ else{
     //////////////////
     // PROCESAR MEJORA
     //////////////////
-    rowIndex = 2;
+    /*rowIndex = 3;
     while (readCell('A', rowIndex) != '') {
 
       // Dejar a vacio las columnas de minusválidos y deportistas de élite
@@ -1347,6 +1347,7 @@ else{
 
     }
     xlsx.writeFile(wb, path.join(__dirname, '..', 'temp', filename+"Mejora.xlsx"), { type: 'base64' } );
+    */
   }
 
   return `${filename}`;

@@ -1194,7 +1194,7 @@ async function processAssigns(category, city, filePath, config) {
     //////////////////
     // PROCESAR MEJORA
     //////////////////
-    rowIndex = 2;
+    rowIndex = 3;
     while (readCell('A', rowIndex) != '') {
       // Dejar a vacio las columnas de minusválidos y deportistas de élite
       writeCell('T', rowIndex, '');

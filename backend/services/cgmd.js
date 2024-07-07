@@ -73,7 +73,7 @@ async function processAssigns(category, city, filePath, config) {
     return false;
   }
 
-  let rowIndex = 2;
+  let rowIndex = 3;
   let infoSolicitud;
   const validateAndAppendCourse = (field, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, infoSolicitud, prioridad, textoCursoCompleto, mandatory = false) => {
     var cursoCompleto = false;

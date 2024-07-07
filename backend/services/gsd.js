@@ -1195,7 +1195,7 @@ else{
     //////////////////
     // PROCESAR MEJORA
     //////////////////
-    rowIndex = 2;
+    rowIndex = 3;
     while (readCell('A', rowIndex) != '') {
 
       // Dejar a vacio las columnas de minusválidos y deportistas de élite
