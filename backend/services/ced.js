@@ -26,7 +26,16 @@ async function processAssigns(category, city, filePath, config) {
     const cellValue = wb.Sheets[dataSheet][`${column}${row}`];
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
-
+  const DESCARTADO = 'DESCARTADO-MEJORA';
+  const writeCell = (column, row, cellValue) => {
+    if (wb.Sheets[dataSheet][`${column}${row}`]?.v){
+      wb.Sheets[dataSheet][`${column}${row}`].v = cellValue;
+      wb.Sheets[dataSheet][`${column}${row}`].w = cellValue;
+    }
+    else {
+      xlsx.utils.sheet_add_aoa(wb.Sheets[dataSheet], [[cellValue]], {origin: `${column}${row}`});
+    }
+  }
   const generarTextoExclusionCE = (texto) => {
     var motivo = String();
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textCER1 + ' / ';
@@ -147,12 +156,12 @@ async function processAssigns(category, city, filePath, config) {
         }
         listaModulosComprobados.push(centrosCiclosModulo);
         // Quitado para la mejora
-        /*if (Number(selectedCourse.vacantes>0)){
+        if (Number(selectedCourse.vacantes>0)){
           listaModulosComprobados.push(centrosCiclosModulo);
         }
         else{
           console.log(`Eliminada peticion ${infoSolicitud.applicationId} porque el curso ${selectedCourse.curso} modulo ${selectedCourse.modulo} no tiene plazas.`);
-        }*/
+        }
       }
     }
     infoSolicitud.listaCentrosCiclosModulos.push(listaModulosComprobados)
@@ -160,33 +169,35 @@ async function processAssigns(category, city, filePath, config) {
 
   // Leer del excel los datos de las listaSolicitudesAceptadas
   while (readCell('A', rowIndex) != '') {
-    infoSolicitud = {
-      docId: readCell('A', rowIndex),
-      applicationId: readCell('B', rowIndex),
-      randomNumber: toNumberRandom(readCell('C', rowIndex)),
-      personalId: readCell('D', rowIndex),
-      especialNeeds: false,
-      listaCentrosCiclosModulos: Array()
-    };  
-    validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, ['si','sí'].includes(readCell('U',  rowIndex).toLowerCase()), readCell('J', rowIndex));
-    validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
-    validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
-    validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
-    infoSolicitud.viaAcceso = readCell('H', rowIndex);
-    infoSolicitud.scoring = toNumber(readCell('BO', rowIndex));
-    infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
-    infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
-    infoSolicitud.incumple = readCell('BS', rowIndex).toLowerCase();
-    infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
-    // Condicion especial de solicitud SOLO de segundo y sin embargo NO se permite segundo
-    if ((!infoSolicitud.permitirSegundo) && (!algunModuloPrimero(infoSolicitud.listaCentrosCiclosModulos)) ) {
-      infoSolicitud.incumple = 'r4';
-    }
-    if (String(infoSolicitud.incumple || '') == '') {
-      listaSolicitudesAceptadas.push(infoSolicitud);
-    }
-    else{
-      listaSolicitudesNoAceptadas.push(infoSolicitud);
+    if (DESCARTADO!=readCell('A', rowIndex)){
+      infoSolicitud = {
+        docId: readCell('A', rowIndex),
+        applicationId: readCell('B', rowIndex),
+        randomNumber: toNumberRandom(readCell('C', rowIndex)),
+        personalId: readCell('D', rowIndex),
+        especialNeeds: false,
+        listaCentrosCiclosModulos: Array()
+      };  
+      validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, ['si','sí'].includes(readCell('U',  rowIndex).toLowerCase()), readCell('J', rowIndex));
+      validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
+      validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
+      validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
+      infoSolicitud.viaAcceso = readCell('H', rowIndex);
+      infoSolicitud.scoring = toNumber(readCell('BO', rowIndex));
+      infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
+      infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
+      infoSolicitud.incumple =  readCell('BS', rowIndex).toLowerCase();
+      infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
+      // Condicion especial de solicitud SOLO de segundo y sin embargo NO se permite segundo
+      if ((!infoSolicitud.permitirSegundo) && (!algunModuloPrimero(infoSolicitud.listaCentrosCiclosModulos)) ) {
+        infoSolicitud.incumple = 'r4';
+      }
+      if (String(infoSolicitud.incumple || '') == '') {
+        listaSolicitudesAceptadas.push(infoSolicitud);
+      }
+      else{
+        listaSolicitudesNoAceptadas.push(infoSolicitud);
+      }
     }
     rowIndex++;
   }
@@ -248,7 +259,8 @@ var algunaSolicitudCambia = true;
           admitido: false,
           espera: true,
           preferencia: modulo.prioridad? modulo.prioridad : false,
-          scoring : registro.scoring? Number(registro.scoring) : Number(0),
+          //scoring : registro.scoring? Number(registro.scoring) : Number(0),
+          scoring : registro.scoring? (modulo.prioridad?Number(registro.scoring) + Number(4) : Number(registro.scoring)) : Number(0),
           viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
           eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
           handicapped: registro.handicapped? registro.handicapped : false,
@@ -276,7 +288,7 @@ var algunaSolicitudCambia = true;
   }
 
 
-  const ordenarCandidatos = (c1, c2) => {
+  /*const ordenarCandidatos = (c1, c2) => {
     if ((typeof c1.preferencia === 'undefined') || (typeof c2.preferencia === 'undefined')){
       console.log("ERROR EN SORT preferencia");
     }
@@ -296,8 +308,22 @@ var algunaSolicitudCambia = true;
         }
       }
     }
+  }*/
+  const ordenarCandidatos = (c1, c2) => {
+    if (Number(c1.scoring) != Number(c2.scoring)) {
+      return Number(c2.scoring) - Number(c1.scoring);
+    } else {
+      // NOTE: Si hay empate en scoring, se escoge el que más cerca esté del randomNumber, en dirección siempre creciente-modular
+      if (((Number(c1.randomNumber) - Number(config.randomNumberSelected)) >= 0 && (Number(c2.randomNumber) - Number(config.randomNumberSelected)) >= 0) ||
+        (((Number(c1.randomNumber) - Number(config.randomNumberSelected)) < 0 && (Number(c2.randomNumber) - Number(config.randomNumberSelected)) < 0))) {
+        return Number(c1.randomNumber) - Number(c2.randomNumber);
+      } else {
+        return Number(c2.randomNumber) - Number(c1.randomNumber);
+      }
+    }
   }
 
+  
   const listaSolicitudesAceptadasMapeadas = listaSolicitudesAceptadas.reduce(function(listaAcumulada, solicitud){
     for (var i=0; i<4; i++){
       const listaModulos = mapearLinealmenteDatosIniciales(solicitud, i);
@@ -416,7 +442,7 @@ var algunaSolicitudCambia = true;
   }
     
   ////////////////////////////////////////////////////////////////////////////
-  // Resolvemos resto grupos A, B y C
+  // Resolvemos resto grupos A, B, C y D
   ////////////////////////////////////////////////////////////////////////////
   seguir = true;
   for (vueltas=0; (vueltas<MaxVueltas && seguir); vueltas++) {
@@ -561,7 +587,7 @@ else{
   const esperaBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `esperaBase${category}.html`));
   const excluidosBaseHtml = await fs.readFileSync(path.join(__dirname, '..', 'templates', `excluidosBase${category}.html`));
 
-  var contentAdmitidosExcel = 'ORDEN;NÚMERO DOCUMENTO DE IDENTIDAD;NÚMERO SOLICITUD;CENTRO;CÓDIGO CENTRO;CICLO;CÓDIGO CICLO;LISTA;PREFERENCIA;PUNTUACIÓN;MINUSVALÍA;ATLETA;MODULO_1;MODULO_2;MODULO_3;MODULO_4;MODULO_5;MODULO_6;MODULO_7;MODULO_8;MODULO_9;MODULO_10;\r\n';
+  var contentAdmitidosExcel = 'ORDEN;NÚMERO DOCUMENTO DE IDENTIDAD;NÚMERO SOLICITUD;CENTRO;CÓDIGO CENTRO;CICLO;CÓDIGO CICLO;LISTA;PUNTUACIÓN;MINUSVALÍA;ATLETA;MODULO_1;MODULO_2;MODULO_3;MODULO_4;MODULO_5;MODULO_6;MODULO_7;MODULO_8;MODULO_9;MODULO_10;\r\n';
   var contentEsperaExcel = contentAdmitidosExcel;
   var contentExcluidosExcel = 'NÚMERO;DNI;NOMBRE;CÓDIGO EXCLUSIÓN;MOTIVO EXCLUSIÓN;\r\n';
 
@@ -819,13 +845,12 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -859,13 +884,12 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -899,13 +923,12 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -938,13 +961,12 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -977,13 +999,50 @@ else{
           htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += '</table>';
+            htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaAdmitidos += `</table>`;
+        htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+      }
+      // Asignados resto lista D
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosD.length>0) {
+        cursoCentroCicloModulo.listaAsignadosD.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += admitidosBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleAdmitted##', config.titleAdmitted)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textCETypeGeneral##', config.textCETypeD)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaAdmitidos += `   <td>${(orden)}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaAdmitidos += `  </tr>`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += '</table>';
@@ -1017,13 +1076,12 @@ else{
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -1056,13 +1114,12 @@ else{
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -1095,13 +1152,50 @@ else{
           htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
-              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += '</table>';
+            htmlListaEspera += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaEspera += `</table>`;
+        htmlListaEspera += `<div style="page-break-after:always"></div>`;
+      }
+      // Generar lista espera resto lista D
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosDEspera.length>0) {
+        cursoCentroCicloModulo.listaAsignadosDEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += esperaBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleWaiting##', config.titleWaiting)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textCETypeGeneral##', config.textCETypeD)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaEspera += `    <td>${(orden)}</td>`;
+          htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaEspera += `  </tr>`;
+          contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
                 +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += '</table>';
@@ -1181,7 +1275,164 @@ else{
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.pdf"), contentExcluidosPdf);
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.csv"), contentExcluidosExcel, 'latin1');
     
+    //////////////////
+    // PROCESAR MEJORA
+    //////////////////
+    rowIndex = 3;
+    while (readCell('A', rowIndex) != '') {
+
+      // Dejar a vacio las columnas de minusválidos y deportistas de élite
+      writeCell('BQ', rowIndex, '');
+      writeCell('BR', rowIndex, '');
+      // Incumple
+      if ((readCell('BS', rowIndex).toLowerCase() || '') != '') {
+        // Borrar linea no desplazarla
+        writeCell('A', rowIndex, DESCARTADO);
+      }
+      
+      const applicationId = readCell('B', rowIndex);
+      const listaPeticionesAceptadas = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==applicationId));
+      var prioridadMejora = 0;
+      if (listaPeticionesAceptadas){
+        for (var i=0; i<listaPeticionesAceptadas.length; i++){
+          if (listaPeticionesAceptadas[i].asignado!=SIN_ASIGNAR){
+            var filaExcel = '';
+            if (listaPeticionesAceptadas[i].prioridadPeticion==0){
+              switch (i) {
+                case 0 : { filaExcel = 'K'; break;}
+                case 1 : { filaExcel = 'L'; break;}
+                case 2 : { filaExcel = 'M'; break;}
+                case 3 : { filaExcel = 'N'; break;}
+                case 4 : { filaExcel = 'O'; break;}
+                case 5 : { filaExcel = 'P'; break;}
+                case 6 : { filaExcel = 'Q'; break;}
+                case 7 : { filaExcel = 'R'; break;}
+                case 8 : { filaExcel = 'S'; break;}
+                case 9 : { filaExcel = 'T'; break;}
+              }
+            }
+            if (listaPeticionesAceptadas[i].prioridadPeticion==1){
+              switch (i) {
+                case 0 : { filaExcel = 'Y'; break;}
+                case 1 : { filaExcel = 'Z'; break;}
+                case 2 : { filaExcel = 'AA'; break;}
+                case 3 : { filaExcel = 'AB'; break;}
+                case 4 : { filaExcel = 'AC'; break;}
+                case 5 : { filaExcel = 'AD'; break;}
+                case 6 : { filaExcel = 'AE'; break;}
+                case 7 : { filaExcel = 'AF'; break;}
+                case 8 : { filaExcel = 'AG'; break;}
+                case 9 : { filaExcel = 'AH'; break;}
+              }
+            }
+            if (listaPeticionesAceptadas[i].prioridadPeticion==2){
+              switch (i) {
+                case 0 : { filaExcel = 'AM'; break;}
+                case 1 : { filaExcel = 'AN'; break;}
+                case 2 : { filaExcel = 'AO'; break;}
+                case 3 : { filaExcel = 'AP'; break;}
+                case 4 : { filaExcel = 'AQ'; break;}
+                case 5 : { filaExcel = 'AR'; break;}
+                case 6 : { filaExcel = 'AS'; break;}
+                case 7 : { filaExcel = 'AT'; break;}
+                case 8 : { filaExcel = 'AU'; break;}
+                case 9 : { filaExcel = 'AV'; break;}
+              }
+            }
+            if (listaPeticionesAceptadas[i].prioridadPeticion==3){
+              switch (i) {
+                case 0 : { filaExcel = 'BA'; break;}
+                case 1 : { filaExcel = 'BB'; break;}
+                case 2 : { filaExcel = 'BC'; break;}
+                case 3 : { filaExcel = 'BD'; break;}
+                case 4 : { filaExcel = 'BE'; break;}
+                case 5 : { filaExcel = 'BF'; break;}
+                case 6 : { filaExcel = 'BG'; break;}
+                case 7 : { filaExcel = 'BH'; break;}
+                case 8 : { filaExcel = 'BI'; break;}
+                case 9 : { filaExcel = 'BJ'; break;}
+              }
+            }
+            if (filaExcel!=''){
+              console.log(`Borrando filaExcel: ${filaExcel}`);
+              writeCell(filaExcel, rowIndex, '');
+              prioridadMejora = listaPeticionesAceptadas[i].prioridadPeticion;
+            }
+          }
+        }
+      }
+
+      if (prioridadMejora==0){ // NO existe mejora posible (Salvo que algun módulo no se le haya asignado)
+        const listaNivel0 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==applicationId && lsam.prioridadPeticion==0))
+        const asignadosNivel0 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==applicationId && lsam.asignado!=SIN_ASIGNAR && lsam.prioridadPeticion==0))
+        if (asignadosNivel0 && listaNivel0 && (asignadosNivel0.length==listaNivel0.length) && (asignadosNivel0.length>0)){
+          writeCell('A', rowIndex, DESCARTADO);
+          writeCell('I', rowIndex, '');
+          writeCell('J', rowIndex, '');
+          writeCell('U', rowIndex, '');
+          writeCell('V', rowIndex, '');
+          console.log(`Descartado applicationId: ${applicationId}`);
+        }
+      }
+      else {
+        if (prioridadMejora<2){
+          writeCell('W', rowIndex, '');
+          writeCell('X', rowIndex, '');
+          writeCell('Y', rowIndex, '');
+          writeCell('Z', rowIndex, '');
+          writeCell('AA', rowIndex, '');
+          writeCell('AB', rowIndex, '');
+          writeCell('AC', rowIndex, '');
+          writeCell('AD', rowIndex, '');
+          writeCell('AE', rowIndex, '');
+          writeCell('AF', rowIndex, '');
+          writeCell('AG', rowIndex, '');
+          writeCell('AH', rowIndex, '');
+          writeCell('AI', rowIndex, '');
+          writeCell('AJ', rowIndex, '');
+        }
+        if (prioridadMejora<3){
+          writeCell('AK', rowIndex, '');
+          writeCell('AL', rowIndex, '');
+          writeCell('AM', rowIndex, '');
+          writeCell('AN', rowIndex, '');
+          writeCell('AO', rowIndex, '');
+          writeCell('AP', rowIndex, '');
+          writeCell('AQ', rowIndex, '');
+          writeCell('AR', rowIndex, '');
+          writeCell('AS', rowIndex, '');
+          writeCell('AT', rowIndex, '');
+          writeCell('AU', rowIndex, '');
+          writeCell('AV', rowIndex, '');
+          writeCell('AW', rowIndex, '');
+          writeCell('AX', rowIndex, '');
+        }
+        writeCell('AY', rowIndex, '');
+        writeCell('AZ', rowIndex, '');
+        writeCell('BA', rowIndex, '');
+        writeCell('BB', rowIndex, '');
+        writeCell('BC', rowIndex, '');
+        writeCell('BD', rowIndex, '');
+        writeCell('BE', rowIndex, '');
+        writeCell('BF', rowIndex, '');
+        writeCell('BG', rowIndex, '');
+        writeCell('BH', rowIndex, '');
+        writeCell('BI', rowIndex, '');
+        writeCell('BJ', rowIndex, '');
+        writeCell('BK', rowIndex, '');
+        writeCell('BL', rowIndex, '');
+      }
+
+      rowIndex++;
+      validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
+      validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
+      validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
+
+    }
+    xlsx.writeFile(wb, path.join(__dirname, '..', 'temp', filename+"Mejora.xlsx"), { type: 'base64' } );
   }
+
+  console.log(`FIN PROCESO ${filename}`);
 
   return `${filename}`;
 }
