@@ -1,0 +1,31 @@
+NUMERO;DNI;NOMBRE;CODIGO EXCLUSION;MOTIVO EXCLUSION;
+1;TN6378369;ABDERRAHIM EDDIOUAN ;r1 ;Identidad alumno 
+2;45315618Y;ALEJANDRO JIMENEZ LEIVA;r2 ;Forma de acceso 
+3;FT7919472;ALI GHLAL ;r1 ;Identidad alumno 
+4;Y9224943W;AMAL LAGHMIRI ;r2 ;Forma de acceso 
+5;BV5180589;AYA EL FAYDA ;r1 ;Identidad alumno 
+6;60388674N;BAKARY SOUMBOUNOU SOUMBOUNOU;r2 ;Forma de acceso 
+7;44107204N;ENEAS ALBARRACIN BOUHARRASS;r1 r2 r3;Identidad alumno / Forma de acceso / Declaración responsable (menores de edad) 
+8;45355530J;FATIMA FRITET BELHACH;r3;Declaración responsable (menores de edad) 
+9;Y5364357N;FATIMA MAZOUAD ;r2 ;Forma de acceso 
+10;44110667W;HAFIDA EL OUZZANI EL HACHOUNI;r2 ;Forma de acceso 
+11;Y6294542P;HIND MAZOUAD ;r2 ;Forma de acceso 
+12;71792415P;IBRAHIM LAHCHAICHI BELKACEM;r2 ;Forma de acceso 
+13;TS0858479;IMAD BEN CHATTAH ;r1 ;Identidad alumno 
+14;L639249;IMAD BEN CHATTAH ;r1 ;Identidad alumno 
+15;TF0769895;IMAD EDDINE OUAMAR ;r1 r2 ;Identidad alumno / Forma de acceso 
+16;01663186X;JAIME MARQUEZ MATICHE;r2 ;Forma de acceso 
+17;Y2906092X;JAMILA EL BOUTAYBI ;r2 ;Forma de acceso 
+18;45277077J;JOSÉ MIGUEL MARTÍNEZ QUESADA;r2 ;Forma de acceso 
+19;48965331X;MILAGROSA MAINE GARCIA;r2 ;Forma de acceso 
+20;SA25875;MOHAMED TAHIRI ;r1 r2 ;Identidad alumno / Forma de acceso 
+21;Y2033869Q;MOURAD SOUSSI ;r2 ;Forma de acceso 
+22;DW4206391;NISRINE TALBI ;r1 ;Identidad alumno 
+23;Y9847594C;OUALID JAATIT ;r1 ;Identidad alumno 
+24;GA6376251;OUASSIM MAKHLOUF ;r1 ;Identidad alumno 
+25;L659308;SAAD REKLAOUI ;r1 ;Identidad alumno 
+26;45355828N;SALMA KASSEN EZZAYDI;r2 ;Forma de acceso 
+27;74046101Q;SALWA CASADO ESSADIK;r2 ;Forma de acceso 
+28;45303048V;SUCAINA MOHAMED MARZOK;r2 ;Forma de acceso 
+29;45323967Y;YASMIN YACHOU BENAISA;r2 ;Forma de acceso 
+30;45317349N;YONAIDA EL MALQUIOUI ;r1 r2 ;Identidad alumno / Forma de acceso 

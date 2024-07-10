@@ -267,7 +267,7 @@ async function processAssigns(category, city, filePath, config) {
 
     const longitudLista=listaAsignados.length;
 
-    const copia = Array().concat(listaAsignados);
+    var copia = Array().concat(listaAsignados);
     listaCandidatos.forEach(lc=>{
       if (!copia.map(lsam=>lsam.applicationId).includes(lc.applicationId)){
         copia.push(lc);
@@ -279,6 +279,8 @@ async function processAssigns(category, city, filePath, config) {
         console.log(`ERROR. Repetidos en mejorarPosicionesCandidatos, applicationId: ${applicationId}`)
       }
     });
+    // IMPORTANTE ORDENARLA!
+    copia = copia.sort(ordenarCandidatos);
 
     listaAsignados.forEach(la=>{
       cursoCentroCicloModulo.vacantesDisponibles += la.especialNeeds?Number(2):Number(1);
@@ -581,7 +583,6 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -617,7 +618,6 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -653,7 +653,6 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaAdmitidos += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `  </tr>`;
           contentAdmitidosExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`
@@ -689,7 +688,6 @@ async function processAssigns(category, city, filePath, config) {
           htmlListaEspera += `	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
-          htmlListaEspera += `	  <td>${ap.especialNeeds ? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `  </tr>`;
           contentEsperaExcel+= `${(orden || '')};${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.centro || '')};`
             +`${(cursoCentroCicloModulo.codigoCurso || '')};${(cursoCentroCicloModulo.curso || '')};${(ap.docId || '')};${(ap.personalId.substr(ap.personalId.indexOf(', ') + 2) || '')};`

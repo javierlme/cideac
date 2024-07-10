@@ -267,7 +267,7 @@ async function processAssigns(category, city, filePath, config) {
 
     const longitudLista=listaAsignados.length;
 
-    const copia = Array().concat(listaAsignados);
+    var copia = Array().concat(listaAsignados);
     listaCandidatos.forEach(lc=>{
       if (!copia.map(lsam=>lsam.applicationId).includes(lc.applicationId)){
         copia.push(lc);
@@ -279,6 +279,8 @@ async function processAssigns(category, city, filePath, config) {
         console.log(`ERROR. Repetidos en mejorarPosicionesCandidatos, applicationId: ${applicationId}`)
       }
     });
+    // IMPORTANTE ORDENARLA!
+    copia = copia.sort(ordenarCandidatos);
 
     listaAsignados.forEach(la=>{
       cursoCentroCicloModulo.vacantesDisponibles += la.especialNeeds?Number(2):Number(1);
