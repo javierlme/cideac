@@ -154,7 +154,6 @@ async function processAssigns(category, city, filePath, config) {
           textoCursoCompleto: textoCursoCompleto,
           numeroCurso: Number(selectedCourse.numeroCurso)
         }
-        listaModulosComprobados.push(centrosCiclosModulo);
         // Quitado para la mejora
         if (Number(selectedCourse.vacantes>0)){
           listaModulosComprobados.push(centrosCiclosModulo);
@@ -481,7 +480,7 @@ else{
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
           for (solicitud of listaSolicitantesA){            
-            const listaAceptadosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+            const listaAceptadosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
             algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesA, listaAceptadosA, solicitud, ASIGNAR_GRUPO_A);
           }
@@ -491,7 +490,7 @@ else{
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
           for (solicitud of listaSolicitantesB){            
-            const listaAceptadosB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+            const listaAceptadosB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
             algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesB, listaAceptadosB, solicitud, ASIGNAR_GRUPO_B);
           }
@@ -501,7 +500,7 @@ else{
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
           for (solicitud of listaSolicitantesC){            
-            const listaAceptadosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+            const listaAceptadosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
             algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesC, listaAceptadosC, solicitud, ASIGNAR_GRUPO_C);
           }
@@ -511,7 +510,7 @@ else{
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
           for (solicitud of listaSolicitantesD){            
-            const listaAceptadosD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+            const listaAceptadosD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
             algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesD, listaAceptadosD, solicitud, ASIGNAR_GRUPO_D);
           }

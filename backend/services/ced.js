@@ -154,7 +154,6 @@ async function processAssigns(category, city, filePath, config) {
           textoCursoCompleto: textoCursoCompleto,
           numeroCurso: Number(selectedCourse.numeroCurso)
         }
-        listaModulosComprobados.push(centrosCiclosModulo);
         // Quitado para la mejora
         if (Number(selectedCourse.vacantes>0)){
           listaModulosComprobados.push(centrosCiclosModulo);
