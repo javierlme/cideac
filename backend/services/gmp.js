@@ -272,7 +272,7 @@ async function processAssigns(category, city, filePath, config) {
 
     const longitudLista=listaAsignados.length;
 
-    const copia = Array().concat(listaAsignados);
+    var copia = Array().concat(listaAsignados);
     listaCandidatos.forEach(lc=>{
       if (!copia.map(lsam=>lsam.applicationId).includes(lc.applicationId)){
         copia.push(lc);
@@ -284,6 +284,8 @@ async function processAssigns(category, city, filePath, config) {
         console.log(`ERROR. Repetidos en mejorarPosicionesCandidatos, applicationId: ${applicationId}`)
       }
     });
+    // IMPORTANTE ORDENARLA!
+    copia = copia.sort(ordenarCandidatos);
 
     listaAsignados.forEach(la=>{
       if (forzarAnotacion){
@@ -300,6 +302,9 @@ async function processAssigns(category, city, filePath, config) {
       listaAsignados.push(candidatoSelecionado);
       if (forzarAnotacion){
         cursoCentroCicloModulo.vacantesDisponibles -= candidatoSelecionado.especialNeeds?Number(2):Number(1);
+      }
+      else{
+        console.log(`Asignado ${candidatoSelecionado.applicationId} en ${cursoCentroCicloModulo.claveCentroCicloModulo} con prioridad ${prioridadPeticion}`);
       }
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion>candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=false);
       listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==candidatoSelecionado.applicationId && lsam.prioridadPeticion==candidatoSelecionado.prioridadPeticion)).map(l=>l.asignado=true);
@@ -661,6 +666,7 @@ async function processAssigns(category, city, filePath, config) {
     
   }
 
+
   //////////////////////////
   // Verificaciones
   //////////////////////////
@@ -743,6 +749,8 @@ async function processAssigns(category, city, filePath, config) {
   if (listaAsignadosGeneralesPorApplicationId.length!=listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.asignado).length) {
     console.log(`ERROR DE COHERENCIA EN ASIGNADOS`)
     console.log(`TOTAL ASIGNADOS: ${listaAsignadosGeneralesPorApplicationId.length} FRENTE a TOTAL SOLICITUDES ASIGNADAS: ${listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.asignado).length}`)
+    let diff = listaAsignadosGeneralesPorApplicationId.filter(x => !listaSolicitudesAceptadasMapeadas.filter(lsam=>lsam.asignado).map(l=>l.applicationId).includes(x));
+    console.log(`diff: ${diff.length} diff: ${diff.join(',')}`)
   }  
 
   const filename = `${category}_${Date.now()}_`;
