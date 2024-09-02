@@ -205,13 +205,12 @@ async function processAssigns(category, city, filePath, config) {
   console.log(`listaSolicitudesAceptadas.length:${listaSolicitudesAceptadas.length}`);
   console.log(`listaSolicitudesNoAceptadas.length:${listaSolicitudesNoAceptadas.length}`);
 
-  const redondear = (valor) => { 
+  const redondear = (valor, vacantesDisponibles = Number(0)) => { 
     const result = Math.round(Number(valor));
     if (result) return result;
 
-    return Number(1);
+    return vacantesDisponibles<1?Number(0):Number(1);
   }
-
 
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
@@ -411,8 +410,8 @@ var algunaSolicitudCambia = true;
 
     for (var opcionSolicitud=0; opcionSolicitud<4; opcionSolicitud++) {
       for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
-        const vacantesMinusvalidos = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap);
-        const vacantesDeportistas = redondear(cursoCentroCicloModulo. vacantes * config.percentageAthlete);
+        const vacantesMinusvalidos = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap, cursoCentroCicloModulo.vacantesDisponibles);
+        const vacantesDeportistas = redondear(cursoCentroCicloModulo. vacantes * config.percentageAthlete, cursoCentroCicloModulo.vacantesDisponibles);
         algunaSolicitudCambia = true;
         while (algunaSolicitudCambia){
           algunaSolicitudCambia = false;
@@ -457,9 +456,9 @@ var algunaSolicitudCambia = true;
         const vacantesAsignadasC = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
         const vacantesAsignadasD = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
 
-        let vacantesA = redondear(vacantesAsignadasA + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageA));
-        let vacantesB = redondear(vacantesAsignadasB + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageB));
-        let vacantesC = redondear(vacantesAsignadasC + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageC));
+        let vacantesA = redondear(vacantesAsignadasA + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageA), cursoCentroCicloModulo.vacantesDisponibles);
+        let vacantesB = redondear(vacantesAsignadasB + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageB), cursoCentroCicloModulo.vacantesDisponibles);
+        let vacantesC = redondear(vacantesAsignadasC + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageC), cursoCentroCicloModulo.vacantesDisponibles);
         let vacantesD = config.plazasDdistancia - vacantesAsignadasD;
 
 /*if (cursoCentroCicloModulo.vacantes>vacantesAsignadas) {

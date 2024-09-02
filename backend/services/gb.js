@@ -131,11 +131,11 @@ async function processAssigns(category, city, filePath, config) {
   config.percentageB=Number(0);
   config.percentageC=Number(0);
 
-  const redondear = (valor) => { 
+  const redondear = (valor, vacantesDisponibles = Number(0)) => { 
     const result = Math.round(Number(valor));
     if (result) return result;
 
-    return Number(1);
+    return vacantesDisponibles<1?Number(0):Number(1);
   }
 
 ////////////////////////////////////////////////////////
@@ -333,13 +333,13 @@ async function processAssigns(category, city, filePath, config) {
       cursoCentroCicloModulo.listaAsignadosDeportistasElite = mejorarPosicionesCandidatos(cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosDeportistasElite, listaSolicitantesDeportistasElite);
 
       // Asignamos % fijo de vacantes a minusválidos
-      const vacantesMinusvalidos = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap);
+      const vacantesMinusvalidos = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap, cursoCentroCicloModulo.vacantesDisponibles);
       if (vacantesMinusvalidos>contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)) {
         cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.concat(
           rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, vacantesMinusvalidos, listaSolicitantesDiscapacitados, 'vacantesPendientesDiscapacitados')).sort(ordenarCandidatos);
       }
       // Asignamos % fijo de vacantes a deportistas de élite
-      const vacantesDeportistas = redondear(cursoCentroCicloModulo. vacantes * config.percentageAthlete);
+      const vacantesDeportistas = redondear(cursoCentroCicloModulo. vacantes * config.percentageAthlete, cursoCentroCicloModulo.vacantesDisponibles);
       if (vacantesDeportistas>contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) {
         cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.concat(
           rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, vacantesDeportistas, listaSolicitantesDeportistasElite, 'vacantesPendientesDeportistasElite')).sort(ordenarCandidatos);
@@ -368,17 +368,17 @@ async function processAssigns(category, city, filePath, config) {
 
         // Asignamos al Grupo A (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.concat(
-          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageA), 
+          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageA, cursoCentroCicloModulo.vacantesDisponibles), 
             listaSolicitantesA, 'vacantesPendientesA')).sort(ordenarCandidatos);
 
         // Asignamos al Grupo B (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.concat(
-          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageB), 
+          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageB, cursoCentroCicloModulo.vacantesDisponibles), 
             listaSolicitantesB, 'vacantesPendientesB')).sort(ordenarCandidatos);
 
         // Asignamos al Grupo C (los que podamos dentro del rango del %)
         cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.concat(
-          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageC), 
+          rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageC, cursoCentroCicloModulo.vacantesDisponibles), 
             listaSolicitantesC, 'vacantesPendientesC')).sort(ordenarCandidatos);
 
       }

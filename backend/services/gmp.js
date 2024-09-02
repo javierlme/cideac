@@ -127,13 +127,12 @@ async function processAssigns(category, city, filePath, config) {
   console.log(`listaSolicitudesAceptadas.length:${listaSolicitudesAceptadas.length}`);
   console.log(`listaSolicitudesNoAceptadas.length:${listaSolicitudesNoAceptadas.length}`);
 
-  const redondear = (valor) => { 
+  const redondear = (valor, vacantesDisponibles = Number(0)) => { 
     const result = Math.round(Number(valor));
     if (result) return result;
 
-    return Number(1);
+    return vacantesDisponibles<1?Number(0):Number(1);
   }
-
 
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
@@ -392,19 +391,19 @@ async function processAssigns(category, city, filePath, config) {
         cursoCentroCicloModulo.listaAsignadosD = mejorarPosicionesCandidatos(cursoCentroCicloModulo, cursoCentroCicloModulo.listaAsignadosD, listaSolicitantesD, false);
 
         // Asignamos al Grupo A (los que podamos dentro del rango del %)
-        const maxCandidatosEnGrupoA = redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageA);
+        const maxCandidatosEnGrupoA = redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageA, cursoCentroCicloModulo.vacantesDisponibles);
         if (contarLista(cursoCentroCicloModulo.listaAsignadosA)<maxCandidatosEnGrupoA) {
           cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.concat(
             rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, maxCandidatosEnGrupoA, listaSolicitantesA)).sort(ordenarCandidatos);
         }
         // Asignamos al Grupo B (los que podamos dentro del rango del %)
-        const maxCandidatosEnGrupoB = redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageB);
+        const maxCandidatosEnGrupoB = redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageB, cursoCentroCicloModulo.vacantesDisponibles);
         if (contarLista(cursoCentroCicloModulo.listaAsignadosB)<maxCandidatosEnGrupoB) {
           cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.concat(
             rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, maxCandidatosEnGrupoB, listaSolicitantesB)).sort(ordenarCandidatos);
         }
         // Asignamos al Grupo C (los que podamos dentro del rango del %)
-        const maxCandidatosEnGrupoC = redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageC);
+        const maxCandidatosEnGrupoC = redondear((cursoCentroCicloModulo.vacantes-contarLista(cursoCentroCicloModulo.listaAsignadosDiscapacitados)-contarLista(cursoCentroCicloModulo.listaAsignadosDeportistasElite)) * config.percentageC, cursoCentroCicloModulo.vacantesDisponibles);
         if (contarLista(cursoCentroCicloModulo.listaAsignadosC)<maxCandidatosEnGrupoC) {
           cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.concat(
             rellenarCandidatos(cursoCentroCicloModulo, opcionSolicitud, maxCandidatosEnGrupoC, listaSolicitantesC)).sort(ordenarCandidatos);
@@ -607,8 +606,8 @@ async function processAssigns(category, city, filePath, config) {
     // En este caso pasar de la listas generales a las especiales PERO sin recalcular las plazas/vacantes (SOLO un cambio de uno por otro)
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
 
-      const vacantesMinusvalidos = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap);
-      const vacantesDeportistas = redondear(cursoCentroCicloModulo. vacantes * config.percentageAthlete);
+      const vacantesMinusvalidos = redondear(cursoCentroCicloModulo.vacantes * config.percentageHandicap, cursoCentroCicloModulo.vacantesDisponibles);
+      const vacantesDeportistas = redondear(cursoCentroCicloModulo. vacantes * config.percentageAthlete, cursoCentroCicloModulo.vacantesDisponibles);
 
       // Comprobar en lista A
       cursoCentroCicloModulo.listaAsignadosA.forEach(candidatoSelecionado=>{
