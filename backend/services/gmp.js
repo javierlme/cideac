@@ -9,6 +9,16 @@ const toNumber = (valor) => {
   }
   return Number (valor)
 }
+const toNumberScore = (value) => {
+  if (isNaN(value)){
+    return value
+  }
+  var num = Number(value);
+  while (num>999 || num<-999){
+    num = num/1000;
+  }
+  return Number (num)
+}
 const toNumberRandom = (valor) => {
   if (isNaN(valor)){
     return Number(valor.replace(',',''))
@@ -109,7 +119,7 @@ async function processAssigns(category, city, filePath, config) {
       validateAndAppendCourse('I', infoSolicitud, ['si','sí'].includes(readCell('J', rowIndex).toLowerCase()));
       validateAndAppendCourse('K', infoSolicitud, ['si','sí'].includes(readCell('L', rowIndex).toLowerCase()));
       infoSolicitud.viaAcceso = readCell('M', rowIndex);
-      infoSolicitud.scoring = toNumber(readCell('S', rowIndex));
+      infoSolicitud.scoring = toNumberScore(toNumber(readCell('S', rowIndex)));
       infoSolicitud.handicapped = ['si','sí'].includes(readCell('T', rowIndex).toLowerCase());
       infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('U', rowIndex).toLowerCase());
       infoSolicitud.incumple =  readCell('V', rowIndex).toLowerCase();

@@ -9,6 +9,16 @@ const toNumber = (valor) => {
   }
   return Number (valor)
 }
+const toNumberScore = (value) => {
+  if (isNaN(value)){
+    return value
+  }
+  var num = Number(value);
+  while (num>999 || num<-999){
+    num = num/1000;
+  }
+  return Number (num)
+}
 const toNumberRandom = (valor) => {
   if (isNaN(valor)){
     return Number(valor.replace(',',''))
@@ -171,7 +181,7 @@ async function processAssigns(category, city, filePath, config) {
     validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
     validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
     infoSolicitud.viaAcceso = readCell('H', rowIndex);
-    infoSolicitud.scoring = toNumber(readCell('BO', rowIndex));
+    infoSolicitud.scoring = toNumberScore(toNumber(readCell('BO', rowIndex)));
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple = readCell('BS', rowIndex).toLowerCase();
