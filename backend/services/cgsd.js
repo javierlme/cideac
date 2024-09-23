@@ -37,6 +37,15 @@ async function processAssigns(category, city, filePath, config) {
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
 
+  
+  
+  
+  
+  
+  
+  
+  
+  
   const generarTextoExclusionGS = (texto) => {
     var motivo = String();
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textGSR1 + ' / ';
@@ -155,6 +164,7 @@ async function processAssigns(category, city, filePath, config) {
           textoCursoCompleto: textoCursoCompleto,
           numeroCurso: Number(selectedCourse.numeroCurso)
         }
+        
         if (Number(selectedCourse.vacantes>0)){
           listaModulosComprobados.push(centrosCiclosModulo);
         }
@@ -199,6 +209,8 @@ async function processAssigns(category, city, filePath, config) {
     rowIndex++;
   }
 
+ 
+ 
   console.log(`listaCentrosCiclosModulos.length:${listaCentrosCiclosModulos.length}`);
   console.log(`listaSolicitudesAceptadas.length:${listaSolicitudesAceptadas.length}`);
   console.log(`listaSolicitudesNoAceptadas.length:${listaSolicitudesNoAceptadas.length}`);
@@ -218,10 +230,11 @@ async function processAssigns(category, city, filePath, config) {
 const SIN_ASIGNAR = Number(0);
 const ASIGNAR_MINUSVALIDO = Number(1);
 const ASIGNAR_DEPORTISTA = Number(2);
-const ASIGNAR_GRUPO_A = Number(3);
-const ASIGNAR_GRUPO_B = Number(4);
-const ASIGNAR_GRUPO_C = Number(5);
-const ASIGNAR_GRUPO_D = Number(6);
+const ASIGNAR_GRUPO_A1 = Number(3);
+const ASIGNAR_GRUPO_A2 = Number(4);
+const ASIGNAR_GRUPO_B = Number(5);
+const ASIGNAR_GRUPO_C = Number(6);
+const ASIGNAR_GRUPO_D = Number(7);
 var algunaSolicitudCambia = true;
 
 
@@ -255,6 +268,7 @@ var algunaSolicitudCambia = true;
           admitido: false,
           espera: true,
           preferencia: modulo.prioridad? modulo.prioridad : false,
+          
           scoring : registro.scoring? Number(registro.scoring) : Number(0),
           viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
           eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
@@ -305,6 +319,19 @@ var algunaSolicitudCambia = true;
     }
   }
 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   const listaSolicitudesAceptadasMapeadas = listaSolicitudesAceptadas.reduce(function(listaAcumulada, solicitud){
     for (var i=0; i<4; i++){
       const listaModulos = mapearLinealmenteDatosIniciales(solicitud, i);
@@ -321,7 +348,8 @@ var algunaSolicitudCambia = true;
     cursoCentroCicloModulo.claveCentroCicloModulo = generarClave(cursoCentroCicloModulo);
     cursoCentroCicloModulo.listaAsignadosDiscapacitados = Array();
     cursoCentroCicloModulo.listaAsignadosDeportistasElite = Array();
-    cursoCentroCicloModulo.listaAsignadosA = Array();
+    cursoCentroCicloModulo.listaAsignadosA1 = Array();
+    cursoCentroCicloModulo.listaAsignadosA2 = Array();
     cursoCentroCicloModulo.listaAsignadosB = Array();
     cursoCentroCicloModulo.listaAsignadosC = Array();
     cursoCentroCicloModulo.listaAsignadosD = Array();
@@ -423,7 +451,7 @@ var algunaSolicitudCambia = true;
   }
     
   ////////////////////////////////////////////////////////////////////////////
-  // Resolvemos resto grupos A, B y C
+  // Resolvemos resto grupos A1, A2, B, C y D
   ////////////////////////////////////////////////////////////////////////////
   seguir = true;
   for (vueltas=0; (vueltas<MaxVueltas && seguir); vueltas++) {
@@ -434,12 +462,14 @@ var algunaSolicitudCambia = true;
       for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
 
         let vacantesAsignadas = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado!=SIN_ASIGNAR && lsam.asignado!=ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
-        const vacantesAsignadasA = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
+        const vacantesAsignadasA1 = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A1 && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
+        const vacantesAsignadasA2 = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A2 && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
         const vacantesAsignadasB = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
         const vacantesAsignadasC = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
         const vacantesAsignadasD = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
 
-        let vacantesA = redondear(vacantesAsignadasA + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageA), cursoCentroCicloModulo.vacantesDisponibles);
+        let vacantesA1 = redondear(vacantesAsignadasA1 + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageA * config.percentageA1), cursoCentroCicloModulo.vacantesDisponibles);
+        let vacantesA2 = redondear(vacantesAsignadasA2 + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageA * config.percentageA2), cursoCentroCicloModulo.vacantesDisponibles);
         let vacantesB = redondear(vacantesAsignadasB + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageB), cursoCentroCicloModulo.vacantesDisponibles);
         let vacantesC = redondear(vacantesAsignadasC + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageC), cursoCentroCicloModulo.vacantesDisponibles);
         let vacantesD = config.plazasDcidead - vacantesAsignadasD;
@@ -457,14 +487,24 @@ else{
         while (algunaSolicitudCambia){
           algunaSolicitudCambia = false;
 
-          // Resolvemos Grupo A
-          const listaSolicitantesA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso=='A'
+          // Resolvemos Grupo A1
+          const listaSolicitantesA1 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso=='A1'
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
-          for (solicitud of listaSolicitantesA){            
-            const listaAceptadosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+          for (solicitud of listaSolicitantesA1){            
+            const listaAceptadosA1 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A1 && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
-            algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesA, listaAceptadosA, solicitud, ASIGNAR_GRUPO_A);
+            algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesA1, listaAceptadosA1, solicitud, ASIGNAR_GRUPO_A1);
+          }
+
+          // Resolvemos Grupo A2
+          const listaSolicitantesA2 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso=='A2'
+            && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
+
+          for (solicitud of listaSolicitantesA2){            
+            const listaAceptadosA2 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A2 && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
+  
+            algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesA2, listaAceptadosA2, solicitud, ASIGNAR_GRUPO_A2);
           }
 
           // Resolvemos Grupo B
@@ -472,7 +512,7 @@ else{
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
           for (solicitud of listaSolicitantesB){            
-            const listaAceptadosB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+            const listaAceptadosB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
             algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesB, listaAceptadosB, solicitud, ASIGNAR_GRUPO_B);
           }
@@ -482,7 +522,7 @@ else{
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
           for (solicitud of listaSolicitantesC){            
-            const listaAceptadosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+            const listaAceptadosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
             algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesC, listaAceptadosC, solicitud, ASIGNAR_GRUPO_C);
           }
@@ -492,7 +532,7 @@ else{
             && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
 
           for (solicitud of listaSolicitantesD){            
-            const listaAceptadosD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
+            const listaAceptadosD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
   
             algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesD, listaAceptadosD, solicitud, ASIGNAR_GRUPO_D);
           }
@@ -503,23 +543,29 @@ else{
           else{
             vacantesAsignadas = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado!=SIN_ASIGNAR && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
             if (cursoCentroCicloModulo.vacantes>vacantesAsignadas){
-              if ((!algunaSolicitudCambia) && (vacantesAsignadasA>=vacantesA)) {
+              if ((!algunaSolicitudCambia) && (vacantesAsignadasA1>=vacantesA1)) {
                 algunaSolicitudCambia=true;
                 seguir = true;
-                vacantesA++;
-                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo A. Vacantes:${vacantesA} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC}`);
+                vacantesA1++;
+                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo A1. Vacantes:${vacantesA1} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A1:${vacantesAsignadasA1} A2:${vacantesAsignadasA2} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA1:${vacantesA1} PA2:${vacantesA2} PB:${vacantesB} PC:${vacantesC}`);
+              }
+              if ((!algunaSolicitudCambia) && (vacantesAsignadasA2>=vacantesA2)) {
+                algunaSolicitudCambia=true;
+                seguir = true;
+                vacantesA2++;
+                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo A2. Vacantes:${vacantesA2} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A1:${vacantesAsignadasA1} A2:${vacantesAsignadasA2} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA1:${vacantesA1} PA2:${vacantesA2} PB:${vacantesB} PC:${vacantesC}`);
               }
               if ((!algunaSolicitudCambia) && (vacantesAsignadasB>=vacantesB)) {
                 algunaSolicitudCambia=true;
                 seguir = true;
                 vacantesB++;
-                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo B. Vacantes:${vacantesB} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC}`);
+                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo B. Vacantes:${vacantesB} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A1:${vacantesAsignadasA1} A2:${vacantesAsignadasA2} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA1:${vacantesA1} PA2:${vacantesA2} PB:${vacantesB} PC:${vacantesC}`);
               }
               if ((!algunaSolicitudCambia) && (vacantesAsignadasC>=vacantesC)) {
                 algunaSolicitudCambia=true;
                 seguir = true;
                 vacantesC++;
-                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo C. Vacantes:${vacantesC} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC}`);
+                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo C. Vacantes:${vacantesC} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A1:${vacantesAsignadasA1} A2:${vacantesAsignadasA2} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA1:${vacantesA1} PA2:${vacantesA2} PB:${vacantesB} PC:${vacantesC}`);
               }
             }
           }
@@ -533,12 +579,15 @@ else{
   for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
     cursoCentroCicloModulo.listaAsignadosDiscapacitados = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_MINUSVALIDO && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
     cursoCentroCicloModulo.listaAsignadosDeportistasElite = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_DEPORTISTA && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
-    cursoCentroCicloModulo.listaAsignadosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
+    cursoCentroCicloModulo.listaAsignadosA1 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A1 && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
+    cursoCentroCicloModulo.listaAsignadosA2 = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A2 && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
     cursoCentroCicloModulo.listaAsignadosB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
     cursoCentroCicloModulo.listaAsignadosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
     cursoCentroCicloModulo.listaAsignadosD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
-    cursoCentroCicloModulo.listaAsignadosAEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo 
-      && lsam.viaAcceso=='A')).filter(solicitud=>solicitudEnEspera(solicitud)).sort(ordenarCandidatos);
+    cursoCentroCicloModulo.listaAsignadosA1Espera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo 
+      && lsam.viaAcceso=='A1')).filter(solicitud=>solicitudEnEspera(solicitud)).sort(ordenarCandidatos);
+    cursoCentroCicloModulo.listaAsignadosA2Espera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo 
+      && lsam.viaAcceso=='A2')).filter(solicitud=>solicitudEnEspera(solicitud)).sort(ordenarCandidatos);
     cursoCentroCicloModulo.listaAsignadosBEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo 
       && lsam.viaAcceso=='B')).filter(solicitud=>solicitudEnEspera(solicitud)).sort(ordenarCandidatos);
     cursoCentroCicloModulo.listaAsignadosCEspera = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo 
@@ -547,7 +596,7 @@ else{
       && lsam.viaAcceso=='D')).filter(solicitud=>solicitudEnEspera(solicitud)).sort(ordenarCandidatos);
   
     const asignadosTotales = cursoCentroCicloModulo.listaAsignadosDiscapacitados.length + cursoCentroCicloModulo.listaAsignadosDeportistasElite.length 
-      + cursoCentroCicloModulo.listaAsignadosA.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length;
+      + cursoCentroCicloModulo.listaAsignadosA1.length + cursoCentroCicloModulo.listaAsignadosA2.length + cursoCentroCicloModulo.listaAsignadosB.length + cursoCentroCicloModulo.listaAsignadosC.length;
     const esperaTotales = cursoCentroCicloModulo.listaAsignadosAEspera.length + cursoCentroCicloModulo.listaAsignadosBEspera.length + cursoCentroCicloModulo.listaAsignadosCEspera.length;
     /*console.log(`---------------------------------------`);      
     console.log(`${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes}`);
@@ -556,7 +605,7 @@ else{
     if (((asignadosTotales<cursoCentroCicloModulo.vacantes) && (esperaTotales>0)) || (asignadosTotales>cursoCentroCicloModulo.vacantes)){
       console.log(`----------------ERROR------------------`);
       console.log(`${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes}`);
-      console.log(`    Asignados: ${asignadosTotales} Disc:${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length} Elite:${cursoCentroCicloModulo.listaAsignadosDeportistasElite.length} A:${cursoCentroCicloModulo.listaAsignadosA.length} B:${cursoCentroCicloModulo.listaAsignadosB.length} C:${cursoCentroCicloModulo.listaAsignadosC.length} D:${cursoCentroCicloModulo.listaAsignadosD.length} `);
+      console.log(`    Asignados: ${asignadosTotales} Disc:${cursoCentroCicloModulo.listaAsignadosDiscapacitados.length} Elite:${cursoCentroCicloModulo.listaAsignadosDeportistasElite.length} A1:${cursoCentroCicloModulo.listaAsignadosA1.length}  A2:${cursoCentroCicloModulo.listaAsignadosA2.length} B:${cursoCentroCicloModulo.listaAsignadosB.length} C:${cursoCentroCicloModulo.listaAsignadosC.length} D:${cursoCentroCicloModulo.listaAsignadosD.length} `);
       console.log(`    Espera: ${esperaTotales}`);
     }
   }
@@ -581,8 +630,10 @@ else{
 
 
     const listaCentrosCiclosModulosAgrupada = Array();
-    var listaAsignadosA = Array();
-    var listaAsignadosAEspera = Array();
+    var listaAsignadosA1 = Array();
+    var listaAsignadosA1Espera = Array();
+    var listaAsignadosA2 = Array();
+    var listaAsignadosA2Espera = Array();
     var listaAsignadosB = Array();
     var listaAsignadosBEspera = Array();
     var listaAsignadosC = Array();
@@ -599,8 +650,10 @@ else{
       const key = String(lccm.codigoCentro + '_' + lccm.codigoCurso);
       if (keyAnterior!=key){
         keyAnterior = key;
-        listaAsignadosA = Array();
-        listaAsignadosAEspera = Array();
+        listaAsignadosA1 = Array();
+        listaAsignadosA1Espera = Array();
+        listaAsignadosA2 = Array();
+        listaAsignadosA2Espera = Array();
         listaAsignadosB = Array();
         listaAsignadosBEspera = Array();
         listaAsignadosC = Array();
@@ -612,8 +665,8 @@ else{
         listaAsignadosDiscapacitados = Array();
         listaAsignadosDiscapacitadosEspera = Array();
       }
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA))) {
-        const datosAux = listaAsignadosA.find(l=>l.applicationId==lista.applicationId)
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA1))) {
+        const datosAux = listaAsignadosA1.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
           datosAux.listaCodigosModulos.push(lccm.codigoModulo);
@@ -624,11 +677,11 @@ else{
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
           data.listaCodigosModulos = Array();
           data.listaCodigosModulos.push(lccm.codigoModulo);
-          listaAsignadosA.push(data);
+          listaAsignadosA1.push(data);
         }
       };
-      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosAEspera))) {
-        const datosAux = listaAsignadosAEspera.find(l=>l.applicationId==lista.applicationId)
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA1Espera))) {
+        const datosAux = listaAsignadosA1Espera.find(l=>l.applicationId==lista.applicationId)
         if (datosAux){
           datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
           datosAux.listaCodigosModulos.push(lccm.codigoModulo);
@@ -639,7 +692,37 @@ else{
           data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
           data.listaCodigosModulos = Array();
           data.listaCodigosModulos.push(lccm.codigoModulo);
-          listaAsignadosAEspera.push(data);
+          listaAsignadosA1Espera.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA2))) {
+        const datosAux = listaAsignadosA2.find(l=>l.applicationId==lista.applicationId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
+          listaAsignadosA2.push(data);
+        }
+      };
+      for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosA2Espera))) {
+        const datosAux = listaAsignadosA2Espera.find(l=>l.applicationId==lista.applicationId)
+        if (datosAux){
+          datosAux.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          datosAux.listaCodigosModulos.push(lccm.codigoModulo);
+        }
+        else {
+          const data = JSON.parse(JSON.stringify(lista));
+          data.listaCentrosCiclosModulos = Array();
+          data.listaCentrosCiclosModulos.push(generarTextoModulo(lccm.codigoModulo));
+          data.listaCodigosModulos = Array();
+          data.listaCodigosModulos.push(lccm.codigoModulo);
+          listaAsignadosA2Espera.push(data);
         }
       };
       for (const lista of JSON.parse(JSON.stringify(lccm.listaAsignadosB))) {
@@ -770,8 +853,10 @@ else{
           centro: lccm.centro,
           codigoCurso: lccm.codigoCurso,
           curso: lccm.curso,
-          listaAsignadosA: listaAsignadosA,
-          listaAsignadosAEspera: listaAsignadosAEspera,
+          listaAsignadosA1: listaAsignadosA1,
+          listaAsignadosA1Espera: listaAsignadosA1Espera,
+          listaAsignadosA2: listaAsignadosA2,
+          listaAsignadosA2Espera: listaAsignadosA2Espera,
           listaAsignadosB: listaAsignadosB,
           listaAsignadosBEspera: listaAsignadosBEspera,
           listaAsignadosC: listaAsignadosC,
@@ -789,11 +874,13 @@ else{
     for (const cursoCentroCicloModulo of listaCentrosCiclosModulosAgrupada) {
       cursoCentroCicloModulo.listaAsignadosDiscapacitados = cursoCentroCicloModulo.listaAsignadosDiscapacitados.sort(ordenarCandidatos);
       cursoCentroCicloModulo.listaAsignadosDeportistasElite = cursoCentroCicloModulo.listaAsignadosDeportistasElite.sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosA = cursoCentroCicloModulo.listaAsignadosA.sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosA1 = cursoCentroCicloModulo.listaAsignadosA1.sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosA2 = cursoCentroCicloModulo.listaAsignadosA2.sort(ordenarCandidatos);
       cursoCentroCicloModulo.listaAsignadosB = cursoCentroCicloModulo.listaAsignadosB.sort(ordenarCandidatos);
       cursoCentroCicloModulo.listaAsignadosC = cursoCentroCicloModulo.listaAsignadosC.sort(ordenarCandidatos);
       cursoCentroCicloModulo.listaAsignadosD = cursoCentroCicloModulo.listaAsignadosD.sort(ordenarCandidatos);
-      cursoCentroCicloModulo.listaAsignadosAEspera = cursoCentroCicloModulo.listaAsignadosAEspera.sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosA1Espera = cursoCentroCicloModulo.listaAsignadosA1Espera.sort(ordenarCandidatos);
+      cursoCentroCicloModulo.listaAsignadosA2Espera = cursoCentroCicloModulo.listaAsignadosA2Espera.sort(ordenarCandidatos);
       cursoCentroCicloModulo.listaAsignadosBEspera = cursoCentroCicloModulo.listaAsignadosBEspera.sort(ordenarCandidatos);
       cursoCentroCicloModulo.listaAsignadosCEspera = cursoCentroCicloModulo.listaAsignadosCEspera.sort(ordenarCandidatos);
       cursoCentroCicloModulo.listaAsignadosDEspera = cursoCentroCicloModulo.listaAsignadosDEspera.sort(ordenarCandidatos);
@@ -885,10 +972,10 @@ else{
         htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
       }
 
-      // Asignados resto lista A
+      // Asignados resto lista A1
       orden=0;
-      if (cursoCentroCicloModulo.listaAsignadosA.length>0) {
-        cursoCentroCicloModulo.listaAsignadosA.map(ap => {
+      if (cursoCentroCicloModulo.listaAsignadosA1.length>0) {
+        cursoCentroCicloModulo.listaAsignadosA1.map(ap => {
           const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
@@ -900,7 +987,47 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeA)
+            .replace('##textGSTypeGeneral##', config.textGSTypeA1)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaAdmitidos += `   <td>${(orden)}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaAdmitidos += `  </tr>`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += '</table>';
+            htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaAdmitidos += `</table>`;
+        htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+      }
+      // Asignados resto lista A2
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosA2.length>0) {
+        cursoCentroCicloModulo.listaAsignadosA2.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += admitidosBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleAdmitted##', config.titleAdmitted)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textGSTypeGeneral##', config.textGSTypeA2)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -1005,11 +1132,51 @@ else{
         htmlListaAdmitidos += `</table>`;
         htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
       }
-
-      // Generar lista espera resto lista A
+      // Asignados resto lista D
       orden=0;
-      if (cursoCentroCicloModulo.listaAsignadosAEspera.length>0) {
-        cursoCentroCicloModulo.listaAsignadosAEspera.map(ap => {
+      if (cursoCentroCicloModulo.listaAsignadosD.length>0) {
+        cursoCentroCicloModulo.listaAsignadosD.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += admitidosBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleAdmitted##', config.titleAdmitted)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textGSTypeGeneral##', config.textGSTypeD)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaAdmitidos += `   <td>${(orden)}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaAdmitidos += `  </tr>`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += '</table>';
+            htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaAdmitidos += `</table>`;
+        htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+      }
+
+      // Generar lista espera resto lista A1
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosA1Espera.length>0) {
+        cursoCentroCicloModulo.listaAsignadosA1Espera.map(ap => {
           const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
@@ -1021,7 +1188,47 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textGSTypeGeneral##', config.textGSTypeA)
+            .replace('##textGSTypeGeneral##', config.textGSTypeA1)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaEspera += `   <td>${(orden)}</td>`;
+          htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaEspera += `  </tr>`;
+          contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += '</table>';
+            htmlListaEspera += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaEspera += `</table>`;
+        htmlListaEspera += `<div style="page-break-after:always"></div>`;
+      }
+      // Generar lista espera resto lista A2
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosA2Espera.length>0) {
+        cursoCentroCicloModulo.listaAsignadosA2Espera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += esperaBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleWaiting##', config.titleWaiting)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textGSTypeGeneral##', config.textGSTypeA2)
             .replace('##titleWarning##', config.titleWarning)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
@@ -1126,6 +1333,46 @@ else{
         htmlListaEspera += `</table>`;
         htmlListaEspera += `<div style="page-break-after:always"></div>`;
       }
+      // Generar lista espera resto lista D
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosDEspera.length>0) {
+        cursoCentroCicloModulo.listaAsignadosDEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += esperaBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textGSTitleGeneral##', config.textGSTitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleWaiting##', config.titleWaiting)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textGSTypeGeneral##', config.textGSTypeD)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaEspera += `    <td>${(orden)}</td>`;
+          htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaEspera += `  </tr>`;
+          contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += '</table>';
+            htmlListaEspera += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaEspera += `</table>`;
+        htmlListaEspera += `<div style="page-break-after:always"></div>`;
+      }
 
     }// for
 
@@ -1197,6 +1444,8 @@ else{
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.csv"), contentExcluidosExcel, 'latin1');
     
   }
+
+  console.log(`FIN PROCESO ${filename}`);
 
   return `${filename}`;
 }

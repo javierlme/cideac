@@ -37,6 +37,15 @@ async function processAssigns(category, city, filePath, config) {
     return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
   }
 
+  
+  
+  
+  
+  
+  
+  
+  
+  
   const generarTextoExclusionCE = (texto) => {
     var motivo = String();
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textCER1 + ' / ';
@@ -155,6 +164,7 @@ async function processAssigns(category, city, filePath, config) {
           textoCursoCompleto: textoCursoCompleto,
           numeroCurso: Number(selectedCourse.numeroCurso)
         }
+
         if (Number(selectedCourse.vacantes>0)){
           listaModulosComprobados.push(centrosCiclosModulo);
         }
@@ -198,6 +208,8 @@ async function processAssigns(category, city, filePath, config) {
     }
     rowIndex++;
   }
+
+
 
   console.log(`listaCentrosCiclosModulos.length:${listaCentrosCiclosModulos.length}`);
   console.log(`listaSolicitudesAceptadas.length:${listaSolicitudesAceptadas.length}`);
@@ -255,6 +267,7 @@ var algunaSolicitudCambia = true;
           admitido: false,
           espera: true,
           preferencia: modulo.prioridad? modulo.prioridad : false,
+          
           scoring : registro.scoring? Number(registro.scoring) : Number(0),
           viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
           eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
@@ -305,6 +318,20 @@ var algunaSolicitudCambia = true;
     }
   }
 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   const listaSolicitudesAceptadasMapeadas = listaSolicitudesAceptadas.reduce(function(listaAcumulada, solicitud){
     for (var i=0; i<4; i++){
       const listaModulos = mapearLinealmenteDatosIniciales(solicitud, i);
@@ -423,7 +450,7 @@ var algunaSolicitudCambia = true;
   }
     
   ////////////////////////////////////////////////////////////////////////////
-  // Resolvemos resto grupos A, B y C
+  // Resolvemos resto grupos A, B, C y D
   ////////////////////////////////////////////////////////////////////////////
   seguir = true;
   for (vueltas=0; (vueltas<MaxVueltas && seguir); vueltas++) {
@@ -1005,6 +1032,46 @@ else{
         htmlListaAdmitidos += `</table>`;
         htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
       }
+      // Asignados resto lista D
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosD.length>0) {
+        cursoCentroCicloModulo.listaAsignadosD.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += admitidosBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleAdmitted##', config.titleAdmitted)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textCETypeGeneral##', config.textCETypeD)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaAdmitidos += `   <td>${(orden)}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaAdmitidos += `  </tr>`;
+          contentAdmitidosExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaAdmitidos += '</table>';
+            htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaAdmitidos += `</table>`;
+        htmlListaAdmitidos += `<div style="page-break-after:always"></div>`;
+      }
 
       // Generar lista espera resto lista A
       orden=0;
@@ -1126,6 +1193,46 @@ else{
         htmlListaEspera += `</table>`;
         htmlListaEspera += `<div style="page-break-after:always"></div>`;
       }
+      // Generar lista espera resto lista D
+      orden=0;
+      if (cursoCentroCicloModulo.listaAsignadosDEspera.length>0) {
+        cursoCentroCicloModulo.listaAsignadosDEspera.map(ap => {
+          const textoCursoCompletoModulos = ap.cursoCompleto? ap.textoCursoCompleto : ap.listaCentrosCiclosModulos.map(l=>l).join(' ')
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += esperaBaseHtml.toString()
+            .replace('##titleGeneral##', config.titleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##city##', city)
+            .replace('##titleCurse##', config.titleCurse)
+            .replace('##titleWaiting##', config.titleWaiting)
+            .replace('##school##', cursoCentroCicloModulo.centro)
+            .replace('##course##', cursoCentroCicloModulo.curso)
+            .replace('##modulo##', cursoCentroCicloModulo.modulo)
+            .replace('##textCETypeGeneral##', config.textCETypeD)
+            .replace('##titleWarning##', config.titleWarning)
+          }  
+          htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
+          htmlListaEspera += `    <td>${(orden)}</td>`;
+          htmlListaEspera += `	  <td>${ap.docId ? `****${ap.docId.substr(4)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
+          htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
+          htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
+          htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
+          htmlListaEspera += `  </tr>`;
+          contentEsperaExcel+= `${(orden || '')};${(ap.docId || '')};${(ap.applicationId || '')};${(cursoCentroCicloModulo.centro || '')};`
+            +`${(cursoCentroCicloModulo.codigoCentro || '')};${(cursoCentroCicloModulo.curso || '')};${(cursoCentroCicloModulo.codigoCurso || '')};`
+              +`${(ap.viaAcceso || '')};${(ap.preferencia? 'SI' : 'NO')};${(ap.scoring || '')};${ap.handicapped ? 'SI' : 'NO'};${ap.eliteAthlete ? 'SI' : 'NO'};`
+                +`${(ap.listaCodigosModulos.map(l=>l).join(';') || '')};\r\n`;
+          if (orden%numLinesPerPage==0){
+            htmlListaEspera += '</table>';
+            htmlListaEspera += `<div style="page-break-after:always"></div>`;
+          }
+        });
+        htmlListaEspera += `</table>`;
+        htmlListaEspera += `<div style="page-break-after:always"></div>`;
+      }
 
     }// for
 
@@ -1197,6 +1304,8 @@ else{
     fs.writeFileSync(path.join(__dirname, '..', 'temp', filename+"Excluidos.csv"), contentExcluidosExcel, 'latin1');
     
   }
+
+  console.log(`FIN PROCESO ${filename}`);
 
   return `${filename}`;
 }

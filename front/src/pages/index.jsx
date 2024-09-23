@@ -39,10 +39,10 @@ let plazasDce = 6;
 
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
 let titleCurse = 'Curso 2024/2025';
-let titleAdmitted = 'LISTADO PROVISIONAL DE ADMITIDOS';
-let titleWaiting = 'LISTAS PROVISIONAL DE ESPERA';
-let titleRejected = 'LISTADO PROVISIONAL DE EXCLUIDOS';
-let titleSlot = 'LISTADO PROVISIONAL DE VACANTES';
+let titleAdmitted = 'LISTADOS DE ADMITIDOS';
+let titleWaiting = 'LISTADOS DE ESPERA';
+let titleRejected = 'LISTADOS DE EXCLUIDOS';
+let titleSlot = 'LISTADOS DE VACANTES';
 let titleWarning = ''
 
 let textGBTitleGeneral = 'CICLOS FORMATIVOS DE GRADO BÁSICO';
