@@ -244,6 +244,8 @@ export default function Home() {
         updateSteps();
       }
     } catch (err) {
+      console.log('ERROR de TIEMPO : ')
+      console.log(err?.data)
       const index = steps.indexOf(step);
       resetSteps(index);
       steps[index] = { ...steps[index], state: 'error', info: err?.data?.additionalInfo?err.data.additionalInfo:err, file: null };

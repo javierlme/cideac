@@ -114,7 +114,7 @@ exports.getCategoryCourses = async (city, category) => {
         codigoCentro: String(getCellValue('A'+rowIndex)).replace('.','').trim(),
         centro: getCellValue('B'+rowIndex),
         codigoCurso: String(getCellValue('C'+rowIndex)).replace('.','').trim(),
-        curso: `${String(getCellValue('D'+rowIndex)).trim()} ${numeroCurso?`(Curso ${numeroCurso})`:''}`,
+        curso: `${String(getCellValue('D'+rowIndex)).trim()} ${numeroCurso&&city!='CIDEAD'?`(Curso ${numeroCurso})`:''}`,
         codigoModulo: String(getCellValue('E'+rowIndex)).replace('.','').trim(),//.padStart(4, '0'),
         modulo: getCellValue('F'+rowIndex),
         maxHorasModulo: getCellValue('G'+rowIndex),
@@ -131,7 +131,7 @@ exports.getCategoryCourses = async (city, category) => {
         codigoCentro: String(getCellValue('A'+rowIndex)).replace('.','').trim(),
         centro: getCellValue('B'+rowIndex),
         codigoCurso: String(getCellValue('C'+rowIndex) + numeroCurso).replace('.','').trim(),
-        curso: `${String(getCellValue('D'+rowIndex)).trim()} ${numeroCurso?`(Curso ${numeroCurso})`:''}`,
+        curso: `${String(getCellValue('D'+rowIndex)).trim()} ${numeroCurso&&city!='CIDEAD'?`(Curso ${numeroCurso})`:''}`,
         vacantes: Number(getCellValue('E'+rowIndex)),
         numeroCurso: numeroCurso
       });
