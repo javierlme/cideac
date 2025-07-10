@@ -399,6 +399,7 @@ const buildConfig = (req) => {
     "textGMR2": String(req.body.textGMR2?req.body.textGMR2:String()),
     "textGMR3": String(req.body.textGMR3?req.body.textGMR3:String()),
     "textGMR4": String(req.body.textGMR4?req.body.textGMR4:String()),
+    "textGMR5": String(req.body.textGMR5?req.body.textGMR5:String()),
 
     "textGSTitleGeneral": String(req.body.textGSTitleGeneral?req.body.textGSTitleGeneral:String()),
     "textGSTypeA1": String(req.body.textGSTypeA1?req.body.textGSTypeA1:String()),
@@ -412,6 +413,7 @@ const buildConfig = (req) => {
     "textGSR2": String(req.body.textGSR2?req.body.textGSR2:String()),
     "textGSR3": String(req.body.textGSR3?req.body.textGSR3:String()),
     "textGSR4": String(req.body.textGSR4?req.body.textGSR4:String()),
+    "textGSR5": String(req.body.textGSR5?req.body.textGSR5:String()),
 
     "textCETitleGeneral": String(req.body.textCETitleGeneral?req.body.textCETitleGeneral:String()),
     "textCETypeGeneral": String(req.body.textCETypeGeneral?req.body.textCETypeGeneral:String()),

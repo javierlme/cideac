@@ -51,7 +51,8 @@ async function processAssigns(category, city, filePath, config) {
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textCER1 + ' / ';
     if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textCER2 + ' / ';
     if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textCER3 + ' / ';
-    if (texto.match(new RegExp('r4', 'i')) != null) motivo+=config.textGMR4 + ' / ';
+    if (texto.match(new RegExp('r4', 'i')) != null) motivo+=config.textCER4 + ' / ';
+    if (texto.match(new RegExp('r5', 'i')) != null) motivo+=config.textCER5 + ' / ';
     return motivo.slice(0,-2)
   }
 

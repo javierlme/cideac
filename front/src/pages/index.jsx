@@ -22,7 +22,7 @@ const defaultSteps = [
 
 // Configuration
 let openConfig = false;
-let randomNumberSelected = 4682;
+let randomNumberSelected = 1567;
 let percentageHandicap = 5;
 let numSlotsBySeatHandicap = 1;
 let percentageAthlete = 5;
@@ -38,7 +38,7 @@ let plazasDcidead = 20;
 let plazasDce = 6;
 
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
-let titleCurse = 'Curso 2024/2025';
+let titleCurse = 'Curso 2025/2026';
 let titleAdmitted = 'LISTADOS DE ADMITIDOS';
 let titleWaiting = 'LISTADOS DE ESPERA';
 let titleRejected = 'LISTADOS DE EXCLUIDOS';
@@ -72,6 +72,7 @@ let textGMR1 = 'Identidad alumno';
 let textGMR2 = 'Forma de acceso';
 let textGMR3 = 'Declaración responsable (menores de edad)';
 let textGMR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
+let textGMR5 = 'No se acredita experiencia laboral';
 
 let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
 let textGSTypeA1 = 'Bachillerato';
@@ -85,6 +86,7 @@ let textGSR1 = 'Identidad alumno';
 let textGSR2 = 'Forma de acceso';
 let textGSR3 = 'Declaración responsable (menores de edad)';
 let textGSR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
+let textGSR5 = 'No se acredita experiencia laboral';
 
 let textCETitleGeneral = 'CURSO ESPECIALIZACIÓN';
 let textCETypeGeneral = 'General';
@@ -192,6 +194,7 @@ export default function Home() {
     formData.set('textGMR2', textGMR2);
     formData.set('textGMR3', textGMR3);
     formData.set('textGMR4', textGMR4);
+    formData.set('textGMR5', textGMR5);
 
     formData.set('textGSTitleGeneral', textGSTitleGeneral);
     formData.set('textGSTypeA1', textGSTypeA1);
@@ -205,6 +208,7 @@ export default function Home() {
     formData.set('textGSR2', textGSR2);
     formData.set('textGSR3', textGSR3);
     formData.set('textGSR4', textGSR4);
+    formData.set('textGSR5', textGSR5);
 
     formData.set('textCETitleGeneral', textCETitleGeneral);
     formData.set('textCETypeGeneral', textCETypeGeneral);
@@ -388,7 +392,7 @@ export default function Home() {
         </Button>
       </header>
       <section className="intro">
-        <h2><b>Plataforma de asignación de plazas de formación profesional 2024/2025</b></h2>
+        <h2><b>Plataforma de asignación de plazas de formación profesional 2025/2026</b></h2>
         <p>Para comenzar sigue los pasos a continuación:</p>
         <label className="selector">
           Seleccionar ciclo
@@ -794,6 +798,14 @@ export default function Home() {
                   <input class="inputConfig" id="textGMR4Input" value={textGMR4} onChange={(e) => { textGMR4 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R5
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMR5Input" value={textGMR5} onChange={(e) => { textGMR5 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
             <h4><b>Vía acceso Grado Superior (GS)</b></h4>
             <table>
@@ -891,6 +903,14 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textGSR4Input" value={textGSR4} onChange={(e) => { textGSR4 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R5
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSR5Input" value={textGSR5} onChange={(e) => { textGSR5 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>

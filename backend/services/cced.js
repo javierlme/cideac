@@ -51,7 +51,8 @@ async function processAssigns(category, city, filePath, config) {
     if (texto.match(new RegExp('r1', 'i')) != null) motivo+=config.textCER1 + ' / ';
     if (texto.match(new RegExp('r2', 'i')) != null) motivo+=config.textCER2 + ' / ';
     if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textCER3 + ' / ';
-    if (texto.match(new RegExp('r4', 'i')) != null) motivo+=config.textGMR4 + ' / ';
+    if (texto.match(new RegExp('r4', 'i')) != null) motivo+=config.textCER4 + ' / ';
+    if (texto.match(new RegExp('r5', 'i')) != null) motivo+=config.textCER5 + ' / ';
     return motivo.slice(0,-2)
   }
 
@@ -847,6 +848,7 @@ else{
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
             .replace('##textCETypeGeneral##', config.textCETypeHandicap)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
@@ -854,7 +856,7 @@ else{
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -888,6 +890,7 @@ else{
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
             .replace('##textCETypeGeneral##', config.textCETypeAthlete)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
@@ -895,7 +898,7 @@ else{
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -927,8 +930,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeA)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
@@ -936,7 +940,7 @@ else{
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -967,8 +971,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeB)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
@@ -976,7 +981,7 @@ else{
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1007,8 +1012,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeC)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
@@ -1016,7 +1022,7 @@ else{
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1047,8 +1053,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeD)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaAdmitidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaAdmitidos += `   <td>${(orden)}</td>`;
@@ -1056,7 +1063,7 @@ else{
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaAdmitidos += `  </tr>`;
@@ -1088,8 +1095,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeA)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td>${(orden)}</td>`;
@@ -1097,7 +1105,7 @@ else{
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -1128,8 +1136,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeB)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `   <td>${(orden)}</td>`;
@@ -1137,7 +1146,7 @@ else{
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -1168,8 +1177,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeC)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `    <td>${(orden)}</td>`;
@@ -1177,7 +1187,7 @@ else{
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -1208,8 +1218,9 @@ else{
             .replace('##school##', cursoCentroCicloModulo.centro)
             .replace('##course##', cursoCentroCicloModulo.curso)
             .replace('##modulo##', cursoCentroCicloModulo.modulo)
-            .replace('##textCETypeGeneral##', config.textCETypeD)
+            .replace('##textCETypeGeneral##', config.textCETypeGeneral)
             .replace('##titleWarning##', config.titleWarning)
+            .replace('##randomNumber##', config.randomNumberSelected)
           }  
           htmlListaEspera += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
           htmlListaEspera += `    <td>${(orden)}</td>`;
@@ -1217,7 +1228,7 @@ else{
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
           htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
-          htmlListaEspera += `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
+          htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
           htmlListaEspera += `  </tr>`;
@@ -1253,6 +1264,7 @@ else{
         .replace('##titleRejected##', config.titleRejected)
         .replace('##textCETypeGeneral##', config.textCETypeGeneral)
         .replace('##titleWarning##', config.titleWarning)
+        .replace('##randomNumber##', config.randomNumberSelected)
       }  
 
       htmlListaExcluidos += `  <tr style="background-color:${(orden++)%1==0?'#aaa':'#fff'};font-weight:normal">`;
