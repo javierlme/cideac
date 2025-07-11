@@ -72,7 +72,7 @@ let textGMR1 = 'Identidad alumno';
 let textGMR2 = 'Forma de acceso';
 let textGMR3 = 'Declaración responsable (menores de edad)';
 let textGMR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
-let textGMR5 = 'No se acredita experiencia laboral';
+let textGMR5 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa';
 
 let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
 let textGSTypeA1 = 'Bachillerato';
@@ -86,7 +86,7 @@ let textGSR1 = 'Identidad alumno';
 let textGSR2 = 'Forma de acceso';
 let textGSR3 = 'Declaración responsable (menores de edad)';
 let textGSR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
-let textGSR5 = 'No se acredita experiencia laboral';
+let textGSR5 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa';
 
 let textCETitleGeneral = 'CURSO ESPECIALIZACIÓN';
 let textCETypeGeneral = 'General';
