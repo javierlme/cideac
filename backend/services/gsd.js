@@ -53,6 +53,7 @@ async function processAssigns(category, city, filePath, config) {
     if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textGSR3 + ' / ';
     if (texto.match(new RegExp('r4', 'i')) != null) motivo+=config.textGSR4 + ' / ';
     if (texto.match(new RegExp('r5', 'i')) != null) motivo+=config.textGSR5 + ' / ';
+    if (texto.match(new RegExp('r6', 'i')) != null) motivo+=config.textGSR6 + ' / ';
     return motivo.slice(0,-2)
   }
 
@@ -200,7 +201,7 @@ async function processAssigns(category, city, filePath, config) {
       infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
       // Condicion especial de solicitud SOLO de segundo y sin embargo NO se permite segundo
       if ((!infoSolicitud.permitirSegundo) && (!algunModuloPrimero(infoSolicitud.listaCentrosCiclosModulos)) ) {
-        infoSolicitud.incumple = 'r4';
+        infoSolicitud.incumple = 'r6';
       }
       if (String(infoSolicitud.incumple || '') == '') {
         listaSolicitudesAceptadas.push(infoSolicitud);

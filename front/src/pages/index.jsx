@@ -70,9 +70,10 @@ let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGMR1 = 'Identidad alumno';
 let textGMR2 = 'Forma de acceso';
-let textGMR3 = 'Declaración responsable (menores de edad)';
-let textGMR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
-let textGMR5 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa';
+let textGMR3 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador asalariado';
+let textGMR4 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador autónomo por cuenta propia';
+let textGMR5 = 'Declaración responsable (menores de edad)';
+let textGMR6 = 'No acredita la superación de módulos de 1º';
 
 let textGSTitleGeneral = 'CICLOS FORMATIVOS DE GRADO SUPERIOR';
 let textGSTypeA1 = 'Bachillerato';
@@ -84,9 +85,10 @@ let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textGSR1 = 'Identidad alumno';
 let textGSR2 = 'Forma de acceso';
-let textGSR3 = 'Declaración responsable (menores de edad)';
-let textGSR4 = 'Solicita únicamente modulos de 2° curso y no justifica cumplir las condiciones de porcentaje de horas de primer curso superadas';
-let textGSR5 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa';
+let textGSR3 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador asalariado';
+let textGSR4 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador autónomo por cuenta propia';
+let textGSR5 = 'Declaración responsable (menores de edad)';
+let textGSR6 = 'No acredita la superación de módulos de 1º';
 
 let textCETitleGeneral = 'CURSO ESPECIALIZACIÓN';
 let textCETypeGeneral = 'General';
@@ -94,7 +96,10 @@ let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
 let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
 let textCER1 = 'Identidad alumno';
 let textCER2 = 'Forma de acceso';
-let textCER3 = 'Declaración responsable (menores de edad)';
+let textCER3 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador asalariado';
+let textCER4 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador autónomo por cuenta propia';
+let textCER5 = 'Declaración responsable (menores de edad)';
+let textCER6 = 'No acredita la superación de módulos de 1º';
 
 export default function Home() {
   const [user, logout] = useSession(selector, shallow);
@@ -195,6 +200,7 @@ export default function Home() {
     formData.set('textGMR3', textGMR3);
     formData.set('textGMR4', textGMR4);
     formData.set('textGMR5', textGMR5);
+    formData.set('textGMR6', textGMR6);
 
     formData.set('textGSTitleGeneral', textGSTitleGeneral);
     formData.set('textGSTypeA1', textGSTypeA1);
@@ -209,6 +215,7 @@ export default function Home() {
     formData.set('textGSR3', textGSR3);
     formData.set('textGSR4', textGSR4);
     formData.set('textGSR5', textGSR5);
+    formData.set('textGSR6', textGSR6);
 
     formData.set('textCETitleGeneral', textCETitleGeneral);
     formData.set('textCETypeGeneral', textCETypeGeneral);
@@ -217,6 +224,9 @@ export default function Home() {
     formData.set('textCER1', textCER1);
     formData.set('textCER2', textCER2);
     formData.set('textCER3', textCER3);
+    formData.set('textCER4', textCER4);
+    formData.set('textCER5', textCER5);
+    formData.set('textCER6', textCER6);
 
     try {
       const index = steps.indexOf(step);
@@ -806,6 +816,14 @@ export default function Home() {
                   <input class="inputConfig" id="textGMR5Input" value={textGMR5} onChange={(e) => { textGMR5 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R6
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGMR6Input" value={textGMR6} onChange={(e) => { textGMR6 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
             <h4><b>Vía acceso Grado Superior (GS)</b></h4>
             <table>
@@ -913,6 +931,14 @@ export default function Home() {
                   <input class="inputConfig" id="textGSR5Input" value={textGSR5} onChange={(e) => { textGSR5 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R6
+                </td>
+                <td>
+                  <input class="inputConfig" id="textGSR6Input" value={textGSR6} onChange={(e) => { textGSR6 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
             </table>
             <h4><b>Vía acceso Curso Especialización (CE)</b></h4>
             <table>
@@ -970,6 +996,30 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textCER3Input" value={textCER3} onChange={(e) => { textCER3 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R4
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCER4Input" value={textCER4} onChange={(e) => { textCER4 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R5
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCER5Input" value={textCER5} onChange={(e) => { textCER5 = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>
+              <tr>
+                <td class="tdConfig">
+                  Texto lista excluidos R6
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCER6Input" value={textCER6} onChange={(e) => { textCER6 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>

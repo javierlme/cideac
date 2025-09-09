@@ -53,6 +53,7 @@ async function processAssigns(category, city, filePath, config) {
     if (texto.match(new RegExp('r3', 'i')) != null) motivo+=config.textGSR3 + ' / ';
     if (texto.match(new RegExp('r4', 'i')) != null) motivo+=config.textGSR4 + ' / ';
     if (texto.match(new RegExp('r5', 'i')) != null) motivo+=config.textGSR5 + ' / ';
+    if (texto.match(new RegExp('r6', 'i')) != null) motivo+=config.textGSR6 + ' / ';
     return motivo.slice(0,-2)
   }
 

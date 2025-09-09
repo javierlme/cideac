@@ -400,6 +400,7 @@ const buildConfig = (req) => {
     "textGMR3": String(req.body.textGMR3?req.body.textGMR3:String()),
     "textGMR4": String(req.body.textGMR4?req.body.textGMR4:String()),
     "textGMR5": String(req.body.textGMR5?req.body.textGMR5:String()),
+    "textGMR6": String(req.body.textGMR6?req.body.textGMR6:String()),
 
     "textGSTitleGeneral": String(req.body.textGSTitleGeneral?req.body.textGSTitleGeneral:String()),
     "textGSTypeA1": String(req.body.textGSTypeA1?req.body.textGSTypeA1:String()),
@@ -414,6 +415,7 @@ const buildConfig = (req) => {
     "textGSR3": String(req.body.textGSR3?req.body.textGSR3:String()),
     "textGSR4": String(req.body.textGSR4?req.body.textGSR4:String()),
     "textGSR5": String(req.body.textGSR5?req.body.textGSR5:String()),
+    "textGSR6": String(req.body.textGSR6?req.body.textGSR6:String()),
 
     "textCETitleGeneral": String(req.body.textCETitleGeneral?req.body.textCETitleGeneral:String()),
     "textCETypeGeneral": String(req.body.textCETypeGeneral?req.body.textCETypeGeneral:String()),
@@ -421,7 +423,10 @@ const buildConfig = (req) => {
     "textCETypeHandicap": String(req.body.textCETypeHandicap?req.body.textCETypeHandicap:String()),
     "textCER1": String(req.body.textCER1?req.body.textCER1:String()),
     "textCER2": String(req.body.textCER2?req.body.textCER2:String()),
-    "textCER3": String(req.body.textCER3?req.body.textCER3:String())
+    "textCER3": String(req.body.textCER3?req.body.textCER3:String()),
+    "textCER4": String(req.body.textCER4?req.body.textCER4:String()),
+    "textCER5": String(req.body.textCER5?req.body.textCER5:String()),
+    "textCER6": String(req.body.textCER6?req.body.textCER6:String())
   }
 
 }
