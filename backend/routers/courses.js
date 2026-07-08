@@ -1,3 +1,17 @@
+/**
+ * @file routers/courses.js
+ * @description Router para la gestión de cursos, plazas y asignaciones.
+ *
+ * Endpoints:
+ *  - POST /slots: Sube el fichero Excel de plazas (slots) para una ciudad.
+ *  - POST /assign: Realiza la asignación de plazas a partir de un fichero de solicitudes.
+ *  - GET /categories: Devuelve el listado de categorías (convocatorias) disponibles.
+ *  - GET /checkSlots: Comprueba si el fichero de plazas para una ciudad ya ha sido subido.
+ *  - DELETE /slots/:city: Elimina el fichero de plazas para una ciudad.
+ *  - GET /files/...(slots|excel|pdf|xlsx)/:filename: Descarga ficheros de datos o generados.
+ *
+ * Todos los endpoints requieren permisos de 'admin'.
+ */
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const common = require('../common');
@@ -24,6 +38,16 @@ const {Buffer} = require('buffer');
 const listDistanceCode = ['GMD', 'GSD', 'CED'];
 const listPresentialCode = ['GB', 'GBNEE', 'GMP', 'GSP', 'CEP'];
 
+/**
+ * @route POST /slots
+ * @description Sube y procesa el fichero Excel con la oferta de plazas (slots).
+ * El fichero debe ser un .xls o .xlsx y contener una hoja por cada categoría
+ * de la ciudad especificada. Tras validar y guardar el fichero, genera los
+ * PDFs de leyendas para cada categoría.
+ * @param {string} city - Ciudad para la que se suben las plazas (Ceuta, Melilla, CIDEAD).
+ * @param {file} file - Fichero Excel con las plazas.
+ * @returns {Object} 200 OK si el proceso es correcto.
+ */
 router.post('/slots', guard.check([['admin']]),
   upload.single('file'), async (req, res) => {
     try {
@@ -88,6 +112,16 @@ router.post('/slots', guard.check([['admin']]),
     }
   });
 
+/**
+ * @function getCategoryCourses
+ * @description Obtiene la lista de cursos y sus detalles para una ciudad y categoría dadas,
+ * leyendo los datos del fichero Excel de plazas (slots) correspondiente.
+ * @param {string} city - La ciudad (ej. 'Ceuta').
+ * @param {string} category - El código de la categoría (ej. 'GMP').
+ * @returns {Promise<Array<Object>>} - Promesa que resuelve a un array de objetos,
+ * donde cada objeto representa un curso con sus propiedades (centro, código, vacantes, etc.).
+ * @throws {Object} - Error si el fichero de plazas no existe.
+ */
 exports.getCategoryCourses = async (city, category) => {
   const filePath = path.join(__dirname, '..', 'data', `${city}_slots.xls`);
   if (!fs.existsSync(filePath)) {
@@ -141,6 +175,17 @@ exports.getCategoryCourses = async (city, category) => {
   return courses;
 }
 
+/**
+ * @route POST /assign
+ * @description Procesa un fichero de solicitudes de alumnos y realiza la asignación
+ * de plazas para una ciudad y categoría específicas. Delega la lógica de asignación
+ * al servicio correspondiente según la categoría (GB, GMD, GSP, etc.).
+ * @param {string} city - Ciudad para la que se realiza la asignación.
+ * @param {string} category - Categoría de la convocatoria.
+ * @param {file} file - Fichero Excel con las solicitudes de los alumnos.
+ * @param {Object} body - Parámetros de configuración para el algoritmo de asignación.
+ * @returns {Object} 200 OK con la URL al fichero de resultados.
+ */
 router.post('/assign', guard.check([['admin']]),
   upload.single('file'), async (req, res) => {
     try {
@@ -236,6 +281,11 @@ router.post('/assign', guard.check([['admin']]),
     }
   });
 
+/**
+ * @route GET /categories
+ * @description Devuelve la lista completa de categorías (convocatorias) definidas en el sistema.
+ * @returns {Object} 200 OK con un array de objetos de categoría.
+ */
 router.get('/categories', guard.check([['admin']]), async (req, res) => {
   try {
     common.respond(req, res, 200, { result: categories });
@@ -244,6 +294,12 @@ router.get('/categories', guard.check([['admin']]), async (req, res) => {
   }
 });
 
+/**
+ * @route GET /checkSlots
+ * @description Comprueba si el fichero de plazas (slots) para una ciudad determinada existe.
+ * @param {string} req.query.city - La ciudad a comprobar.
+ * @returns {Object} 200 OK con { result: boolean }.
+ */
 router.get('/checkSlots', guard.check([['admin']]), async (req, res) => {
   try {
     if (!req.query.city) {
@@ -256,6 +312,12 @@ router.get('/checkSlots', guard.check([['admin']]), async (req, res) => {
   }
 });
 
+/**
+ * @route DELETE /slots/:city
+ * @description Elimina el fichero de plazas (slots) de una ciudad.
+ * @param {string} req.params.city - La ciudad cuyo fichero de plazas se eliminará.
+ * @returns {Object} 200 OK.
+ */
 router.delete('/slots/:city', guard.check([['admin']]), async (req, res) => {
   try {
     const city = req.params.city
@@ -270,6 +332,12 @@ router.delete('/slots/:city', guard.check([['admin']]), async (req, res) => {
   }
 });
 
+/**
+ * @route GET /files/slots/:filename
+ * @description Descarga el contenido de un fichero de plazas (slots) en formato base64.
+ * @param {string} req.params.filename - Nombre del fichero a descargar (ej. 'Ceuta_slots.xls').
+ * @returns {string} 200 OK con el contenido del fichero en base64.
+ */
 router.get('/files/slots/:filename', guard.check([['admin']]), async (req, res) => {
   try {
     const filename = req.params.filename
@@ -289,6 +357,12 @@ router.get('/files/slots/:filename', guard.check([['admin']]), async (req, res) 
   }
 });
 
+/**
+ * @route GET /files/excel/:filename
+ * @description Descarga el contenido de un fichero Excel generado en la carpeta /temp.
+ * @param {string} req.params.filename - Nombre del fichero a descargar.
+ * @returns {string} 200 OK con el contenido del fichero en base64.
+ */
 router.get('/files/excel/:filename', guard.check([['admin']]), async (req, res) => {
   try {
     const filename = req.params.filename
@@ -308,6 +382,12 @@ router.get('/files/excel/:filename', guard.check([['admin']]), async (req, res) 
   }
 });
 
+/**
+ * @route GET /files/pdf/:filename
+ * @description Descarga el contenido de un fichero PDF generado en la carpeta /temp.
+ * @param {string} req.params.filename - Nombre del fichero a descargar.
+ * @returns {string} 200 OK con el contenido del fichero en base64.
+ */
 router.get('/files/pdf/:filename', guard.check([['admin']]), async (req, res) => {
   try {
     const filename = req.params.filename
@@ -327,6 +407,12 @@ router.get('/files/pdf/:filename', guard.check([['admin']]), async (req, res) =>
   }
 });
 
+/**
+ * @route GET /files/xlsx/:filename
+ * @description Descarga el contenido de un fichero XLSX generado en la carpeta /temp.
+ * @param {string} req.params.filename - Nombre del fichero a descargar.
+ * @returns {string} 200 OK con el contenido del fichero en base64.
+ */
 router.get('/files/xlsx/:filename', guard.check([['admin']]), async (req, res) => {
   try {
     const filename = req.params.filename
@@ -346,6 +432,15 @@ router.get('/files/xlsx/:filename', guard.check([['admin']]), async (req, res) =
   }
 });
 
+/**
+ * @function buildConfig
+ * @description Construye un objeto de configuración a partir de los parámetros
+ * opcionales del cuerpo de la petición. Proporciona valores por defecto para
+ * todos los parámetros de configuración del algoritmo de asignación y de los
+ * textos de los PDFs generados.
+ * @param {Object} req - Objeto de petición Express.
+ * @returns {Object} - Objeto de configuración completo.
+ */
 const buildConfig = (req) => {
   return {
         

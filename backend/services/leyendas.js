@@ -1,9 +1,25 @@
+/**
+ * @file services/leyendas.js
+ * @description Servicio para generar los PDFs de leyendas de la oferta formativa.
+ * Las leyendas son documentos que detallan los cursos y módulos disponibles para
+ * cada categoría (convocatoria) en una ciudad, agrupados por centro educativo.
+ * Se generan dos tipos de leyendas: una para modalidad a distancia y otra para presencial.
+ */
 const xlsx = require('xlsx');
 const path = require('path');
 const courseService = require('../routers/courses');
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
 
+/**
+ * @function sortLeyendasDistancia
+ * @description Función de comparación para ordenar los cursos de modalidad a distancia
+ * en las leyendas. El orden es: por centro (desc), por curso (desc), por número de curso (asc)
+ * y finalmente por abreviatura del módulo (alfabético).
+ * @param {Object} c1 - Primer curso a comparar.
+ * @param {Object} c2 - Segundo curso a comparar.
+ * @returns {number} - Resultado de la comparación.
+ */
 const sortLeyendasDistancia = (c1, c2) => {
   return (Number(c1.codigoCentro) != Number(c2.codigoCentro))? Number(c2.codigoCentro) - Number(c1.codigoCentro) :
     (Number(c1.codigoCurso) != Number(c2.codigoCurso))? Number(c2.codigoCurso) - Number(c1.codigoCurso) :  
@@ -11,12 +27,29 @@ const sortLeyendasDistancia = (c1, c2) => {
         String(c1.abreviaturaModulo).localeCompare(String(c2.abreviaturaModulo));
 }
 
+/**
+ * @function sortLeyendasPresencial
+ * @description Función de comparación para ordenar los cursos de modalidad presencial
+ * en las leyendas. El orden es: por centro (desc) y luego por número de vacantes (desc).
+ * @param {Object} c1 - Primer curso a comparar.
+ * @param {Object} c2 - Segundo curso a comparar.
+ * @returns {number} - Resultado de la comparación.
+ */
 const sortLeyendasPresencial = (c1, c2) => {
   return (Number(c1.codigoCentro) != Number(c2.codigoCentro))? Number(c2.codigoCentro) - Number(c1.codigoCentro) :
     Number(c2.vacantes) - Number(c1.vacantes);
 }
 
-
+/**
+ * @function buildPdfDistancia
+ * @description Construye y guarda un PDF con la leyenda de la oferta formativa
+ * para una categoría de modalidad a distancia.
+ * @param {string} city - La ciudad (ej. 'CIDEAD').
+ * @param {string} category - La categoría de la convocatoria (ej. 'GMD').
+ * @param {Object} config - Objeto de configuración con los textos y títulos para el PDF.
+ * @returns {Promise<void>}
+ * @throws {Object} - Error si la generación del PDF falla.
+ */
 const buildPdfDistancia = async (city, category, config) => {
   try{
     const listaCentrosCiclosModulosGrouped = await (await courseService.getCategoryCourses(city, category)).sort(sortLeyendasDistancia).reduce(function (r, a) {
@@ -87,6 +120,16 @@ const buildPdfDistancia = async (city, category, config) => {
 
 }
 
+/**
+ * @function buildPdfPresencial
+ * @description Construye y guarda un PDF con la leyenda de la oferta formativa
+ * para una categoría de modalidad presencial.
+ * @param {string} city - La ciudad (ej. 'Ceuta').
+ * @param {string} category - La categoría de la convocatoria (ej. 'GMP').
+ * @param {Object} config - Objeto de configuración con los textos y títulos para el PDF.
+ * @returns {Promise<void>}
+ * @throws {Object} - Error si la generación del PDF falla.
+ */
 const buildPdfPresencial = async (city, category, config) => {
   try{
     const listaCentrosCiclosModulosGrouped = await (await courseService.getCategoryCourses(city, category)).sort(sortLeyendasPresencial).reduce(function (r, a) {

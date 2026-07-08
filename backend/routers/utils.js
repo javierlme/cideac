@@ -1,12 +1,32 @@
+/**
+ * @file routers/utils.js
+ * @description Utilidades compartidas para los routers, principalmente para
+ * la gestión de tokens JWT y la ofuscación de datos sensibles.
+ */
 const config = require('../config.js');
 const jwt = require('jsonwebtoken');
 const tokenTTL = process.env.TOKEN_TTL || 60 * 24 * 7;//Una semana
 
+/**
+ * @function signToken
+ * @description Firma un payload y genera un token JWT con una fecha de expiración.
+ * @param {Object} payload - El contenido a incluir en el token.
+ * @returns {{expiration: Date, token: string}} - Un objeto con la fecha de expiración y el token firmado.
+ */
 const signToken = (payload) => {
   const expiration = new Date(new Date().getTime() + (tokenTTL || 7) * 60000);
   return { expiration, token: jwt.sign({ ...payload, expiration }, config.serverSecret) };
 }
 
+/**
+ * @function obfuscateString
+ * @description Ofusca un string (DNI, NIE, pasaporte u otro) para proteger la privacidad.
+ * - DNI/NIE: Muestra los dígitos en las posiciones 4 a 7. Ej: *****1234*
+ * - Pasaporte: Muestra los últimos 4 dígitos. Ej: ******5678
+ * - Otros: Muestra los últimos 4 caracteres. Ej: ******abcd
+ * @param {string} str - El string a ofuscar.
+ * @returns {string} - El string ofuscado.
+ */
 function obfuscateString(str) {
   if (!str) return '';
 
