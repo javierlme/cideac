@@ -1,6 +1,32 @@
+/**
+ * @file constants.js
+ * @description Constantes globales del sistema de asignación de plazas de FP.
+ *
+ * - types:      Tipos de ciclo formativo (GB, GBNEE, GM, GS, CE).
+ * - cities:     Ciudades gestionadas (Ceuta, Melilla, CIDEAD).
+ * - categories: Catálogo completo de convocatorias, donde cada entrada combina
+ *               ciudad + tipo + modalidad (presencial P / distancia D).
+ *
+ * Códigos de categoría:
+ *   GB    = Grado Básico (presencial)
+ *   GBNEE = Grado Básico con Necesidades Educativas Especiales (presencial)
+ *   GMP   = Grado Medio Presencial
+ *   GMD   = Grado Medio a Distancia
+ *   GSP   = Grado Superior Presencial
+ *   GSD   = Grado Superior a Distancia
+ *   CEP   = Curso de Especialización Presencial
+ *   CED   = Curso de Especialización a Distancia
+ */
 module.exports = {
+  /** Tipos de ciclo soportados por el sistema */
   types: ['GB', 'GBNEE', 'GM', 'GS', 'CE'],
+  /** Ciudades / ámbitos territoriales gestionados */
   cities: ['Ceuta', 'Melilla', 'CIDEAD'],
+  /**
+   * Catálogo de categorías (convocatorias).
+   * Cada entrada define: name (etiqueta), code (código interno),
+   * city (ciudad) y type (tipo de ciclo al que pertenece).
+   */
   categories: [
     { name: 'Ceuta GB',    code: 'GB',  city: 'Ceuta',   type: 'GB' },
     { name: 'Ceuta GB (NEE)', code: 'GBNEE',  city: 'Ceuta', type: 'GB' },

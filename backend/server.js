@@ -1,4 +1,22 @@
-/*Código que habilita información para debug y tratamiento de errores.*/
+/**
+ * @file server.js
+ * @description Punto de entrada principal de la API REST del sistema de asignación
+ * de plazas de Formación Profesional (FP) para Ceuta, Melilla y CIDEAD.
+ *
+ * Responsabilidades:
+ *  - Configuración de Express: middlewares (CORS, body-parser, cookies, compresión).
+ *  - Protección JWT: todas las rutas están protegidas salvo las declaradas como abiertas.
+ *  - Registro de routers: /users (autenticación) y /courses (gestión de plazas).
+ *  - Servicio de archivos estáticos desde la carpeta /temp (PDFs y CSVs generados).
+ *  - Manejo global de errores (express-jwt UnauthorizedError, errores genéricos).
+ *
+ * @exports {express.Application} app - Instancia de Express exportada para testing con supertest.
+ */
+
+/* ─────────────────────────────────────────────────────────────
+   Propiedades globales de depuración (__stack, __file, __line, __function)
+   Permiten obtener información de la pila de llamadas en tiempo de ejecución.
+   ───────────────────────────────────────────────────────────── */
 Object.defineProperty(global, '__stack', {
 	get: function () {
 		const orig = Error.prepareStackTrace;
@@ -28,6 +46,7 @@ Object.defineProperty(global, '__function', {
 	}
 });
 
+/* ─── Configuración de Express y middlewares ─── */
 const config = require('./config.js');
 const express = require('express');
 const app = express();
@@ -38,12 +57,17 @@ const compression = require('compression');
 const fs = require('fs');
 
 const httpServer = require('http').createServer(app);
-app.use(compression());
-app.use(cookieParser(config.serverSecret));
+app.use(compression());                                    // Compresión gzip de respuestas
+app.use(cookieParser(config.serverSecret));                 // Parseo de cookies firmadas
 // Los dos siguientes permiten peticiones de más de 50MB
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(bodyParser.json({ limit: '50mb', 'Content-Type': 'application/x-www-form-urlencoded' }));
-app.use(methodOverride());
+app.use(methodOverride());                                 // Soporte para PUT/DELETE en formularios
+/**
+ * Middleware CORS: permite peticiones desde cualquier origen.
+ * Intercepta peticiones OPTIONS (preflight) y las responde directamente.
+ * Para peticiones text/*, acumula el body en req.text (stream manual).
+ */
 const enableCORS = function (req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -67,15 +91,17 @@ app.use(enableCORS);
 
 // TODO: Capa de seguridad por roles
 
+/* ─── Carpeta estática para archivos generados (PDFs, CSVs, Excel de mejora) ─── */
 const staticFolderName = 'temp';
 if (!fs.existsSync(`${__dirname}/${staticFolderName}`)) {
 	fs.mkdirSync(`${__dirname}/${staticFolderName}`);
 }
 app.use('/files', express.static(staticFolderName));
 
+/* ─── Registro de routers y recolección de endpoints abiertos (sin JWT) ─── */
 const routers = [
-	require('./routers/users.js'),
-	require('./routers/courses.js'),
+	require('./routers/users.js'),    // Autenticación: login, refreshToken
+	require('./routers/courses.js'),  // Gestión de plazas: slots, assign, categorías, archivos
 ];
 let openEndpoints = ['/'];
 const rs = [];
@@ -84,6 +110,7 @@ for (const router of routers) {
 	rs.push(router);
 	openEndpoints = openEndpoints.concat((router.openEndpoints || []).map(endpoint => `${router.path}${endpoint}`));
 }
+/* ─── Protección JWT: todas las rutas requieren token salvo openEndpoints ─── */
 const jwt = require('express-jwt');
 app.use(jwt({
 	secret: config.serverSecret,
@@ -97,12 +124,19 @@ for (const router of rs) {
 	app.use(router.path, router.router);
 }
 
+/* ─── Ruta raíz: healthcheck básico ─── */
 const router = express.Router();
 router.get('/', function (req, res) {
 	res.status(200).jsonp(`Servidor OK!`);
 });
 app.use(router);
 
+/**
+ * Manejador global de errores de Express.
+ * - Errores de JWT (UnauthorizedError) → 401 ERR_NOT_AUTHORIZED
+ * - Errores con flag letGo → se relanza para que lo capture el proceso
+ * - Cualquier otro error → 500 ERR_UNKNOWN
+ */
 const genericErrorHandler = (err, req, res, next) => {
 	if (err.letGo) {
 		throw JSON.stringify(err);
@@ -115,12 +149,14 @@ const genericErrorHandler = (err, req, res, next) => {
 		}
 	}
 };
+/* ─── Arranque del servidor HTTP ─── */
 app.use(genericErrorHandler);
 httpServer.listen(config.expressPort, function () {
 	console.log(`Node server running on port:${config.expressPort}`);
 });
-httpServer.setTimeout(0);
+httpServer.setTimeout(0);  // Sin timeout para operaciones de larga duración (generación de PDFs)
 
+/* ─── Captura global de errores no controlados ─── */
 // UNHANDLED ERRORS
 process.on('unhandledRejection', err => {
 	console.error({ desc: 'Promesa no controlada', err: err.message });
@@ -132,3 +168,5 @@ process.on('uncaughtException', function (err) {
 		console.error({ desc: 'Excepción no controlada', err: err.stack });
 	}
 });
+
+module.exports = app;
