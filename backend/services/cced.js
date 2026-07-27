@@ -483,109 +483,66 @@ var algunaSolicitudCambia = true;
   }
     
   ////////////////////////////////////////////////////////////////////////////
-  // Resolvemos resto grupos A, B, C y D
+  // Resolvemos resto grupos A, B y C secuencialmente por puntos (A first, then B, then C)
   ////////////////////////////////////////////////////////////////////////////
-  seguir = true;
-  for (vueltas=0; (vueltas<MaxVueltas && seguir); vueltas++) {
-    seguir = false;
-    console.log(`---- Vuelta ${vueltas} ----`);
+  // Para cada módulo, después de las asignaciones especiales (minusválidos y deportistas),
+  // rellenar plazas restantes primero con la lista A, luego B y luego C, respetando
+  // la prioridad de petición (0..3) y el orden por puntos dentro de cada sublista.
+  for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+    // Contar ya asignados (excluyendo grupo D)
+    let asignadosPrevios = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado!=SIN_ASIGNAR && lsam.asignado!=ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
+    let remainingVacantes = Number(cursoCentroCicloModulo.vacantes) - asignadosPrevios;
+    if (remainingVacantes <= 0) continue;
 
-    for (var opcionSolicitud=0; opcionSolicitud<4; opcionSolicitud++) {
-      for (const cursoCentroCicloModulo of listaCentrosCiclosModulos) {
+    const assignGroupSequential = (groupCode, viaAccesoChar) => {
+      for (let opcionSolicitud=0; opcionSolicitud<4 && remainingVacantes>0; opcionSolicitud++) {
+        const candidatos = listaSolicitudesAceptadasMapeadas
+          .filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso==viaAccesoChar && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo))
+          .sort(ordenarCandidatos);
 
-        let vacantesAsignadas = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado!=SIN_ASIGNAR && lsam.asignado!=ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
-        const vacantesAsignadasA = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
-        const vacantesAsignadasB = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
-        const vacantesAsignadasC = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
-        const vacantesAsignadasD = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
-    
-        let vacantesA = redondear(vacantesAsignadasA + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageA), cursoCentroCicloModulo.vacantesDisponibles);
-        let vacantesB = redondear(vacantesAsignadasB + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageB), cursoCentroCicloModulo.vacantesDisponibles);
-        let vacantesC = redondear(vacantesAsignadasC + ((cursoCentroCicloModulo.vacantes-vacantesAsignadas) * config.percentageC), cursoCentroCicloModulo.vacantesDisponibles);
-        let vacantesD = config.plazasDce - vacantesAsignadasD;
+        for (const solicitud of candidatos) {
+          if (remainingVacantes<=0) break;
 
-/*if (cursoCentroCicloModulo.vacantes>vacantesAsignadas) {
-  console.log(`${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} D:${vacantesAsignadasD} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC} PD:${vacantesD}`);
-}
-else{
-  console.log(`${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} D:${vacantesAsignadasD} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC} PD:${vacantesD}`);
-  console.log('Nos quedamos sin vacantes')
-}*/
-
-
-        algunaSolicitudCambia = true;
-        while (algunaSolicitudCambia){
-          algunaSolicitudCambia = false;
-
-          // Resolvemos Grupo A
-          const listaSolicitantesA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso=='A'
-            && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
-
-          for (solicitud of listaSolicitantesA){            
-            const listaAceptadosA = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_A && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
-  
-            algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesA, listaAceptadosA, solicitud, ASIGNAR_GRUPO_A);
+          // Comprobar si ya tiene asignada otra petición de mayor prioridad
+          const asignadoPreviamenteMayorPrioridad = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.applicationId==solicitud.applicationId && lsam.asignado!=SIN_ASIGNAR 
+            && lsam.prioridadPeticion<solicitud.prioridadPeticion && lsam.claveCentroCicloModulo!=solicitud.claveCentroCicloModulo));
+          if (asignadoPreviamenteMayorPrioridad && contarLista(asignadoPreviamenteMayorPrioridad)>0){
+            continue;
           }
 
-          // Resolvemos Grupo B
-          const listaSolicitantesB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso=='B'
-            && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
-
-          for (solicitud of listaSolicitantesB){            
-            const listaAceptadosB = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_B && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
-  
-            algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesB, listaAceptadosB, solicitud, ASIGNAR_GRUPO_B);
-          }
-
-          // Resolvemos Grupo C
-          const listaSolicitantesC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso=='C'
-            && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
-
-          for (solicitud of listaSolicitantesC){            
-            const listaAceptadosC = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_C && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
-  
-            algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesC, listaAceptadosC, solicitud, ASIGNAR_GRUPO_C);
-          }
-
-          // Resolvemos Grupo D
-          const listaSolicitantesD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==SIN_ASIGNAR && lsam.viaAcceso=='D'
-            && lsam.prioridadPeticion==opcionSolicitud && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)).sort(ordenarCandidatos);
-
-          for (solicitud of listaSolicitantesD){            
-            const listaAceptadosD = listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado==ASIGNAR_GRUPO_D && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo));
-  
-            algunaSolicitudCambia = algunaSolicitudCambia || comprobarCandidatos(vacantesD, listaAceptadosD, solicitud, ASIGNAR_GRUPO_D);
-          }
-
-          if (algunaSolicitudCambia) {
-            seguir = true;
-          }
-          else{
-            vacantesAsignadas = contarLista(listaSolicitudesAceptadasMapeadas.filter(lsam=>(lsam.asignado!=SIN_ASIGNAR && lsam.claveCentroCicloModulo==cursoCentroCicloModulo.claveCentroCicloModulo)));
-            if (cursoCentroCicloModulo.vacantes>vacantesAsignadas){
-              if ((!algunaSolicitudCambia) && (vacantesAsignadasA>=vacantesA)) {
-                algunaSolicitudCambia=true;
-                seguir = true;
-                vacantesA++;
-                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo A. Vacantes:${vacantesA} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC}`);
-              }
-              if ((!algunaSolicitudCambia) && (vacantesAsignadasB>=vacantesB)) {
-                algunaSolicitudCambia=true;
-                seguir = true;
-                vacantesB++;
-                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo B. Vacantes:${vacantesB} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC}`);
-              }
-              if ((!algunaSolicitudCambia) && (vacantesAsignadasC>=vacantesC)) {
-                algunaSolicitudCambia=true;
-                seguir = true;
-                vacantesC++;
-                console.log(`Vuelta:${vueltas} Opcion Solicitud:${opcionSolicitud} Asignar restos para el grupo C. Vacantes:${vacantesC} ${cursoCentroCicloModulo.codigoModulo} ${cursoCentroCicloModulo.modulo} Vacantes:${cursoCentroCicloModulo.vacantes} Asignadas:${vacantesAsignadas} A:${vacantesAsignadasA} B:${vacantesAsignadasB} C:${vacantesAsignadasC} PA:${vacantesA} PB:${vacantesB} PC:${vacantesC}`);
+          // Si accesoIncorrecto es true, no se puede asignar: marcar como excluido con R2
+          if (solicitud.accesoIncorrecto === true) {
+            solicitud.asignado = SIN_ASIGNAR;
+            const alreadyExcluded = listaSolicitudesNoAceptadas.find(ls => ls.applicationId == solicitud.applicationId);
+            if (!alreadyExcluded) {
+              const original = listaSolicitudesAceptadas.find(s => s.applicationId == solicitud.applicationId);
+              const incumpleText = (original && original.incumple) ? `${original.incumple}|r2` : 'r2';
+              listaSolicitudesNoAceptadas.push({ docId: solicitud.docId || '', applicationId: solicitud.applicationId || '', personalId: solicitud.personalId || '', incumple: incumpleText });
+            } else {
+              if (alreadyExcluded.incumple) {
+                if (!alreadyExcluded.incumple.toLowerCase().includes('r2')) {
+                  alreadyExcluded.incumple = `${alreadyExcluded.incumple}|r2`;
+                }
+              } else {
+                alreadyExcluded.incumple = 'r2';
               }
             }
+            continue;
           }
+
+          // Asignar teniendo en cuenta si necesita 2 plazas por especialNeeds
+          solicitud.asignado = groupCode;
+          remainingVacantes -= solicitud.especialNeeds? 2 : 1;
         }
       }
     }
+
+    // Rellenar A, luego B, luego C
+    assignGroupSequential(ASIGNAR_GRUPO_A, 'A');
+    if (remainingVacantes>0) assignGroupSequential(ASIGNAR_GRUPO_B, 'B');
+    if (remainingVacantes>0) assignGroupSequential(ASIGNAR_GRUPO_C, 'C');
+
+    // Nota: Grupo D no se rellena aquí. Se mantiene la lógica previa para D si aplica en otro punto.
   }
 
 
@@ -913,7 +870,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -955,7 +912,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -996,7 +953,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -1037,7 +994,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -1078,7 +1035,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -1120,7 +1077,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1161,7 +1118,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1202,7 +1159,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1243,7 +1200,7 @@ else{
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1290,7 +1247,7 @@ else{
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
         .replace('##titleGeneral##', config.titleGeneral)
-        .replace('##textCETitleGeneral##', config.textCETitleGeneral)
+        .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
         .replace('##city##', city)
         .replace('##titleCurse##', config.titleCurse)
         .replace('##titleRejected##', config.titleRejected)
