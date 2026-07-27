@@ -542,7 +542,12 @@ var algunaSolicitudCambia = true;
     if (remainingVacantes>0) assignGroupSequential(ASIGNAR_GRUPO_B, 'B');
     if (remainingVacantes>0) assignGroupSequential(ASIGNAR_GRUPO_C, 'C');
 
-    // Nota: Grupo D no se rellena aquí. Se mantiene la lógica previa para D si aplica en otro punto.
+    // Rellenar Grupo D con las vacantes que queden tras A, B y C
+    if (remainingVacantes>0) {
+      assignGroupSequential(ASIGNAR_GRUPO_D, 'D');
+    }
+
+    // Nota: Grupo D ha sido rellenado aquí si quedaban plazas libres.
   }
 
 
