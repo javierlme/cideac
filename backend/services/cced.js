@@ -97,8 +97,9 @@ async function processAssigns(category, city, filePath, config) {
 
   let rowIndex = 3;
   let infoSolicitud;
-  const validateAndAppendCourse = (field, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, infoSolicitud, prioridad, textoCursoCompleto, mandatory = false) => {
+  const validateAndAppendCourse = (field, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, infoSolicitud, accesoIncorrecto, textoCursoCompleto, mandatory = false) => {
     var cursoCompleto = false;
+    var prioridad = true;
     const curso   = readCell(field, rowIndex).split(' ')[0].trim();
     var listaModulos = Array();
     const modulo1 = readCell(mod1,  rowIndex).split('#')[0].trim();
@@ -165,7 +166,8 @@ async function processAssigns(category, city, filePath, config) {
           //cursoCompleto: cursoCompleto,
           cursoCompleto: false,
           textoCursoCompleto: textoCursoCompleto,
-          numeroCurso: Number(selectedCourse.numeroCurso)
+          numeroCurso: Number(selectedCourse.numeroCurso),
+          accesoIncorrecto: accesoIncorrecto
         }
 
         if (Number(selectedCourse.vacantes>0)){
@@ -189,10 +191,10 @@ async function processAssigns(category, city, filePath, config) {
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
-    validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, ['si','sí'].includes(readCell('U',  rowIndex).toLowerCase()), readCell('J', rowIndex));
-    validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['si','sí'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
-    validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['si','sí'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
-    validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['si','sí'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
+    validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, ['no','nó'].includes(readCell('U',  rowIndex).toLowerCase()), readCell('J', rowIndex));
+    validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['no','nó'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
+    validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['no','nó'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
+    validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['no','nó'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
     infoSolicitud.viaAcceso = readCell('H', rowIndex);
     infoSolicitud.scoring = toNumberScore(toNumber(readCell('BO', rowIndex)));
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
@@ -266,7 +268,6 @@ var algunaSolicitudCambia = true;
           admitido: false,
           espera: true,
           preferencia: modulo.prioridad? modulo.prioridad : false,
-          
           scoring : registro.scoring? Number(registro.scoring) : Number(0),
           viaAcceso: registro.viaAcceso? registro.viaAcceso.toLocaleUpperCase() : '',
           eliteAthlete: registro.eliteAthlete? registro.eliteAthlete : false,
@@ -284,7 +285,8 @@ var algunaSolicitudCambia = true;
           textoCursoCompleto: modulo.textoCursoCompleto || '',
           cursoCompleto: modulo.cursoCompleto? true:false,
           permitirSegundo: registro.permitirSegundo,
-          abreviaturaModulo: generarTextoModulo(modulo.codigoModulo)
+          abreviaturaModulo: generarTextoModulo(modulo.codigoModulo),
+          accesoIncorrecto: modulo.accesoIncorrecto? true:false
         })
       }
       else{
@@ -361,6 +363,38 @@ var algunaSolicitudCambia = true;
 
     var hayCambios = false;
     if ((vacantes<=0) || (!listaAceptados) || (!solicitud) || (!Array.isArray(listaAceptados))){
+      return hayCambios;
+    }
+
+    // NEW: If the candidate has accesoIncorrecto true, they cannot be assigned.
+    // Add them to the excluded list (listaSolicitudesNoAceptadas) with an R2 reason (append 'r2' to incumple)
+    if (solicitud.accesoIncorrecto === true) {
+      // Ensure not assigned
+      solicitud.asignado = SIN_ASIGNAR;
+
+      // Avoid adding duplicates to the excluded list
+      const alreadyExcluded = listaSolicitudesNoAceptadas.find(ls => ls.applicationId == solicitud.applicationId);
+      if (!alreadyExcluded) {
+        // Try to obtain original record to preserve any existing incumple text
+        const original = listaSolicitudesAceptadas.find(s => s.applicationId == solicitud.applicationId);
+        const incumpleText = (original && original.incumple) ? `${original.incumple}|r2` : 'r2';
+        listaSolicitudesNoAceptadas.push({
+          docId: solicitud.docId || '',
+          applicationId: solicitud.applicationId || '',
+          personalId: solicitud.personalId || '',
+          incumple: incumpleText
+        });
+      } else {
+        // Ensure 'r2' is present in the incumple text
+        if (alreadyExcluded.incumple) {
+          if (!alreadyExcluded.incumple.toLowerCase().includes('r2')) {
+            alreadyExcluded.incumple = `${alreadyExcluded.incumple}|r2`;
+          }
+        } else {
+          alreadyExcluded.incumple = 'r2';
+        }
+      }
+
       return hayCambios;
     }
 
