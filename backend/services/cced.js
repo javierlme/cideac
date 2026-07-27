@@ -198,11 +198,7 @@ async function processAssigns(category, city, filePath, config) {
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple = readCell('BS', rowIndex).toLowerCase();
-    infoSolicitud.permitirSegundo =  ['si','sí'].includes(readCell('BT', rowIndex).toLowerCase())?true:false;
-    // Condicion especial de solicitud SOLO de segundo y sin embargo NO se permite segundo
-    if ((!infoSolicitud.permitirSegundo) && (!algunModuloPrimero(infoSolicitud.listaCentrosCiclosModulos)) ) {
-      infoSolicitud.incumple = 'r6';
-    }
+    infoSolicitud.permitirSegundo = true;
     if (String(infoSolicitud.incumple || '') == '') {
       listaSolicitudesAceptadas.push(infoSolicitud);
     }

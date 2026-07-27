@@ -22,23 +22,23 @@ const defaultSteps = [
 
 // Configuration
 let openConfig = false;
-let randomNumberSelected = 1567;
+let randomNumberSelected = 6779;
 let percentageHandicap = 5;
 let numSlotsBySeatHandicap = 1;
 let percentageAthlete = 5;
 let numSlotsBySeatAthlete = 1;
-let percentageA = 80;
-let percentageA1 = 45;
-let percentageA2 = 55;
-let percentageB = 15;
-let percentageC = 5;
+let percentageA = 100;
+let percentageA1 = 50;
+let percentageA2 = 50;
+let percentageB = 0;
+let percentageC = 0;
 let plazasDpresencial = 3;
 let plazasDdistancia = 4;
 let plazasDcidead = 20;
 let plazasDce = 6;
 
 let titleGeneral = 'PROCESO DE ADMISIÓN DE ESTUDIOS DE FORMACIÓN PROFESIONAL ';
-let titleCurse = 'Curso 2025/2026';
+let titleCurse = 'Curso 2026/2027';
 let titleAdmitted = 'LISTADOS DE ADMITIDOS';
 let titleWaiting = 'LISTADOS DE ESPERA';
 let titleRejected = 'LISTADOS DE EXCLUIDOS';
@@ -466,62 +466,6 @@ export default function Home() {
                 </td>
               </tr>
             </table>
-            <h4><b>Forma acceso</b></h4>
-            <table>
-            <tr>
-                <td class="tdConfig">
-                  Porcentaje plazas tipo A
-                </td>
-                <td>
-                  <input class="inputConfig" id="percentageTypeAInput" value={percentageA} onChange={(e) => { percentageA = e.target.value; resetSteps(); } } />%
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig2">A1</td>
-                <td class="tdConfig"><input class="inputConfig" id="percentageTypeA1Input" value={percentageA1} onChange={(e) => { percentageA1 = e.target.value; resetSteps(); } } /> %</td>
-              </tr>
-              <tr>
-                <td class="tdConfig2">A2</td>
-                <td class="tdConfig"><input class="inputConfig" id="percentageTypeA2Input" value={percentageA2} onChange={(e) => { percentageA2 = e.target.value; resetSteps(); } } /> %</td>
-              </tr>              
-              <tr>
-                <td class="tdConfig">
-                  Porcentaje plazas tipo B
-                </td>
-                <td>
-                  <input class="inputConfig" id="percentageTypeAInput" value={percentageB} onChange={(e) => { percentageB = e.target.value; resetSteps(); } } />%
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Porcentaje plazas tipo C
-                </td>
-                <td>
-                  <input class="inputConfig" id="percentageTypeAInput" value={percentageC} onChange={(e) => { percentageC = e.target.value; resetSteps(); } } />%
-                </td>
-              </tr>
-              <tr>
-                  <td class="tdConfig" colSpan="3">
-                    Porcentaje plazas tipo D
-                  </td>
-              </tr>
-              <tr>
-                <td class="tdConfig2">Presencial GM/GS (Ceuta/Melilla)</td>
-                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDpresencialInput" value={plazasDpresencial} onChange={(e) => { plazasDpresencial = e.target.value; resetSteps(); } } /> plazas</td>
-              </tr>
-              <tr>
-                <td class="tdConfig2">Distancia GM/GS (Ceuta/Melilla)</td>
-                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDdistanciaInput" value={plazasDdistancia} onChange={(e) => { plazasDdistancia = e.target.value; resetSteps(); } } /> plazas</td>
-              </tr>
-              <tr>
-                <td class="tdConfig2">CIDEAD GM/GS (Ceuta/Melilla)</td>
-                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDcideadInput" value={plazasDcidead} onChange={(e) => { plazasDcidead = e.target.value; resetSteps(); } } /> plazas</td>
-              </tr>
-              <tr>
-                <td class="tdConfig2">Curso Especialización (Ceuta/Melilla/CIDEAD)</td>
-                <td class="tdConfig"><input class="inputConfig" id="plazasTypeDceInput" value={plazasDce} onChange={(e) => { plazasDce = e.target.value; resetSteps(); } } /> plazas</td>
-              </tr>
-            </table>
           </div>
         </section>
         <section className="configText">
@@ -600,346 +544,7 @@ export default function Home() {
                 </td>
               </tr>
             </table>
-            <h4><b>Vía acceso Grado Básico (GB)</b></h4>
-            <table>
-              <tr>
-                <td class="tdConfig">
-                  Texto título
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBTitleGeneralInput" value={textGBTitleGeneral} onChange={(e) => { textGBTitleGeneral = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto vía acceso general
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBTypeGeneralInput" value={textGBTypeGeneral} onChange={(e) => { textGBTypeGeneral = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso deportista élite
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBTypeAthleteInput" value={textGBTypeAthlete} onChange={(e) => { textGBTypeAthlete = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso minusvalía
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBTypeHandicapInput" value={textGBTypeHandicap} onChange={(e) => { textGBTypeHandicap = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R1
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBR1Input" value={textGBR1} onChange={(e) => { textGBR1 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R2
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBR2Input" value={textGBR2} onChange={(e) => { textGBR2 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R3
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBR3Input" value={textGBR3} onChange={(e) => { textGBR3 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-            </table>
-            <h4><b>Vía acceso Grado Básico Necesidades Especiales (GB-NEE)</b></h4>
-            <table>
-              <tr>
-                <td class="tdConfig">
-                  Texto título
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBNEETitleGeneralInput" value={textGBNEETitleGeneral} onChange={(e) => { textGBNEETitleGeneral = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto vía acceso general
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBNEETypeGeneralInput" value={textGBNEETypeGeneral} onChange={(e) => { textGBNEETypeGeneral = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso deportista élite
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBNEETypeAthleteInput" value={textGBNEETypeAthlete} onChange={(e) => { textGBNEETypeAthlete = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso minusvalía
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBNEETypeHandicapInput" value={textGBNEETypeHandicap} onChange={(e) => { textGBNEETypeHandicap = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R1
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBNEER1Input" value={textGBNEER1} onChange={(e) => { textGBNEER1 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R2
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBNEER2Input" value={textGBNEER2} onChange={(e) => { textGBNEER2 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R3
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGBNEER3Input" value={textGBNEER3} onChange={(e) => { textGBNEER3 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-            </table>
-            <h4><b>Vía acceso Grado Médio (GM)</b></h4>
-            <table>
-              <tr>
-                <td class="tdConfig">
-                  Texto título
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTitleGeneralInput" value={textGMTitleGeneral} onChange={(e) => { textGMTitleGeneral = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo A
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTypeAInput" value={textGMTypeA} onChange={(e) => { textGMTypeA = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo B
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTypeBInput" value={textGMTypeB} onChange={(e) => { textGMTypeB = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo C
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTypeCInput" value={textGMTypeC} onChange={(e) => { textGMTypeC = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo D
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTypeDInput" value={textGMTypeD} onChange={(e) => { textGMTypeD = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso deportista élite
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTypeAthleteInput" value={textGMTypeAthlete} onChange={(e) => { textGMTypeAthlete = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso minusvalía
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTypeHandicapInput" value={textGMTypeHandicap} onChange={(e) => { textGMTypeHandicap = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R1
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMR1Input" value={textGMR1} onChange={(e) => { textGMR1 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R2
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMR2Input" value={textGMR2} onChange={(e) => { textGMR2 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R3
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMR3Input" value={textGMR3} onChange={(e) => { textGMR3 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R4
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMR4Input" value={textGMR4} onChange={(e) => { textGMR4 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R5
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMR5Input" value={textGMR5} onChange={(e) => { textGMR5 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R6
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMR6Input" value={textGMR6} onChange={(e) => { textGMR6 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-            </table>
-            <h4><b>Vía acceso Grado Superior (GS)</b></h4>
-            <table>
-              <tr>
-                <td class="tdConfig">
-                  Texto título
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTitleGeneralInput" value={textGSTitleGeneral} onChange={(e) => { textGSTitleGeneral = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo A1
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeA1Input" value={textGSTypeA1} onChange={(e) => { textGSTypeA1 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo A2
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeA2Input" value={textGSTypeA2} onChange={(e) => { textGSTypeA2 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo B
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeBInput" value={textGSTypeB} onChange={(e) => { textGSTypeB = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo C
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeCInput" value={textGSTypeC} onChange={(e) => { textGSTypeC = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso tipo D
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeDInput" value={textGSTypeD} onChange={(e) => { textGSTypeD = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso deportista élite
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSTypeAthleteInput" value={textGSTypeAthlete} onChange={(e) => { textGSTypeAthlete = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto acceso minusvalía
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGMTypeHandicapInput" value={textGMTypeHandicap} onChange={(e) => { textGMTypeHandicap = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R1
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSR1Input" value={textGSR1} onChange={(e) => { textGSR1 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R2
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSR2Input" value={textGSR2} onChange={(e) => { textGSR2 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R3
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSR3Input" value={textGSR3} onChange={(e) => { textGSR3 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R4
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSR4Input" value={textGSR4} onChange={(e) => { textGSR4 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R5
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSR5Input" value={textGSR5} onChange={(e) => { textGSR5 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R6
-                </td>
-                <td>
-                  <input class="inputConfig" id="textGSR6Input" value={textGSR6} onChange={(e) => { textGSR6 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-            </table>
+            
             <h4><b>Vía acceso Curso Especialización (CE)</b></h4>
             <table>
               <tr>
@@ -1012,14 +617,6 @@ export default function Home() {
                 </td>
                 <td>
                   <input class="inputConfig" id="textCER5Input" value={textCER5} onChange={(e) => { textCER5 = e.target.value; resetSteps(); } } />
-                </td>
-              </tr>
-              <tr>
-                <td class="tdConfig">
-                  Texto lista excluidos R6
-                </td>
-                <td>
-                  <input class="inputConfig" id="textCER6Input" value={textCER6} onChange={(e) => { textCER6 = e.target.value; resetSteps(); } } />
                 </td>
               </tr>
             </table>

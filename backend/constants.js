@@ -28,7 +28,7 @@ module.exports = {
    * city (ciudad) y type (tipo de ciclo al que pertenece).
    */
   categories: [
-    { name: 'Ceuta GB',    code: 'GB',  city: 'Ceuta',   type: 'GB' },
+    /*{ name: 'Ceuta GB',    code: 'GB',  city: 'Ceuta',   type: 'GB' },
     { name: 'Ceuta GB (NEE)', code: 'GBNEE',  city: 'Ceuta', type: 'GB' },
     { name: 'Ceuta GMP',   code: 'GMP', city: 'Ceuta',   type: 'GM' },
     { name: 'Ceuta GMD',   code: 'GMD', city: 'Ceuta',   type: 'GM' },
@@ -43,7 +43,7 @@ module.exports = {
     { name: 'Melilla GSD', code: 'GSD', city: 'Melilla', type: 'GS' },
     { name: 'Melilla CEP', code: 'CEP', city: 'Melilla', type: 'CE' },
     { name: 'CIDEAD GMD',  code: 'GMD', city: 'CIDEAD',  type: 'GM' },
-    { name: 'CIDEAD GSD',  code: 'GSD', city: 'CIDEAD',  type: 'GS' },
+    { name: 'CIDEAD GSD',  code: 'GSD', city: 'CIDEAD',  type: 'GS' },*/
     //{ name: 'CIDEAD CEP',  code: 'CEP', city: 'CIDEAD',  type: 'CE' },
     { name: 'CIDEAD CED',  code: 'CED', city: 'CIDEAD',  type: 'CE' }
   ]
