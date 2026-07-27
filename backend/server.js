@@ -151,22 +151,43 @@ const genericErrorHandler = (err, req, res, next) => {
 };
 /* ─── Arranque del servidor HTTP ─── */
 app.use(genericErrorHandler);
-httpServer.listen(config.expressPort, function () {
-	console.log(`Node server running on port:${config.expressPort}`);
-});
-httpServer.setTimeout(0);  // Sin timeout para operaciones de larga duración (generación de PDFs)
+
+// Start server only when executed directly (prevents Jest open handle when required in tests)
+function startServer() {
+    httpServer.listen(config.expressPort, function () {
+        console.log(`Node server running on port:${config.expressPort}`);
+    });
+    httpServer.setTimeout(0);  // Sin timeout para operaciones de larga duración (generación de PDFs)
+}
+
+// If server.js is run directly (node server.js), start the server.
+// When required by tests, the server is not started and tests can use the exported `app` with supertest.
+if (require.main === module) {
+    startServer();
+}
+
+// Expose helpers for tests to control the HTTP server explicitly if needed
+app.startServer = startServer;
+app.httpServer = httpServer;
+app.closeServer = function (callback) {
+    if (httpServer && httpServer.listening) {
+        httpServer.close(callback);
+    } else if (callback) {
+        callback();
+    }
+};
 
 /* ─── Captura global de errores no controlados ─── */
 // UNHANDLED ERRORS
 process.on('unhandledRejection', err => {
-	console.error({ desc: 'Promesa no controlada', err: err.message });
+    console.error({ desc: 'Promesa no controlada', err: err.message });
 });
 process.on('uncaughtException', function (err) {
-	if (err.letGo) {
-		throw JSON.stringify(err);
-	} else {
-		console.error({ desc: 'Excepción no controlada', err: err.stack });
-	}
+    if (err.letGo) {
+        throw JSON.stringify(err);
+    } else {
+        console.error({ desc: 'Excepción no controlada', err: err.stack });
+    }
 });
 
 module.exports = app;

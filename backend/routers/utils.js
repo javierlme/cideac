@@ -14,7 +14,7 @@ const tokenTTL = process.env.TOKEN_TTL || 60 * 24 * 7;//Una semana
  * @returns {{expiration: Date, token: string}} - Un objeto con la fecha de expiración y el token firmado.
  */
 const signToken = (payload) => {
-  const expiration = new Date(new Date().getTime() + (tokenTTL || 7) * 60000);
+  const expiration = new Date(Date.now() + (tokenTTL || 7) * 60000);
   return { expiration, token: jwt.sign({ ...payload, expiration }, config.serverSecret) };
 }
 
@@ -30,51 +30,70 @@ const signToken = (payload) => {
 function obfuscateString(str) {
   if (!str) return '';
 
-  // Detect if it's a passport (starts with letters, length > 7)
-  const passportRegex = /^[A-Za-z]+[0-9]+/;
-  if (passportRegex.test(str)) {
-    // Ofuscar todos los caracteres excepto los últimos 4 números de la cadena
-    const lastFourDigitsMatch = str.match(/(\d{4})(?!.*\d)/);
-    if (lastFourDigitsMatch) {
-      const lastFourDigits = lastFourDigitsMatch[1];
-      // Busca la posición de los últimos 4 dígitos en la cadena
-      const lastFourDigitsIndex = str.lastIndexOf(lastFourDigits);
-      let result = '';
-      for (let i = 0; i < str.length; i++) {
-      if (i >= lastFourDigitsIndex && i < lastFourDigitsIndex + 4) {
-        result += str[i];
-      } else {
-        result += '*';
-      }
-      }
-      return result;
-    } else {
-      // Si no hay 4 dígitos, ofuscar todo
-      return '*'.repeat(str.length);
+  const passportRegex = /^[A-Za-z]+\d+/;
+  const dniRegex = /^[XYZ]?\d{7,8}[A-Za-z]$/;
+
+  const obfuscateAll = (len) => '*'.repeat(len);
+
+  const obfuscateGeneric = (s) => {
+    if (s.length <= 4) return s;
+    return '*'.repeat(s.length - 4) + s.slice(-4);
+  };
+
+  const obfuscatePassport = (s) => {
+    const lastFourRe = /(\d{4})(?!.*\d)/;
+    const match = lastFourRe.exec(s);
+    if (match) {
+      const lastFour = match[1];
+      const idx = s.lastIndexOf(lastFour);
+      return s.split('').map((ch, i) => (i >= idx && i < idx + 4 ? ch : '*')).join('');
     }
-  // Matches Spanish DNI/NIE formats: optional leading X/Y/Z, 7-8 digits, ending with a letter
-  } else if (/^[XYZ]?\d{7,8}[A-Za-z]$/.test(str)) {
-    // Ofuscar todas las posiciones excepto 4, 5, 6 y 7 (índices 3, 4, 5, 6)
-    let result = '';
-    for (let i = 0; i < str.length; i++) {
-      if (i >= 3 && i <= 6) {
-      result += str[i];
-      } else {
-      result += '*';
-      }
-    }
-    return result;
-  }
-  else {
-    // Si no es DNI, NIE ni pasaporte, ofuscar todo excepto los 4 últimos caracteres
-    if (str.length <= 4) {
-      return str;
-    }
-    const visible = str.slice(-4);
-    const obfuscated = '*'.repeat(str.length - 4);
-    return obfuscated + visible;
-  }
+    return obfuscateAll(s.length);
+  };
+
+  const obfuscateDniNie = (s) => s.split('').map((ch, i) => (i >= 3 && i <= 6 ? ch : '*')).join('');
+
+  if (passportRegex.test(str)) return obfuscatePassport(str);
+  if (dniRegex.test(str)) return obfuscateDniNie(str);
+  return obfuscateGeneric(str);
 }
+
+/**
+ * NOTAS:
+ * - tokenTTL: valor en minutos. Por defecto es 60 * 24 * 7 (una semana en minutos).
+ * - signToken: genera un objeto { expiration: Date, token: string } y firma el payload
+ *   incluyendo la propiedad `expiration` (como objeto Date). Si se prefiere, puede
+ *   almacenarse como timestamp numérico para facilitar comprobaciones.
+ * - obfuscateString: reglas aplicadas:
+ *     • Pasaporte (comienza con letras y contiene números): muestra los últimos 4
+ *       dígitos encontrados; si no hay 4 dígitos, se ofusca toda la cadena.
+ *     • DNI/NIE (formato español): muestra los caracteres en posiciones 4 a 7
+ *       (índices 3..6) y ofusca el resto.
+ *     • Otros: muestra los últimos 4 caracteres; si la cadena tiene <= 4 caracteres
+ *       se devuelve tal cual.
+ * - Consideraciones de seguridad: los tokens firmados incluyen la fecha de
+ *   expiración en el payload; valida la expiración en cada petición protegida.
+ *
+ * Parche local en node_modules:
+ * - La corrección aplicada en `node_modules/deepmerge/dist/cjs.js` reemplaza
+ *   llamadas inseguras como `target.propertyIsEnumerable(symbol)` por
+ *   `Object.prototype.propertyIsEnumerable.call(target, symbol)` para evitar
+ *   TypeError cuando el objeto no tiene prototipo o `propertyIsEnumerable` no
+ *   es una función.
+ *
+ * Recomendaciones:
+ * 1) Intenta actualizar la dependencia afectada: actualiza `deepmerge` o
+ *    `snowpack` (si lo incorpora) a una versión que incluya la corrección.
+ * 2) Si no es posible actualizar en este momento, aplica el mismo cambio en el
+ *    paquete dentro de `node_modules` como parche temporal antes de desplegar.
+ * 3) Reinstala dependencias para asegurar coherencia (elimina `node_modules` y
+ *    ejecuta `npm install` o el gestor que uses) y reinicia la aplicación para
+ *    verificar que el error se ha resuelto.
+ *
+ * Si el error persiste, adjunta la versión exacta de `deepmerge` encontrada en
+ * tu `package-lock.json` o `yarn.lock` (líneas con la versión) y revisaré la
+ * acción precisa a tomar.
+ */
 
 module.exports = {
   signToken,

@@ -1,4 +1,4 @@
-import { css } from 'goober';
+import { css } from '../../lib/goober.js';
 import { cloneElement, h } from 'preact';
 
 export default function Field(props) {

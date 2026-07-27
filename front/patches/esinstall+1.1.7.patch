@@ -1,0 +1,18 @@
+diff --git a/node_modules/esinstall/lib/index.js b/node_modules/esinstall/lib/index.js
+index f4b4799..4ebfe58 100644
+--- a/node_modules/esinstall/lib/index.js
++++ b/node_modules/esinstall/lib/index.js
+@@ -357,7 +357,12 @@ ${colors.dim(`  At least one dependency must have an ESM "module" entrypoint. Yo
+                         break;
+                     }
+                 }
+-                throw new Error(`Module "${modName}" has no exported member "${exportSpecifier}". Did you mean to use "import ${exportSpecifier} from '${modName}'" instead?`);
++                // Patched: Skip "default" export errors for modules that use named exports only
++                if (exportSpecifier === 'default') {
++                    logger.warn(`Module "${modName}" has no default export, using named exports instead.`);
++                } else {
++                    throw new Error(`Module "${modName}" has no exported member "${exportSpecifier}". Did you mean to use "import ${exportSpecifier} from '${modName}'" instead?`);
++                }
+             }
+             const errFilePath = ((_a = err.loc) === null || _a === void 0 ? void 0 : _a.file) || err.id;
+             if (!errFilePath) {

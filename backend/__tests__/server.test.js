@@ -301,3 +301,10 @@ describe('Server - Rutas protegidas', () => {
     });
   });
 });
+
+// Teardown: cerrar el servidor si fue arrancado durante los tests
+afterAll(async () => {
+  if (app && app.closeServer) {
+    await new Promise(resolve => app.closeServer(resolve));
+  }
+});

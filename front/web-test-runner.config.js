@@ -1,5 +1,10 @@
 process.env.NODE_ENV = 'test';
 
+const { esbuildPlugin } = require('@web/dev-server-esbuild');
+
 module.exports = {
-  plugins: [require('@snowpack/web-test-runner-plugin')()],
+  nodeResolve: true,
+  plugins: [
+    esbuildPlugin({ jsx: true, jsxFactory: 'h', jsxFragment: 'Fragment' })
+  ],
 };

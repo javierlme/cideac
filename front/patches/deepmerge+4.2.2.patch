@@ -1,0 +1,13 @@
+diff --git a/node_modules/deepmerge/dist/cjs.js b/node_modules/deepmerge/dist/cjs.js
+index 8a6a517..c285927 100644
+--- a/node_modules/deepmerge/dist/cjs.js
++++ b/node_modules/deepmerge/dist/cjs.js
+@@ -52,7 +52,7 @@ function getMergeFunction(key, options) {
+ function getEnumerableOwnPropertySymbols(target) {
+ 	return Object.getOwnPropertySymbols
+ 		? Object.getOwnPropertySymbols(target).filter(function(symbol) {
+-			return target.propertyIsEnumerable(symbol)
++			return Object.prototype.propertyIsEnumerable.call(target, symbol)
+ 		})
+ 		: []
+ }

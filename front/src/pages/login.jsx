@@ -1,7 +1,7 @@
-import { styled } from 'goober';
+import { styled } from '../lib/goober.js';
 import { h } from 'preact';
 import shallow from 'zustand/shallow';
-import Field from '../components/forms/Field';
+import Field from '../components/forms/Field.js';
 import Input from '../components/forms/Input';
 import Button from '../components/Button';
 import { useSession } from '../stores/session';

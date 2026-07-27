@@ -1,4 +1,4 @@
-import { styled } from 'goober';
+import { styled } from '../lib/goober.js';
 import { Fragment, h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import Button from '../components/Button';
