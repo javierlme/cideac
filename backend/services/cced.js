@@ -849,7 +849,7 @@ var algunaSolicitudCambia = true;
           htmlListaAdmitidos += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -875,7 +875,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -891,7 +891,7 @@ var algunaSolicitudCambia = true;
           htmlListaAdmitidos += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -917,7 +917,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -933,7 +933,7 @@ var algunaSolicitudCambia = true;
           htmlListaAdmitidos += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -958,7 +958,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -974,7 +974,7 @@ var algunaSolicitudCambia = true;
           htmlListaAdmitidos += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -999,7 +999,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -1015,7 +1015,7 @@ var algunaSolicitudCambia = true;
           htmlListaAdmitidos += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -1040,7 +1040,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaAdmitidos += admitidosBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleAdmitted##', config.titleAdmitted)
@@ -1056,7 +1056,7 @@ var algunaSolicitudCambia = true;
           htmlListaAdmitidos += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaAdmitidos += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaAdmitidos += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaAdmitidos += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaAdmitidos += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaAdmitidos += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -1082,7 +1082,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1098,7 +1098,7 @@ var algunaSolicitudCambia = true;
           htmlListaEspera += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -1123,7 +1123,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1139,7 +1139,7 @@ var algunaSolicitudCambia = true;
           htmlListaEspera += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -1164,7 +1164,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1180,7 +1180,7 @@ var algunaSolicitudCambia = true;
           htmlListaEspera += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -1205,7 +1205,7 @@ var algunaSolicitudCambia = true;
           if (orden%numLinesPerPage==0){
             htmlListaEspera += esperaBaseHtml.toString()
             .replace('##titleGeneral##', config.titleGeneral)
-            .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+            .replace('##textCETitleGeneral##', config.textCETitleGeneral)
             .replace('##city##', city)
             .replace('##titleCurse##', config.titleCurse)
             .replace('##titleWaiting##', config.titleWaiting)
@@ -1221,7 +1221,7 @@ var algunaSolicitudCambia = true;
           htmlListaEspera += `	  <td>${ap.docId ? obfuscateString(ap.docId) : 'Ninguno'}</td>`;
           htmlListaEspera += ``;//`	  <td>${ap.personalId ? `${ap.personalId.substr(ap.personalId.indexOf(', ') + 2)}` : 'Ninguno'}</td>`;
           htmlListaEspera += `	  <td>${textoCursoCompletoModulos}</td>`;
-          htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
+          //htmlListaEspera += `	  <td>${ap.permitirSegundo? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.randomNumber}</td>`; // `	  <td>${ap.preferencia? 'SI' : 'NO'}</td>`;
           htmlListaEspera += `	  <td>${ap.scoring.toFixed(3)}</td>`;
           htmlListaEspera += `	  <td>${(ap.prioridadPeticion+1)}</td>`;
@@ -1252,7 +1252,7 @@ var algunaSolicitudCambia = true;
       if (orden%numLinesPerPage==0){
         htmlListaExcluidos += excluidosBaseHtml.toString()
         .replace('##titleGeneral##', config.titleGeneral)
-        .replace('##textCETitleGeneral##', config.textCETTitleGeneral)
+        .replace('##textCETitleGeneral##', config.textCETitleGeneral)
         .replace('##city##', city)
         .replace('##titleCurse##', config.titleCurse)
         .replace('##titleRejected##', config.titleRejected)
