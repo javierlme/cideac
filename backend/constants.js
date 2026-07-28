@@ -19,9 +19,11 @@
  */
 module.exports = {
   /** Tipos de ciclo soportados por el sistema */
-  types: ['GB', 'GBNEE', 'GM', 'GS', 'CE'],
+  //types: ['GB', 'GBNEE', 'GM', 'GS', 'CE'],
+  types: ['CE'],
   /** Ciudades / ámbitos territoriales gestionados */
-  cities: ['Ceuta', 'Melilla', 'CIDEAD'],
+  //cities: ['Ceuta', 'Melilla', 'CIDEAD'],
+  cities: ['CIDEAD'],
   /**
    * Catálogo de categorías (convocatorias).
    * Cada entrada define: name (etiqueta), code (código interno),

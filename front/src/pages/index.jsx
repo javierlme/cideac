@@ -402,7 +402,7 @@ export default function Home() {
         </Button>
       </header>
       <section className="intro">
-        <h2><b>Plataforma de asignación de plazas de formación profesional 2025/2026</b></h2>
+        <h2><b>Plataforma de asignación de plazas de formación profesional 2026/2027</b></h2>
         <p>Para comenzar sigue los pasos a continuación:</p>
         <label className="selector">
           Seleccionar ciclo
@@ -727,16 +727,6 @@ function Step(props) {
                     <td><Button secondary onClick={() => onDownloadExcluidosExcel(step)}><Icon icon={excel} />Excel</Button></td>
                   </tr>
                 </table>
-                <table>
-                  <tr>
-                    <td style="text-align:center;font-weight:bold;">Mejora</td>
-                  </tr>
-                </table>
-                <table>
-                  <tr>
-                    <td><Button secondary onClick={() => onDownloadMejoraExcel(step)}><Icon icon={excel} />Excel</Button></td>
-                  </tr>
-                </table>
             </Fragment>
           )}
           {step.id !== 'download' && step.state === 'pending' && (
@@ -765,15 +755,6 @@ function Step(props) {
                 </table>
                 <table>
                   <tr>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GB')}><Icon icon={pdf}/>GB</ButtonPq></td>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GBNEE')}><Icon icon={pdf}/>GBNEE</ButtonPq></td>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GMP')}><Icon icon={pdf}/>GMP</ButtonPq></td>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GSP')}><Icon icon={pdf}/>GSP</ButtonPq></td>
-                  </tr>
-                  <tr>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'CEP')}><Icon icon={pdf}/>CEP</ButtonPq></td>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GMD')}><Icon icon={pdf}/>GMD</ButtonPq></td>
-                    <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'GSD')}><Icon icon={pdf}/>GSD</ButtonPq></td>
                     <td><ButtonPq secondary onClick={() => onDownloadVacantesPdf(city, 'CED')}><Icon icon={pdf}/>CED</ButtonPq></td>
                   </tr>
                 </table>

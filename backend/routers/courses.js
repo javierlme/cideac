@@ -35,8 +35,8 @@ const CCEDService = require('../services/cced');
 const LeyendasService = require('../services/leyendas')
 const {Buffer} = require('buffer');
 
-const listDistanceCode = ['GMD', 'GSD', 'CED'];
-const listPresentialCode = ['GB', 'GBNEE', 'GMP', 'GSP', 'CEP'];
+const listDistanceCode = ['CED'];
+const listPresentialCode = [];
 
 /**
  * @route POST /slots
