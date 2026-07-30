@@ -514,6 +514,9 @@ const buildConfig = (req) => {
 
     "textCETitleGeneral": String(req.body.textCETitleGeneral?req.body.textCETitleGeneral:String()),
     "textCETypeGeneral": String(req.body.textCETypeGeneral?req.body.textCETypeGeneral:String()),
+    "textCEAccessRoadA": String(req.body.textCEAccessRoadA?req.body.textCEAccessRoadA:String()),
+    "textCEAccessRoadB": String(req.body.textCEAccessRoadB?req.body.textCEAccessRoadB:String()),
+    "textCEAccessRoadC": String(req.body.textCEAccessRoadC?req.body.textCEAccessRoadC:String()),
     "textCETypeAthlete": String(req.body.textCETypeAthlete?req.body.textCETypeAthlete:String()),
     "textCETypeHandicap": String(req.body.textCETypeHandicap?req.body.textCETypeHandicap:String()),
     "textCER1": String(req.body.textCER1?req.body.textCER1:String()),

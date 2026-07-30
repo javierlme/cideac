@@ -47,16 +47,16 @@ let titleWarning = ''
 
 let textGBTitleGeneral = 'CICLOS FORMATIVOS DE GRADO BÁSICO';
 let textGBTypeGeneral = 'General';
-let textGBTypeAthlete = 'Reserva plaza disposición cuarta 1';
-let textGBTypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGBTypeAthlete = 'Reserva plaza disposición quinta (capítulo III)';
+let textGBTypeHandicap = 'Reserva plaza disposición quinta (capítulo III)';
 let textGBR1 = 'Identidad alumno';
 let textGBR2 = 'Consejo Orientador';
 let textGBR3 = 'Declaración responsable (menores de edad)';
 
 let textGBNEETitleGeneral = 'CICLOS FORMATIVOS DE GRADO BÁSICO (NECESIDADES ESPECIALES)';
 let textGBNEETypeGeneral = 'General';
-let textGBNEETypeAthlete = 'Reserva plaza disposición cuarta 1';
-let textGBNEETypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGBNEETypeAthlete = 'Reserva plaza disposición quinta (capítulo III)';
+let textGBNEETypeHandicap = 'Reserva plaza disposición quinta (capítulo III)';
 let textGBNEER1 = 'Identidad alumno';
 let textGBNEER2 = 'Consejo Orientador';
 let textGBNEER3 = 'Declaración responsable (menores de edad)';
@@ -66,10 +66,10 @@ let textGMTypeA = 'Título de graduado en ESO / Título de Formación Profesiona
 let textGMTypeB = 'Prueba de acceso / Curso de acceso';
 let textGMTypeC = 'Técnico / Técnico Superior';
 let textGMTypeD = 'Certificados profesionales / Acreditación de competencias profesionales';
-let textGMTypeAthlete = 'Reserva plaza disposición cuarta 1';
-let textGMTypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGMTypeAthlete = 'Reserva plaza disposición quinta (capítulo III)';
+let textGMTypeHandicap = 'Reserva plaza disposición quinta (capítulo III)';
 let textGMR1 = 'Identidad alumno';
-let textGMR2 = 'Forma de acceso';
+let textGMR2 = 'Forma de acceso incorrecta en alguna de sus opciones. Revise el resto de opciones por si hubiera obtenido plaza o está en lista de espera';
 let textGMR3 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador asalariado';
 let textGMR4 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador autónomo por cuenta propia';
 let textGMR5 = 'Declaración responsable (menores de edad)';
@@ -81,10 +81,10 @@ let textGSTypeA2 = 'Título de Técnico (G.M. LOE/LOGSE)';
 let textGSTypeB = 'Prueba de acceso / Curso de acceso';
 let textGSTypeC = 'Técnico Superior';
 let textGSTypeD = 'Certificados profesionales / Acreditación de competencias profesionales';
-let textGSTypeAthlete = 'Reserva plaza disposición cuarta 1';
-let textGSTypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textGSTypeAthlete = 'Reserva plaza disposición quinta (capítulo III)';
+let textGSTypeHandicap = 'Reserva plaza disposición quinta (capítulo III)';
 let textGSR1 = 'Identidad alumno';
-let textGSR2 = 'Forma de acceso';
+let textGSR2 = 'Forma de acceso incorrecta en alguna de sus opciones. Revise el resto de opciones por si hubiera obtenido plaza o está en lista de espera';
 let textGSR3 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador asalariado';
 let textGSR4 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador autónomo por cuenta propia';
 let textGSR5 = 'Declaración responsable (menores de edad)';
@@ -92,10 +92,13 @@ let textGSR6 = 'No acredita la superación de módulos de 1º';
 
 let textCETitleGeneral = 'CURSO ESPECIALIZACIÓN';
 let textCETypeGeneral = 'General';
-let textCETypeAthlete = 'Reserva plaza disposición cuarta 1';
-let textCETypeHandicap = 'Reserva plaza disposición cuarta 2';
+let textCEAccessRoadA = 'Acceso con título requerido';
+let textCEAccessRoadB = 'Acceso con título distinto al requerido';
+let textCEAccessRoadC = 'Acceso sin título';
+let textCETypeAthlete = 'Reserva plaza disposición quinta (capítulo III)';
+let textCETypeHandicap = 'Reserva plaza disposición quinta (capítulo III)';
 let textCER1 = 'Identidad alumno';
-let textCER2 = 'Forma de acceso';
+let textCER2 = 'Forma de acceso incorrecta en alguna de sus opciones. Revise el resto de opciones por si hubiera obtenido plaza o está en lista de espera';
 let textCER3 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador asalariado';
 let textCER4 = 'No acredita suficientemente las condiciones de exención de la estancia en empresa. Trabajador autónomo por cuenta propia';
 let textCER5 = 'Declaración responsable (menores de edad)';
@@ -219,6 +222,9 @@ export default function Home() {
 
     formData.set('textCETitleGeneral', textCETitleGeneral);
     formData.set('textCETypeGeneral', textCETypeGeneral);
+    formData.set('textCEAccessRoadA', textCEAccessRoadA);
+    formData.set('textCEAccessRoadB', textCEAccessRoadB);
+    formData.set('textCEAccessRoadC', textCEAccessRoadC);
     formData.set('textCETypeAthlete', textCETypeAthlete);
     formData.set('textCETypeHandicap', textCETypeHandicap);
     formData.set('textCER1', textCER1);
@@ -557,10 +563,26 @@ export default function Home() {
               </tr>
               <tr>
                 <td class="tdConfig">
-                  Texto vía acceso general
+                  Texto Vía de acceso Lista A
                 </td>
                 <td>
-                  <input class="inputConfig" id="textCETypeGeneralInput" value={textCETypeGeneral} onChange={(e) => { textCETypeGeneral = e.target.value; resetSteps(); } } />
+                  <input class="inputConfig" id="textCEAccessRoadAInput" value={textCEAccessRoadA} onChange={(e) => { textCEAccessRoadA = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>              
+              <tr>
+                <td class="tdConfig">
+                  Texto Vía de acceso Lista B
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCEAccessRoadBInput" value={textCEAccessRoadB} onChange={(e) => { textCEAccessRoadB = e.target.value; resetSteps(); } } />
+                </td>
+              </tr>              
+              <tr>
+                <td class="tdConfig">
+                  Texto Vía de acceso Lista C
+                </td>
+                <td>
+                  <input class="inputConfig" id="textCEAccessRoadCInput" value={textCEAccessRoadC} onChange={(e) => { textCEAccessRoadC = e.target.value; resetSteps(); } } />
                 </td>
               </tr>              
               <tr>
