@@ -35,7 +35,7 @@ async function processAssigns(category, city, filePath, config) {
   const dataSheet = wb.SheetNames[0];
   const readCell = (column, row) => {
     const cellValue = wb.Sheets[dataSheet][`${column}${row}`];
-    return cellValue ? cellValue.w || cellValue.v.toString() || '' : '';
+    return cellValue ? (cellValue.w || cellValue.v.toString() || '').trim() : '';
   }
 
   const generarTextoExclusionCE = (texto) => {
@@ -148,10 +148,10 @@ async function processAssigns(category, city, filePath, config) {
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
-    const accesoIncorrecto1 = ['no','nó'].includes(readCell('U',  rowIndex).toLowerCase());
-    const accesoIncorrecto2 = ['no','nó'].includes(readCell('AI', rowIndex).toLowerCase());
-    const accesoIncorrecto3 = ['no','nó'].includes(readCell('AW', rowIndex).toLowerCase());
-    const accesoIncorrecto4 = ['no','nó'].includes(readCell('BK', rowIndex).toLowerCase());
+    const accesoIncorrecto1 = ['','no','nó'].includes(readCell('U',  rowIndex).toLowerCase());
+    const accesoIncorrecto2 = ['','no','nó'].includes(readCell('AI', rowIndex).toLowerCase());
+    const accesoIncorrecto3 = ['','no','nó'].includes(readCell('AW', rowIndex).toLowerCase());
+    const accesoIncorrecto4 = ['','no','nó'].includes(readCell('BK', rowIndex).toLowerCase());
     validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, accesoIncorrecto1, readCell('J', rowIndex));
     validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, accesoIncorrecto2, readCell('X', rowIndex));
     validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, accesoIncorrecto3, readCell('AL', rowIndex));
@@ -162,9 +162,13 @@ async function processAssigns(category, city, filePath, config) {
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple = readCell('BS', rowIndex).toLowerCase();
     infoSolicitud.permitirSegundo = true;
-    const esR2ConTodosAccesoIncorrecto = (String(infoSolicitud.incumple || '').toLowerCase() == 'r2')
-      && accesoIncorrecto1 && accesoIncorrecto2 && accesoIncorrecto3 && accesoIncorrecto4;
-    if (String(infoSolicitud.incumple || '') == '' && !esR2ConTodosAccesoIncorrecto) {
+    const esR2ConAlgunAccesoIncorrecto = (String(infoSolicitud.incumple || '').toLowerCase() == 'r2')
+      && (!accesoIncorrecto1 || !accesoIncorrecto2 || !accesoIncorrecto3 || !accesoIncorrecto4);
+    if (esR2ConAlgunAccesoIncorrecto)
+    {
+      console.log(`Solicitud ${infoSolicitud.applicationId} con R2 y alguna vía de acceso correcta, se acepta`);
+    }
+    if (String(infoSolicitud.incumple || '') == '' || esR2ConAlgunAccesoIncorrecto) {
       listaSolicitudesAceptadas.push(infoSolicitud);
     }
     else{
