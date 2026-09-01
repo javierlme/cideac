@@ -148,17 +148,23 @@ async function processAssigns(category, city, filePath, config) {
       especialNeeds: false,
       listaCentrosCiclosModulos: Array()
     };  
-    validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, ['no','nó'].includes(readCell('U',  rowIndex).toLowerCase()), readCell('J', rowIndex));
-    validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, ['no','nó'].includes(readCell('AI', rowIndex).toLowerCase()), readCell('X', rowIndex));
-    validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, ['no','nó'].includes(readCell('AW', rowIndex).toLowerCase()), readCell('AL', rowIndex));
-    validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, ['no','nó'].includes(readCell('BK', rowIndex).toLowerCase()), readCell('AZ', rowIndex));
+    const accesoIncorrecto1 = ['no','nó'].includes(readCell('U',  rowIndex).toLowerCase());
+    const accesoIncorrecto2 = ['no','nó'].includes(readCell('AI', rowIndex).toLowerCase());
+    const accesoIncorrecto3 = ['no','nó'].includes(readCell('AW', rowIndex).toLowerCase());
+    const accesoIncorrecto4 = ['no','nó'].includes(readCell('BK', rowIndex).toLowerCase());
+    validateAndAppendCourse('I', 'K',  'L',  'M',  'N',  'O',  'P',  'Q',  'R',  'S',  'T',  infoSolicitud, accesoIncorrecto1, readCell('J', rowIndex));
+    validateAndAppendCourse('W', 'Y',  'Z',  'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', infoSolicitud, accesoIncorrecto2, readCell('X', rowIndex));
+    validateAndAppendCourse('AK','AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', infoSolicitud, accesoIncorrecto3, readCell('AL', rowIndex));
+    validateAndAppendCourse('AY','BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', infoSolicitud, accesoIncorrecto4, readCell('AZ', rowIndex));
     infoSolicitud.viaAcceso = readCell('H', rowIndex);
     infoSolicitud.scoring = toNumberScore(toNumber(readCell('BO', rowIndex)));
     infoSolicitud.handicapped = ['si','sí'].includes(readCell('BQ', rowIndex).toLowerCase());
     infoSolicitud.eliteAthlete =  ['si','sí'].includes(readCell('BR', rowIndex).toLowerCase());
     infoSolicitud.incumple = readCell('BS', rowIndex).toLowerCase();
     infoSolicitud.permitirSegundo = true;
-    if (String(infoSolicitud.incumple || '') == '') {
+    const esR2ConTodosAccesoIncorrecto = (String(infoSolicitud.incumple || '').toLowerCase() == 'r2')
+      && accesoIncorrecto1 && accesoIncorrecto2 && accesoIncorrecto3 && accesoIncorrecto4;
+    if (String(infoSolicitud.incumple || '') == '' && !esR2ConTodosAccesoIncorrecto) {
       listaSolicitudesAceptadas.push(infoSolicitud);
     }
     else{
